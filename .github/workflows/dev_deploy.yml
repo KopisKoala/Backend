@@ -53,8 +53,8 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
-          aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: 'KOPIS-dev' # 나의 이름으로 조정
           environment_name: 'KOPIS-dev-env-1' # 나의 이름으로 조정
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
