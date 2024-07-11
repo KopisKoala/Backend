@@ -1,0 +1,85 @@
+spring:
+  # default profile settings
+  profiles:
+    active: local
+
+# 로그인 jwt
+#jwt:
+#  secret: ${JWT_SECRET}
+#  accessExpirationTime: ${JWT_EXPIRATION}
+#  refreshExpirationTime: ${JWT_REFRESH_EXPIRATION}
+
+# s3
+#cloud:
+#  aws:
+#    s3:
+#      bucket: ${aws.s3.bucket}
+#      path:
+#        location: location
+#    region:
+#      static: ap-northeast-2
+#    stack:
+#      auto: false
+#    credentials:
+#      accessKey: ${aws.s3.access.key}
+#      secretKey: ${aws.s3.secret.key}
+
+# swagger
+springdoc:
+  swagger-ui:
+    path: /swagger
+  cache:
+    disabled: true
+  use-fqn: true
+
+---
+
+# local profile
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${local.db.url}
+    username: ${local.db.username}
+    password: ${local.db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        #        format_sql: true
+        #        show_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: create
+        default_batch_fetch_size: 1000
+
+---
+
+# develop profile
+spring:
+  config:
+    activate:
+      on-profile: develop
+  datasource:
+    url: ${aws.db.url}
+    username: ${aws.db.username}
+    password: ${aws.db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        #        format_sql: true
+        #        show_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update
+        default_batch_fetch_size: 1000
