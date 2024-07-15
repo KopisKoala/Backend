@@ -27,14 +27,13 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authHttp -> authHttp
-                                .requestMatchers(
-                                        "/health", // health check
-                                        "/swagger-ui/**", // swagger
-                                        "/v3/api-docs/**"
-                                )
-                                .permitAll()
-                                .anyRequest().permitAll()
-                        //.anyRequest().authenticated()
+                        .requestMatchers(
+                                "/health", // health check
+                                "/swagger-ui/**", // swagger
+                                "/v3/api-docs/**"
+                        )
+                        .permitAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -51,6 +50,7 @@ public class WebSecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://kopis.sangsin.site", "https://kopis.sangsin.site"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
