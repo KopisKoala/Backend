@@ -50,7 +50,6 @@ public class WebSecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://kopis.sangsin.site", "https://kopis.sangsin.site"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
