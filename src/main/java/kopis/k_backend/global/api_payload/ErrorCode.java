@@ -23,6 +23,16 @@ public enum ErrorCode implements BaseCode {
     TOKEN_NO_AUTH(HttpStatus.FORBIDDEN, "JWT_4033", "권한 정보가 없는 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT_4011", "토큰 유효기간이 만료되었습니다."),
 
+    // Review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_4041", "존재하지 않는 리뷰입니다."),
+
+    // Performance
+    PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE_4041", "존재하지 않는 공연입니다."),
+
+
+    // Pair
+    PAIR_NOT_FOUND(HttpStatus.NOT_FOUND, "PAIR_4041", "존재하지 않는 페어입니다.")
+
     ;
 
     private final HttpStatus httpStatus;

@@ -18,6 +18,8 @@ public enum SuccessCode implements BaseCode {
     USER_DELETE_SUCCESS(HttpStatus.OK, "USER_2003", "회원탈퇴가 완료되었습니다."),
     USER_NICKNAME_SUCCESS(HttpStatus.OK, "USER_2004", "닉네임 생성이 완료되었습니다."),
 
+    // Review
+    REVIEW_CREATED(HttpStatus.CREATED, "REVIEW_2011", "리뷰가 생성되었습니다."),
 
     ;
 

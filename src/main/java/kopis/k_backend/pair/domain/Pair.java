@@ -1,4 +1,4 @@
-package kopis.k_backend.pairing.domain;
+package kopis.k_backend.pair.domain;
 
 import jakarta.persistence.*;
 import kopis.k_backend.performance.domain.Performance;

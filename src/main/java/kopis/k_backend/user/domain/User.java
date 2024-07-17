@@ -30,6 +30,8 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String provider;
 
+    private String profileImage;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 5, nullable = false)
     private UserRank userRank = UserRank.B; // rank는 예약어. 기본 값을 Rank.B로 설정
