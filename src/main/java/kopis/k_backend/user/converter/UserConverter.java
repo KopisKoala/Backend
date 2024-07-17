@@ -1,6 +1,7 @@
 package kopis.k_backend.user.converter;
 
 import kopis.k_backend.user.domain.User;
+import kopis.k_backend.user.domain.UserRank;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ public class UserConverter {
                 .username(userReqDto.getUsername())
                 .provider(userReqDto.getProvider())
                 .nickname("WhaShow01")
+                .userRank(UserRank.B)
                 .build();
     }
 
