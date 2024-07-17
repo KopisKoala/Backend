@@ -6,9 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
+import kopis.k_backend.user.converter.UserConverter;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
+import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +71,32 @@ public class UserController {
         userService.saveNickname(nicknameReqDto, user);
 
         return ApiResponse.onSuccess(SuccessCode.USER_NICKNAME_SUCCESS, true);
+    }
+
+    // 회원 정보 조회
+    @Operation(summary = "회원 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 조회 완료")
+    })
+    @GetMapping("/info")
+    public ApiResponse<UserResponseDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        User user = userService.findByUserName(customUserDetails.getUsername());
+        UserResponseDto userResponseDto = UserConverter.toUserDTO(user);
+        return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
+    }
+
+    // 회원 정보 수정
+    @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
+    })
+    @PutMapping("/info")
+    public ApiResponse<UserResponseDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                       @RequestBody UserResponseDto.UserUpdateDto userUpdateDto) {
+        User user = userService.findByUserName(customUserDetails.getUsername());
+        UserConverter.updateUserFromDto(user, userUpdateDto);
+        User updatedUser = userService.save(user);
+        UserResponseDto userResponseDto = UserConverter.toUserDTO(updatedUser);
+        return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, userResponseDto);
     }
 }

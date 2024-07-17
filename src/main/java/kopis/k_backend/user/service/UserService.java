@@ -10,6 +10,7 @@ import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
+import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
@@ -169,8 +170,11 @@ public class UserService {
         log.info("{} 회원 탈퇴 완료", username);
     }
 
-    // 일단 프로필 사진 정보를 받아오기
-    public User updateProfile(User user, MultipartFile file) {
-        return null;
+    // 사용자 정보 저장 메서드 추가
+    @Transactional
+    public User save(User user) {
+        return userRepository.save(user);
     }
 }
+
+
