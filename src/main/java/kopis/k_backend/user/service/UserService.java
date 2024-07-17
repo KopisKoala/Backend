@@ -10,7 +10,6 @@ import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
-import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.Optional;
