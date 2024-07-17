@@ -2,7 +2,10 @@ package kopis.k_backend.user.domain;
 
 import jakarta.persistence.*;
 import kopis.k_backend.global.entity.BaseEntity;
+import kopis.k_backend.review.domain.Review;
 import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,4 +29,11 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private String provider;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 5, nullable = false)
+    private UserRank userRank = UserRank.B; // rank는 예약어. 기본 값을 Rank.B로 설정
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews = new ArrayList<>();
 }
