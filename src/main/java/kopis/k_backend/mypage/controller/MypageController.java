@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import kopis.k_backend.global.api_payload.SuccessCode;
 import kopis.k_backend.user.domain.User;
+import kopis.k_backend.user.domain.UserRank;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +47,13 @@ public class MypageController {
                                             @RequestParam("nickname") String nickname,
                                             @RequestParam("address") String address,
                                             @RequestParam("email") String email,
-                                            @RequestParam("membershipLevel") String membershipLevel,
+                                            @RequestParam("userrank") UserRank userrank,
                                             @RequestParam(value = "file", required = false) MultipartFile file) {
         User user = userService.findByUserName(customUserDetails.getUsername());
         user.setNickname(nickname);
         user.setAddress(address);
         user.setEmail(email);
-        user.setMembershipLevel(membershipLevel);
+        user.setUserRank(userrank);
         User updatedUser = userService.updateProfile(user, file);
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, updatedUser);
     }
