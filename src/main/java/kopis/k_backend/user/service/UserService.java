@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.Optional;
@@ -166,5 +167,10 @@ public class UserService {
         }
         userRepository.delete(user);
         log.info("{} 회원 탈퇴 완료", username);
+    }
+
+    // 일단 프로필 사진 정보를 받아오기
+    public User updateProfile(User user, MultipartFile file) {
+        return null;
     }
 }
