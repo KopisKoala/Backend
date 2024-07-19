@@ -6,6 +6,8 @@ import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
+import kopis.k_backend.review.domain.ReviewLike;
+import kopis.k_backend.review.repository.ReviewLikeRepository;
 import kopis.k_backend.review.repository.ReviewRepository;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.user.domain.User;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +26,7 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final ReviewRepository reviewLikeRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional
     public List<Review> findAll() {
@@ -51,5 +54,22 @@ public class ReviewService {
         return review;
     }
 
+    @Transactional
+    public void delete(Long id, User user) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
+        log.info("ReviewWriter: " + review.getReviewWriter());
+        log.info("Nickname: " + user.getNickname());
+
+        if(Objects.equals(review.getReviewWriter(), user.getNickname())) {
+            // 리뷰 삭제
+            reviewRepository.deleteById(id);
+
+            // 좋아요 삭제
+            List<ReviewLike> reviewLikes = review.getReviewLikes();
+            reviewLikeRepository.deleteAll(reviewLikes);
+        }
+        else throw new GeneralException(ErrorCode.BAD_REQUEST);
+    }
 }
 

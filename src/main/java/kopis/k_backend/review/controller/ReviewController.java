@@ -1,6 +1,8 @@
 package kopis.k_backend.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
@@ -10,10 +12,12 @@ import kopis.k_backend.performance.service.PerformanceService;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
+import kopis.k_backend.review.dto.ReviewResponseDto;
 import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.UserService;
 import kopis.k_backend.pair.Service.PairService;
+import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -64,4 +68,33 @@ public class ReviewController {
             throw e;
         }
     }
+
+    @Operation(summary = "리뷰 삭제 메서드", description = "리뷰를 삭제하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2001", description = "리뷰 삭제가 완료되었습니다.")
+    })
+    @DeleteMapping(value = "/delete/{review-id}")
+    public ApiResponse<Boolean> delete(
+            @PathVariable(name = "review-id") Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        User user = userService.findByUserName(customUserDetails.getUsername());
+        reviewService.delete(id, user);
+
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_DELETED, true);
+    }
+
+    /*@Operation(summary = "공연 리뷰 목록 조회 메서드", description = "리뷰 중 공연에 따라 목록을 조회하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2002", description = "리뷰 목록 조회가 완료되었습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "performance-name", description = "조회하고 싶은 공연 이름"),
+            @Parameter(name = "way", description = "정렬 방식, recent: 최신순, like: 좋아요 순, desc: 공연 별점 높은 순, asc: ㄱ ")
+    })
+    @GetMapping("/review/list/performance")
+    public ApiResponse<ReviewListResDto> getPerformanceReviews(
+
+    )*/
+
 }
