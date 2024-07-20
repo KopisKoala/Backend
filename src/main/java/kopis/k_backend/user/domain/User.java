@@ -35,4 +35,15 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
+    private String profileImage;
+
+
+    // Getter와 Setter 추가
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

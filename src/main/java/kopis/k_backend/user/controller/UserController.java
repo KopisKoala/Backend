@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @Tag(name = "회원", description = "회원 관련 api 입니다.")
@@ -85,17 +88,22 @@ public class UserController {
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
     }
 
-    // 회원 정보 수정
+// 회원 정보 수정
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
     })
     @PutMapping("/info")
     public ApiResponse<UserResponseDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                       @RequestBody UserResponseDto.UserUpdateDto userUpdateDto) {
+                                                       @RequestBody UserResponseDto.UserUpdateDto userUpdateDto,
+                                                       @RequestParam(value = "file", required = false) MultipartFile file) {
         User user = userService.findByUserName(customUserDetails.getUsername());
-        UserConverter.updateUserFromDto(user, userUpdateDto);
-        User updatedUser = userService.save(user);
+        User updatedUser = null;
+        try {
+            updatedUser = userService.updateUser(user, userUpdateDto, file);
+        } catch (IOException e) {
+            return ApiResponse.onFailure("USER_5000", "파일 업로드 중 오류 발생", null);
+        }
         UserResponseDto userResponseDto = UserConverter.toUserDTO(updatedUser);
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, userResponseDto);
     }
