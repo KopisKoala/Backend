@@ -57,7 +57,11 @@ spring:
         hbm2ddl:
           auto: none
         default_batch_fetch_size: 1000
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 ---
 
 # develop profile
@@ -83,3 +87,10 @@ spring:
         hbm2ddl:
           auto: none
         default_batch_fetch_size: 1000
+
+# application.yml
+logging:
+  level:
+    org:
+      springframework:
+        boot: DEBUG

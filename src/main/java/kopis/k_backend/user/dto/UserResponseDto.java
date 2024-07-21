@@ -51,8 +51,5 @@ public class UserResponseDto {
 
         @Schema(description = "주소")
         private String address;
-
-        @Schema(description = "프로필 이미지 URL")
-        private String profileImage;
     }
 }

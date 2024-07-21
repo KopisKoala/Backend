@@ -69,7 +69,7 @@ public class UserController {
     public ApiResponse<Boolean> nickname(
             @RequestBody UserRequestDto.UserNicknameReqDto nicknameReqDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
+    ) {
         User user = userService.findByUserName(customUserDetails.getUsername());
         userService.saveNickname(nicknameReqDto, user);
 
@@ -88,19 +88,18 @@ public class UserController {
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
     }
 
-// 회원 정보 수정
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
     })
-    @PutMapping("/info")
+    @PutMapping(value = "/info", consumes = {"multipart/form-data"})
     public ApiResponse<UserResponseDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                       @RequestBody UserResponseDto.UserUpdateDto userUpdateDto,
-                                                       @RequestParam(value = "file", required = false) MultipartFile file) {
+                                                       @RequestPart UserResponseDto.UserUpdateDto userUpdateDto,
+                                                       @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
         User user = userService.findByUserName(customUserDetails.getUsername());
-        User updatedUser = null;
+        User updatedUser;
         try {
-            updatedUser = userService.updateUser(user, userUpdateDto, file);
+            updatedUser = userService.updateUser(user, userUpdateDto, profileImage);
         } catch (IOException e) {
             return ApiResponse.onFailure("USER_5000", "파일 업로드 중 오류 발생", null);
         }

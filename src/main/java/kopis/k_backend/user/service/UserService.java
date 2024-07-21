@@ -36,6 +36,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JpaUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
+    private final AmazonS3Manager amazonS3Manager;
 
     public User findByUserName(String userName){
         return userRepository.findByUsername(userName)
@@ -176,14 +177,13 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(User user, UserResponseDto.UserUpdateDto userUpdateDto, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            createProfileImage("profile/", file, user);
+    public User updateUser(User user, UserResponseDto.UserUpdateDto userUpdateDto, MultipartFile profileImage) throws IOException {
+        if (profileImage != null && !profileImage.isEmpty()) {
+            createProfileImage("profile/", profileImage, user);
         }
         UserConverter.updateUserFromDto(user, userUpdateDto);
         return userRepository.save(user);
     }
-
 
     @Transactional
     public void createProfileImage(String dirName, MultipartFile file, User user) throws IOException {
@@ -195,21 +195,21 @@ public class UserService {
                 throw GeneralException.of(ErrorCode.INVALID_FILE_CONTENT_TYPE);
             }
 
-            MediaType mediaType = AmazonS3Manager.contentType(Objects.requireNonNull(file.getOriginalFilename()));
+            MediaType mediaType = amazonS3Manager.contentType(Objects.requireNonNull(file.getOriginalFilename()));
             if (mediaType == null || !(mediaType.equals(MediaType.IMAGE_PNG) || mediaType.equals(MediaType.IMAGE_JPEG))) {
                 throw GeneralException.of(ErrorCode.MISMATCH_IMAGE_FILE);
             }
 
             if (!ObjectUtils.isEmpty(user.getProfileImage())) {
                 String previousFilePath = user.getProfileImage();
-                AmazonS3Manager.delete(previousFilePath);
+                amazonS3Manager.delete(previousFilePath);
             }
 
-            java.io.File uploadFile = AmazonS3Manager.convert(file)
+            java.io.File uploadFile = amazonS3Manager.convert(file)
                     .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
 
-            String fileName = dirName + AmazonS3Manager.generateFileName(file);
-            uploadFileUrl = AmazonS3Manager.putS3(uploadFile, fileName);
+            String fileName = dirName + amazonS3Manager.generateFileName(file);
+            uploadFileUrl = amazonS3Manager.putS3(uploadFile, fileName);
 
             user.setProfileImage(uploadFileUrl);
             userRepository.save(user);
