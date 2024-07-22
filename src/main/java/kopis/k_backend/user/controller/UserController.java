@@ -61,7 +61,7 @@ public class UserController {
         return ApiResponse.onSuccess(SuccessCode.USER_DELETE_SUCCESS, "user entity 삭제 완료");
     }
 
-    @Operation(summary = "닉네임 입력", description = "중복 안되는 닉네임을 입력받는 메서드입니다.")
+    @Operation(summary = "닉네임 입력, 수정", description = "중복 안되는 닉네임을 입력받는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER_2004", description = "닉네임 생성이 완료되었습니다.")
     })
@@ -82,28 +82,24 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 조회 완료")
     })
     @GetMapping("/info")
-    public ApiResponse<UserResponseDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<UserResponseDto.SimpleuserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         User user = userService.findByUserName(customUserDetails.getUsername());
-        UserResponseDto userResponseDto = UserConverter.toUserDTO(user);
+        UserResponseDto.SimpleuserDto userResponseDto = UserConverter.toUserDTO(user);
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
     }
 
-    @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
+
+    @Operation(summary = "프로필 사진 추가 및 수정", description = "프로필 사진을 추가하거나 수정합니다.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 완료")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프로필 사진 추가/수정 완료")
     })
-    @PutMapping(value = "/info", consumes = {"multipart/form-data"})
-    public ApiResponse<UserResponseDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                       @RequestPart UserResponseDto.UserUpdateDto userUpdateDto,
-                                                       @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+    @PutMapping(value = "/profile-image", consumes = {"multipart/form-data"})
+    public ApiResponse<String> updateProfileImage(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart("profileImage") MultipartFile profileImage) throws IOException {
         User user = userService.findByUserName(customUserDetails.getUsername());
-        User updatedUser;
-        try {
-            updatedUser = userService.updateUser(user, userUpdateDto, profileImage);
-        } catch (IOException e) {
-            return ApiResponse.onFailure("USER_5000", "파일 업로드 중 오류 발생", null);
-        }
-        UserResponseDto userResponseDto = UserConverter.toUserDTO(updatedUser);
-        return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, userResponseDto);
+        userService.updateProfileImage(profileImage, user);
+        return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, "프로필 이미지가 성공적으로 업로드 되었습니다");
     }
+
 }
