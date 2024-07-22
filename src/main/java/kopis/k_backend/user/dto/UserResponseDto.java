@@ -13,7 +13,7 @@ public class UserResponseDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SimpleuserDto {
+    public static class SimpleUserDto {
         @Schema(description = "닉네임")
         private String nickname;
 
