@@ -17,16 +17,18 @@ import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
 @Service
@@ -176,18 +178,11 @@ public class UserService {
         log.info("{} 회원 탈퇴 완료", username);
     }
 
-    @Transactional
-    public User updateUser(User user, UserResponseDto.UserUpdateDto userUpdateDto, MultipartFile profileImage) throws IOException {
-        if (profileImage != null && !profileImage.isEmpty()) {
-            createProfileImage("profile/", profileImage, user);
-        }
-        UserConverter.updateUserFromDto(user, userUpdateDto);
-        return userRepository.save(user);
-    }
 
     @Transactional
-    public void createProfileImage(String dirName, MultipartFile file, User user) throws IOException {
+    public void updateProfileImage(MultipartFile file, User user) throws IOException {
         String uploadFileUrl = null;
+        String dirName = "profile/";
 
         if (file != null) {
             String contentType = file.getContentType();
@@ -200,18 +195,20 @@ public class UserService {
                 throw GeneralException.of(ErrorCode.MISMATCH_IMAGE_FILE);
             }
 
-            if (!ObjectUtils.isEmpty(user.getProfileImage())) {
+            // 이전 프로필 이미지가 존재하는지 확인
+            if (!isEmpty(user.getProfileImage())) {
+                // 기존 프로필 이미지를 S3에서 삭제
                 String previousFilePath = user.getProfileImage();
-                amazonS3Manager.delete(previousFilePath);
+                amazonS3Manager.delete(previousFilePath); // S3에서 삭제
             }
 
             java.io.File uploadFile = amazonS3Manager.convert(file)
                     .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
 
-            String fileName = dirName + amazonS3Manager.generateFileName(file);
+            String fileName = dirName + AmazonS3Manager.generateFileName(file);
             uploadFileUrl = amazonS3Manager.putS3(uploadFile, fileName);
 
-            user.setProfileImage(uploadFileUrl);
+            user.setProfileImage(uploadFileUrl); // 새로운 사진 url 저장
             userRepository.save(user);
         }
     }
