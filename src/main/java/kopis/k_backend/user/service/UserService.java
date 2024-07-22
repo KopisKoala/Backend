@@ -5,21 +5,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
+import kopis.k_backend.global.s3.AmazonS3Manager;
 import kopis.k_backend.user.converter.UserConverter;
 import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
+import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
+
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
 @Service
@@ -29,6 +38,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JpaUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
+    private final AmazonS3Manager amazonS3Manager;
 
     public User findByUserName(String userName){
         return userRepository.findByUsername(userName)
@@ -166,5 +176,40 @@ public class UserService {
         }
         userRepository.delete(user);
         log.info("{} 회원 탈퇴 완료", username);
+    }
+
+
+    @Transactional
+    public void updateProfileImage(MultipartFile file, User user) throws IOException {
+        String uploadFileUrl = null;
+        String dirName = "profile/";
+
+        if (file != null) {
+            String contentType = file.getContentType();
+            if (ObjectUtils.isEmpty(contentType)) {
+                throw GeneralException.of(ErrorCode.INVALID_FILE_CONTENT_TYPE);
+            }
+
+            MediaType mediaType = amazonS3Manager.contentType(Objects.requireNonNull(file.getOriginalFilename()));
+            if (mediaType == null || !(mediaType.equals(MediaType.IMAGE_PNG) || mediaType.equals(MediaType.IMAGE_JPEG))) {
+                throw GeneralException.of(ErrorCode.MISMATCH_IMAGE_FILE);
+            }
+
+            // 이전 프로필 이미지가 존재하는지 확인
+            if (!isEmpty(user.getProfileImage())) {
+                // 기존 프로필 이미지를 S3에서 삭제
+                String previousFilePath = user.getProfileImage();
+                amazonS3Manager.delete(previousFilePath); // S3에서 삭제
+            }
+
+            java.io.File uploadFile = amazonS3Manager.convert(file)
+                    .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
+
+            String fileName = dirName + AmazonS3Manager.generateFileName(file);
+            uploadFileUrl = amazonS3Manager.putS3(uploadFile, fileName);
+
+            user.setProfileImage(uploadFileUrl); // 새로운 사진 url 저장
+            userRepository.save(user);
+        }
     }
 }

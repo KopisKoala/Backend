@@ -38,10 +38,6 @@ public class AmazonS3Manager {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    public String generateFileName(MultipartFile file) { // 파일명 생성
-        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-    }
-
     public void delete(String filePath) {
         try {
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, filePath);
@@ -65,4 +61,7 @@ public class AmazonS3Manager {
         };
     }
 
+    public static String generateFileName(MultipartFile file) { // 파일명 생성
+        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+    }
 }
