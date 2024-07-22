@@ -28,8 +28,8 @@ public class UserConverter {
                 .build();
     }
 
-    public static UserResponseDto.SimpleuserDto toUserDTO(User user) {
-        return UserResponseDto.SimpleuserDto.builder()
+    public static UserResponseDto.SimpleUserDto toUserDTO(User user) {
+        return UserResponseDto.SimpleUserDto.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .address(user.getAddress())
