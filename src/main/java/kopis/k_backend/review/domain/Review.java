@@ -25,7 +25,7 @@ public class Review extends BaseEntity {
     private User user;
 
     @Column(length = 20, nullable = false)
-    private String reviewWriter;
+    private String writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
@@ -38,7 +38,7 @@ public class Review extends BaseEntity {
     @Column(length = 1000)
     private String content;
 
-    @Column(length = 5)
+    @Column(length = 20)
     private String hashtag;
 
     @Column

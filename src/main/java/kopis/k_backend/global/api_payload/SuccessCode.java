@@ -20,7 +20,8 @@ public enum SuccessCode implements BaseCode {
 
     // Review
     REVIEW_CREATED(HttpStatus.CREATED, "REVIEW_2011", "리뷰가 생성되었습니다."),
-    REVIEW_DELETED(HttpStatus.OK, "REVIEW_2001", "리뷰가 삭제되었습니다.")
+    REVIEW_DELETED(HttpStatus.OK, "REVIEW_2001", "리뷰가 삭제되었습니다."),
+    REVIEW_LIST_VIEW_SUCCESS(HttpStatus.OK, " REVIEW_2002", "리뷰 리스트 조회가 완료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;

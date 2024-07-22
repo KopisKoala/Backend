@@ -29,7 +29,7 @@ public class ReviewResponseDto {
         private int pairingRating;
 
         @Schema(description = "리뷰 작성자") // 닉네임
-        private String reviewWriter;
+        private String writer;
 
         @Schema(description = "리뷰 작성자 프로필") // 이미지
         private String writerProfileImage;
@@ -41,10 +41,7 @@ public class ReviewResponseDto {
         private String hashTag;
 
         @Schema(description = "리뷰 내용")
-        private String reviewContent;
-
-        @Schema(description = "리뷰 작성일", example = "2024-07-17", pattern = "yyyy-MM-dd")
-        private LocalDateTime reviewCreatedAt;
+        private String content;
 
     }
 
