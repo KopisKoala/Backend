@@ -16,6 +16,7 @@ public class UserConverter {
                 .provider(userReqDto.getProvider())
                 .nickname("WhaShow01")
                 .userRank(UserRank.B)
+                .address("경기도 고양시 덕양구 항공대학로 76")
                 .build();
     }
 
@@ -27,27 +28,14 @@ public class UserConverter {
                 .build();
     }
 
-    public static UserResponseDto toUserDTO(User user) {
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
+    public static UserResponseDto.SimpleuserDto toUserDTO(User user) {
+        return UserResponseDto.SimpleuserDto.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .provider(user.getProvider())
                 .address(user.getAddress())
                 .userRank(String.valueOf(user.getUserRank()))
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
+                .profileImage(user.getProfileImage())
                 .build();
-    }
-
-    public static void updateUserFromDto(User user, UserResponseDto.UserUpdateDto userUpdateDto) {
-        if (userUpdateDto.getNickname() != null) {
-            user.setNickname(userUpdateDto.getNickname());
-        }
-        if (userUpdateDto.getAddress() != null) {
-            user.setAddress(userUpdateDto.getAddress());
-        }
     }
 
 }
