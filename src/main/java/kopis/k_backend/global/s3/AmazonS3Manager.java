@@ -22,27 +22,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AmazonS3Manager {
 
-    private static final AmazonS3 amazonS3 = null;
+    private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
-    private static String bucket;
+    private String bucket;
 
-    public static Optional<File> convert(MultipartFile file) throws IOException { // 파일로 변환
+    public Optional<File> convert(MultipartFile file) throws IOException { // 파일로 변환
         File convertedFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getOriginalFilename());
         file.transferTo(convertedFile);
         return Optional.of(convertedFile);
     }
 
-    public static String putS3(File uploadFile, String fileName) { // S3로 업로드
+    public String putS3(File uploadFile, String fileName) { // S3로 업로드
         amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    public static String generateFileName(MultipartFile file) { // 파일명 생성
-        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-    }
-
-    public static void delete(String filePath) {
+    public void delete(String filePath) {
         try {
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, filePath);
             log.info(String.valueOf(deleteObjectRequest));
@@ -54,7 +50,7 @@ public class AmazonS3Manager {
         }
     }
 
-    public static MediaType contentType(String fileName) {
+    public MediaType contentType(String fileName) {
         String[] arr = fileName.split("\\.");
         String type = arr[arr.length - 1];
         return switch (type) {
@@ -65,4 +61,7 @@ public class AmazonS3Manager {
         };
     }
 
+    public static String generateFileName(MultipartFile file) { // 파일명 생성
+        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+    }
 }
