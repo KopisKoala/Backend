@@ -82,9 +82,9 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 조회 완료")
     })
     @GetMapping("/info")
-    public ApiResponse<UserResponseDto.SimpleuserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<UserResponseDto.SimpleUserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         User user = userService.findByUserName(customUserDetails.getUsername());
-        UserResponseDto.SimpleuserDto userResponseDto = UserConverter.toUserDTO(user);
+        UserResponseDto.SimpleUserDto userResponseDto = UserConverter.toUserDTO(user);
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
     }
 
