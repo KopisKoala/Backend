@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+import static kopis.k_backend.global.api_payload.ErrorCode.BAD_REQUEST;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
@@ -211,5 +212,15 @@ public class UserService {
             user.setProfileImage(uploadFileUrl); // 새로운 사진 url 저장
             userRepository.save(user);
         }
+    }
+
+    // 사용자의 주소 정보를 저장합니다.
+    @Transactional
+    public void updateAddress(User user, UserResponseDto.UserAddressDto userUpdateAddressDto) {
+        if (userUpdateAddressDto.getAddress() == null || userUpdateAddressDto.getAddress().isEmpty()) {
+            throw GeneralException.of(BAD_REQUEST);
+        }
+        user.setAddress(userUpdateAddressDto.getAddress());
+        userRepository.save(user);
     }
 }
