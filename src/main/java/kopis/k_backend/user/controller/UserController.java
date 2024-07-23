@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import kopis.k_backend.global.api_payload.ApiResponse;
+import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.api_payload.SuccessCode;
+import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.user.converter.UserConverter;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
@@ -88,7 +90,7 @@ public class UserController {
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_VIEW_SUCCESS, userResponseDto);
     }
 
-
+    //프로필 사진을 추가 및 수정합니다.
     @Operation(summary = "프로필 사진 추가 및 수정", description = "프로필 사진을 추가하거나 수정합니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프로필 사진 추가/수정 완료")
@@ -102,4 +104,22 @@ public class UserController {
         return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, "프로필 이미지가 성공적으로 업로드 되었습니다");
     }
 
+    // 사용자의 주소를 저장합니다.
+    @Operation(summary = "주소 저장 및 수정", description = "사용자의 주소를 저장합니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "주소가 저장되었습니다."),
+    })
+    @PostMapping("/address")
+    public ApiResponse<String> saveAddress(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                           @RequestBody UserResponseDto.UserAddressDto userUpdateAddressDto) {
+        try {
+            User user = userService.findByUserName(customUserDetails.getUsername());
+            userService.updateAddress(user, userUpdateAddressDto);
+            return ApiResponse.onSuccess(SuccessCode.USER_INFO_UPDATE_SUCCESS, "주소가 성공적으로 저장되었습니다.");
+        } catch (IllegalArgumentException e) {
+            throw GeneralException.of(ErrorCode.BAD_REQUEST);
+        } catch (Exception e) {
+            throw GeneralException.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
