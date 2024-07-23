@@ -40,5 +40,15 @@ public class UserResponseDto {
         @Schema(description = "프로필 이미지 변경")
         private MultipartFile profileImage;
     }
+
+    @Getter
+    @Setter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserAddressDto {
+        @Schema(description = "주소 저장")
+        private String address;
+    }
 }
 
