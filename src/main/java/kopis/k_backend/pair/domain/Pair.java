@@ -25,14 +25,8 @@ public class Pair {
     @Column(nullable = false)
     private String actor1Name;
 
-    @Column
-    private String actor1Profile;
-
     @Column(nullable = false)
     private String actor2Name;
-
-    @Column
-    private String actor2Profile;
 
     @Column(length = 7)
     private String hashtag1;
