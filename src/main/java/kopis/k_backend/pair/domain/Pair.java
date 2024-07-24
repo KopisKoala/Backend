@@ -1,4 +1,4 @@
-package kopis.k_backend.pairing.domain;
+package kopis.k_backend.pair.domain;
 
 import jakarta.persistence.*;
 import kopis.k_backend.performance.domain.Performance;
@@ -32,7 +32,7 @@ public class Pair {
 
     private String hashtag2;
 
-    private Long likeCount = 0L;
+    private Long ratingAverage = 0L;
 
     private Long reivewCount = 0L;
 
