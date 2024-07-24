@@ -44,9 +44,11 @@ public class Review extends BaseEntity {
     @Column
     private Long likeCount = 0L;
 
-    private Integer performanceRatings;
+    @Column
+    private Integer performanceRatings = 5;
 
-    private Integer pairRatings;
+    @Column
+    private Integer pairRatings = 5;
 
     @OneToMany(mappedBy = "review")
     private List<ReviewLike> reviewLikes = new ArrayList<>();
