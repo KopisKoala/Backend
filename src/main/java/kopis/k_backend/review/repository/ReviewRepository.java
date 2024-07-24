@@ -13,6 +13,8 @@ import kopis.k_backend.review.domain.Review;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    // 리뷰 목록 조회
     @Query("SELECT r FROM Review r WHERE (r.performance = :performance) ORDER BY " +
             "CASE WHEN :way = 'recent' THEN r.createdAt END DESC, " +
 
@@ -44,5 +46,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "CASE WHEN :way = 'asc' THEN r.createdAt END DESC")
 
     Slice<Review> findReviewByPairAndWay(@Param("pair") Pair pair, @Param("way") String way, Pageable pageable);
+
+
+    // 별점 합 구하기
+    @Query("SELECT SUM(r.pairRatings) FROM Review r WHERE r.pair = :pair")
+    Long sumPairRatingsByPair(@Param("pair") Pair pair);
+
+    @Query("SELECT SUM(r.performanceRatings) FROM Review r WHERE r.performance = :performance")
+    Long sumPerformanceRatingsByPerformance(@Param("performance") Performance performance);
 
 }

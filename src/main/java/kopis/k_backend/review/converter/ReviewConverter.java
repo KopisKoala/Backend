@@ -48,13 +48,14 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static ReviewListResDto reviewListResDto(List<Review> reviews, Long reviewCount, String ratingType, User user) {
+    public static ReviewListResDto reviewListResDto(List<Review> reviews, Long reviewCount, Double rating, String ratingType, User user) {
         List<ReviewResDto> reviewResDtos = reviews.stream()
                 .map(review -> simpleReviewDto(review, ratingType, user))
                 .collect(Collectors.toList());
 
         return ReviewListResDto.builder()
                 .reviewCount(reviewCount)
+                .averageRating(rating)
                 .reviewList(reviewResDtos)
                 .build();
     }

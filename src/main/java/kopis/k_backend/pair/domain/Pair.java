@@ -54,4 +54,8 @@ public class Pair {
         this.reviewCount -= 1;
     }
 
+    public void updateRatingAverage(Long sum){
+        this.ratingAverage = (double)sum / this.reviewCount;
+    }
+
 }

@@ -52,6 +52,9 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 수")
         private Long reviewCount;
 
+        @Schema(description = "별점 평점")
+        private Double averageRating;
+
         @Schema(description = "리뷰 리스트")
         private List<ReviewResDto> reviewList;
 

@@ -60,7 +60,7 @@ public class Performance {
 
     private String poster;
 
-    private Double ratingAverage = 0D;
+    private Double ratingAverage = 0.0;
 
     private Long reviewCount = 0L;
 
@@ -83,5 +83,9 @@ public class Performance {
     public void decreaseReviewCount(Long performanceId){
         this.id = performanceId;
         this.reviewCount -= 1;
+    }
+
+    public void updateRatingAverage(Long sum){
+        this.ratingAverage = (double)sum / this.reviewCount;
     }
 }

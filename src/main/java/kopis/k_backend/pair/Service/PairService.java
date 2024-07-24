@@ -30,5 +30,11 @@ public class PairService {
         return pair.getReviewCount();
     }
 
+    public Double getAverageRatingById(Long id){
+        Pair pair = pairRepository.findById(id)
+                .orElseThrow(() ->GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
+
+        return pair.getRatingAverage();
+    }
 
 }

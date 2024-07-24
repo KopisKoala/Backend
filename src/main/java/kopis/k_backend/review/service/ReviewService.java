@@ -55,6 +55,13 @@ public class ReviewService {
         pair.increaseReviewCount(pair.getId());
         performance.increaseReviewCount(performance.getId());
 
+        // 평균 레이팅 수정
+        Long PairRatingSum = getSumOfPairRatings(pair);
+        pair.updateRatingAverage(PairRatingSum);
+
+        Long PerformanceRatingSum = getSumOfPerformanceRatings(performance);
+        performance.updateRatingAverage(PerformanceRatingSum);
+
         return review;
     }
 
@@ -79,6 +86,14 @@ public class ReviewService {
 
             pair.decreaseReviewCount(pair.getId());
             performance.decreaseReviewCount(performance.getId());
+
+            // 평균 레이팅 수정
+            Long PairRatingSum = getSumOfPairRatings(pair);
+            pair.updateRatingAverage(PairRatingSum);
+
+            Long PerformanceRatingSum = getSumOfPerformanceRatings(performance);
+            performance.updateRatingAverage(PerformanceRatingSum);
+
         }
         else throw new GeneralException(ErrorCode.REVIEW_NOT_YOURS);
     }
@@ -95,6 +110,14 @@ public class ReviewService {
                 .orElseThrow(() -> GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
         Slice<Review> reviewSlice = reviewRepository.findReviewByPairAndWay(pair, way, PageRequest.of(scrollPosition, fetchSize));
         return reviewSlice.getContent();
+    }
+
+    public Long getSumOfPairRatings(Pair pair) {
+        return reviewRepository.sumPairRatingsByPair(pair);
+    }
+
+    public Long getSumOfPerformanceRatings(Performance performance) {
+        return reviewRepository.sumPerformanceRatingsByPerformance(performance);
     }
 
 }

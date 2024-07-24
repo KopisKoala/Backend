@@ -104,9 +104,11 @@ public class ReviewController {
     ){
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = performanceService.getReviewCountById(performanceId);
+        Double rating = performanceService.getAverageRatingById(performanceId);
         String ratingType = "performance";
+
         List<Review> reviews = reviewService.getPerformanceReviewList(performanceId, way, scrollPosition, fetchSize);
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, ratingType, user));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, user));
     }
 
     @Operation(summary = "페어 리뷰 목록 조회 메서드", description = "페어 리뷰 목록을 조회하는 메서드입니다.")
@@ -129,9 +131,11 @@ public class ReviewController {
     ){
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = pairService.getReviewCountById(pairId);
+        Double rating = pairService.getAverageRatingById(pairId);
         String ratingType = "pair";
+
         List<Review> reviews = reviewService.getPairReviewList(pairId, way, scrollPosition, fetchSize);
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, ratingType, user));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, user));
     }
 
 }
