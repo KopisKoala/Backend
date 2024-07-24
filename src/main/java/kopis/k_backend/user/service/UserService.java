@@ -13,6 +13,7 @@ import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
+import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
@@ -221,7 +222,7 @@ public class UserService {
     @Transactional
     public void updateAddress(User user, UserResponseDto.UserAddressDto userUpdateAddressDto) {
         if (userUpdateAddressDto.getAddress() == null || userUpdateAddressDto.getAddress().isEmpty()) {
-            throw GeneralException.of(BAD_REQUEST);
+            throw GeneralException.of(ErrorCode.USER_ADDRESS_NULL);
         }
         user.setAddress(userUpdateAddressDto.getAddress());
         userRepository.save(user);
