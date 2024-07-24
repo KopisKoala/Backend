@@ -74,10 +74,7 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw GeneralException.of(ErrorCode.ALREADY_USED_NICKNAME);
         }
-
-        // 중복이 없는 경우 닉네임 저장
-        user.setNickname(nickname);
-        userRepository.save(user);
+        user.updateNickname(nickname);
     }
 
     @Transactional
@@ -213,8 +210,7 @@ public class UserService {
             String fileName = dirName + AmazonS3Manager.generateFileName(file);
             uploadFileUrl = amazonS3Manager.putS3(uploadFile, fileName);
 
-            user.setProfileImage(uploadFileUrl); // 새로운 사진 url 저장
-            userRepository.save(user);
+            user.updateProfileImage(uploadFileUrl); // 새로운 사진 url 저장
         }
     }
 
@@ -224,7 +220,7 @@ public class UserService {
         if (userUpdateAddressDto.getAddress() == null || userUpdateAddressDto.getAddress().isEmpty()) {
             throw GeneralException.of(ErrorCode.USER_ADDRESS_NULL);
         }
-        user.setAddress(userUpdateAddressDto.getAddress());
-        userRepository.save(user);
+
+        user.updateAddress(userUpdateAddressDto.getAddress());
     }
 }

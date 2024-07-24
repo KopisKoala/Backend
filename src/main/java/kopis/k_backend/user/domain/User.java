@@ -9,9 +9,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "user")
 public class User extends BaseEntity {
@@ -40,4 +39,23 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
+
+    public User(String username, String nickname, String email, String provider) {
+        this.username = username;
+        this.nickname = nickname;
+        this.email = email;
+        this.provider = provider;
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
+    }
+
+    public void updateAddress(String address){
+        this.address = address;
+    }
 }
