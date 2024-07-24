@@ -3,6 +3,11 @@ spring:
   profiles:
     active: local
 
+  # 용량 제한 늘리기
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
 # 로그인 jwt
 jwt:
   secret: ${JWT_SECRET}
