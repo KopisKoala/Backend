@@ -21,14 +21,5 @@ public class PerformanceController {
 
     private final PerformanceService performanceService;
 
-    @Operation(summary = "DB에 예시 데이터 넣기", description = "DB에 페어 예시 데이터 넣는 메소드입니다.")
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2001", description = "리뷰 삭제가 완료되었습니다.")
-    })
-    @DeleteMapping(value = "/data")
-    public ApiResponse<Boolean> data(){
-        performanceService.data();
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_DELETED, true);
-    }
 
 }

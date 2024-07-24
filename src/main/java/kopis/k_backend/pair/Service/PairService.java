@@ -30,22 +30,5 @@ public class PairService {
         return pair.getReviewCount();
     }
 
-    public void data(){
-        Performance p = performanceRepository.findById(1L)
-                .orElseThrow(() ->GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
-
-        Pair pair = Pair.builder()
-                .performance(p)
-                .actor1Name("이동훈")
-                .actor2Name("박상신")
-                .hashtag1("잘생겼다")
-                .hashtag2("경이롭다")
-                .hashtag3("짜릿하다")
-                .ratingAverage(4.5)
-                .reviewCount(10L)
-                .build();
-
-        pairRepository.save(pair);
-    }
 
 }
