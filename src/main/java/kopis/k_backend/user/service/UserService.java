@@ -13,6 +13,7 @@ import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
+import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
@@ -28,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
@@ -72,10 +72,7 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw GeneralException.of(ErrorCode.ALREADY_USED_NICKNAME);
         }
-
-        // 중복이 없는 경우 닉네임 저장
-        user.setNickname(nickname);
-        userRepository.save(user);
+        user.updateNickname(nickname);
     }
 
     @Transactional
@@ -211,8 +208,17 @@ public class UserService {
             String fileName = dirName + AmazonS3Manager.generateFileName(file);
             uploadFileUrl = amazonS3Manager.putS3(uploadFile, fileName);
 
-            user.setProfileImage(uploadFileUrl); // 새로운 사진 url 저장
-            userRepository.save(user);
+            user.updateProfileImage(uploadFileUrl); // 새로운 사진 url 저장
         }
+    }
+
+    // 사용자의 주소 정보를 저장합니다.
+    @Transactional
+    public void updateAddress(User user, UserResponseDto.UserAddressDto userUpdateAddressDto) {
+        if (userUpdateAddressDto.getAddress() == null || userUpdateAddressDto.getAddress().isEmpty()) {
+            throw GeneralException.of(ErrorCode.USER_ADDRESS_NULL);
+        }
+
+        user.updateAddress(userUpdateAddressDto.getAddress());
     }
 }

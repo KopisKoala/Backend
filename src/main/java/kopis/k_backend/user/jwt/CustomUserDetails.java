@@ -1,10 +1,7 @@
 package kopis.k_backend.user.jwt;
 
 import kopis.k_backend.user.domain.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CustomUserDetails implements UserDetails {
     @Getter
     private Long id;
@@ -75,22 +73,6 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public User newEntity() {
-        User entity = new User();
-        entity.setUsername(username);
-        entity.setEmail(email);
-        entity.setNickname(nickname);
-        entity.setProvider(provider);
-        return entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CustomUserDetails{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", provider='" + provider + '\'' +
-                '}';
+        return new User(username, nickname, email, provider);
     }
 }
