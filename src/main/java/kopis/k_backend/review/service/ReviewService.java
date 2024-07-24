@@ -62,10 +62,8 @@ public class ReviewService {
     public void delete(Long id, User user) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
-        log.info("ReviewWriter: " + review.getWriter());
-        log.info("Nickname: " + user.getNickname());
 
-        if(Objects.equals(review.getWriter(), user.getNickname())) {
+        if(Objects.equals(review.getWriter(), user.getUsername())) {
             // 리뷰 삭제
             reviewRepository.deleteById(id);
 
@@ -82,7 +80,7 @@ public class ReviewService {
             pair.decreaseReviewCount(pair.getId());
             performance.decreaseReviewCount(performance.getId());
         }
-        else throw new GeneralException(ErrorCode.BAD_REQUEST);
+        else throw new GeneralException(ErrorCode.REVIEW_NOT_YOURS);
     }
 
     public List<Review> getPerformanceReviewList(Long performanceId, String way, Integer scrollPosition, Integer fetchSize) {
