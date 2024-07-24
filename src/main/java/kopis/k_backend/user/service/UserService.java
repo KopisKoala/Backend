@@ -4,14 +4,15 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kopis.k_backend.global.api_payload.ErrorCode;
+import kopis.k_backend.global.entity.Uuid;
 import kopis.k_backend.global.exception.GeneralException;
+import kopis.k_backend.global.repository.UuidRepository;
 import kopis.k_backend.global.s3.AmazonS3Manager;
 import kopis.k_backend.user.converter.UserConverter;
 import kopis.k_backend.user.domain.RefreshToken;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
 import kopis.k_backend.user.dto.UserRequestDto;
-import kopis.k_backend.user.dto.UserResponseDto;
 import kopis.k_backend.user.jwt.JwtTokenUtils;
 import kopis.k_backend.user.repository.RefreshTokenRepository;
 import kopis.k_backend.user.repository.UserRepository;
@@ -39,6 +40,7 @@ public class UserService {
     private final JpaUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
     private final AmazonS3Manager amazonS3Manager;
+    private final UuidRepository uuidRepository;
 
     public User findByUserName(String userName){
         return userRepository.findByUsername(userName)
@@ -51,8 +53,9 @@ public class UserService {
 
     @Transactional
     public User createUser(UserRequestDto.UserReqDto userReqDto) {
-        // 새로운 사용자 생성
-        User newUser = userRepository.save(UserConverter.saveUser(userReqDto));
+        Uuid uuid = Uuid.generateUuid(); String nick = "user" + uuid.getUuid();
+        uuidRepository.save(uuid);
+        User newUser = userRepository.save(UserConverter.saveUser(userReqDto, nick));
 
         // 새로운 사용자 정보를 반환하기 전에 저장된 UserDetails를 다시 로드하여 동기화 시도
         manager.loadUserByUsername(userReqDto.getUsername());
