@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.review.domain.Review;
 import lombok.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +87,13 @@ public class Performance {
         this.reviewCount -= 1;
     }
 
-    public void updateRatingAverage(Long sum){
-        this.ratingAverage = (double)sum / this.reviewCount;
+    public void updateRatingAverage(Long sum) {
+        if (this.reviewCount != 0) {
+            BigDecimal average = new BigDecimal((double) sum / this.reviewCount);
+            average = average.setScale(1, RoundingMode.HALF_UP); // 소수점 첫째 자리까지 반올림
+            this.ratingAverage = average.doubleValue();
+        } else {
+            this.ratingAverage = 0.0;
+        }
     }
 }
