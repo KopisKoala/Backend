@@ -25,7 +25,7 @@ public class ReviewLikeService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
 
-        ReviewLike existingLike = reviewLikeRepository.findByUserAndReview(user, review).orElse(null);;
+        ReviewLike existingLike = reviewLikeRepository.findByUserAndReview(user, review).orElse(null);
 
         if (existingLike != null) {
             throw new GeneralException(ErrorCode.REVIEW_ALREADY_LIKED);
