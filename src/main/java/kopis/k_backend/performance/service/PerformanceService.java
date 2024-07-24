@@ -30,9 +30,8 @@ public class PerformanceService {
         return perf.getReviewCount();
     }
 
-    @PostConstruct
+    @PostConstruct // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
     public void data() {
-        // Performance 객체 생성
         Performance performance = Performance.builder()
                 .title("Amazing Performance")
                 .performanceType(PerformanceType.PLAY)

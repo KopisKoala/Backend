@@ -30,7 +30,6 @@ public class PairService {
         return pair.getReviewCount();
     }
 
-    // 에시 데이터 넣기
     public void data(){
         Performance p = performanceRepository.findById(1L)
                 .orElseThrow(() ->GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
