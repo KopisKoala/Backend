@@ -66,4 +66,10 @@ public class Pair {
         }
     }
 
+    public void updateTopHashtags(List<String> topHashtags) {
+        this.hashtag1 = topHashtags.size() > 0 ? topHashtags.get(0) : null;
+        this.hashtag2 = topHashtags.size() > 1 ? topHashtags.get(1) : null;
+        this.hashtag3 = topHashtags.size() > 2 ? topHashtags.get(2) : null;
+    }
+
 }
