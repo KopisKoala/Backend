@@ -22,4 +22,7 @@ public class PerformanceActor {
     @JoinColumn(name = "performance_id")
     private Performance performance;
 
+    @Column(nullable = false)
+    private String characterName;
+
 }
