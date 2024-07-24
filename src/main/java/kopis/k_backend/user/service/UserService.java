@@ -29,8 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-
-import static kopis.k_backend.global.api_payload.ErrorCode.BAD_REQUEST;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
