@@ -49,8 +49,11 @@ public class ReviewService {
     public Review create(ReviewReqDto reviewReqDto, User user, Performance performance, Pair pair) throws IOException {
 
         Review review = ReviewConverter.saveReview(reviewReqDto, user, performance, pair);
-
         reviewRepository.save(review);
+
+        // 리뷰 개수 증가
+        pair.increaseReviewCount(pair.getId());
+        performance.increaseReviewCount(performance.getId());
 
         return review;
     }
@@ -69,6 +72,15 @@ public class ReviewService {
             // 좋아요 삭제
             List<ReviewLike> reviewLikes = review.getReviewLikes();
             reviewLikeRepository.deleteAll(reviewLikes);
+
+            // 리뷰 개수 감소
+            Pair pair = pairRepository.findById(review.getPair().getId())
+                    .orElseThrow(() -> GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
+            Performance performance = performanceRepository.findById(review.getPerformance().getId())
+                    .orElseThrow(() -> GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
+
+            pair.decreaseReviewCount(pair.getId());
+            performance.decreaseReviewCount(performance.getId());
         }
         else throw new GeneralException(ErrorCode.BAD_REQUEST);
     }

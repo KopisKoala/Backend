@@ -44,5 +44,14 @@ public class Pair {
     @OneToMany(mappedBy = "pair")
     private List<Review> reviews = new ArrayList<>();
 
+    public void increaseReviewCount(Long pairId){
+        this.id = pairId;
+        this.reviewCount += 1;
+    }
+
+    public void decreaseReviewCount(Long pairId){
+        this.id = pairId;
+        this.reviewCount -= 1;
+    }
 
 }

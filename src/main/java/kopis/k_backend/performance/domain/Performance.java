@@ -74,4 +74,14 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance")
     private List<PerformanceActor> performanceActors = new ArrayList<>();
+
+    public void increaseReviewCount(Long performanceId){
+        this.id = performanceId;
+        this.reviewCount += 1;
+    }
+
+    public void decreaseReviewCount(Long performanceId){
+        this.id = performanceId;
+        this.reviewCount -= 1;
+    }
 }

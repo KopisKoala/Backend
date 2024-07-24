@@ -96,11 +96,11 @@ public class ReviewController {
     })
     @GetMapping("/review/list/performance")
     public ApiResponse<ReviewListResDto> getPerformanceReviews(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam(name = "performanceId") Long performanceId,
-        @RequestParam(name = "way") String way,
-        @RequestParam(name = "scrollPosition", defaultValue = "0") Integer scrollPosition,
-        @RequestParam(name = "fetchSize", defaultValue = "1000") Integer fetchSize
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(name = "performanceId") Long performanceId,
+            @RequestParam(name = "way") String way,
+            @RequestParam(name = "scrollPosition", defaultValue = "0") Integer scrollPosition,
+            @RequestParam(name = "fetchSize", defaultValue = "1000") Integer fetchSize
     ){
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = performanceService.getReviewCountById(performanceId);
