@@ -53,4 +53,14 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     private List<ReviewLike> reviewLikes = new ArrayList<>();
 
+    public Long increaseLikeCount(){
+        this.likeCount += 1;
+        return this.likeCount;
+    }
+
+    public Long decreaseLikeCount(){
+        this.likeCount -= 1;
+        return this.likeCount;
+    }
+
 }
