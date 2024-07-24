@@ -25,16 +25,24 @@ public class Pair {
     @Column(nullable = false)
     private String actor1Name;
 
+    @Column
+    private String actor1Profile;
+
     @Column(nullable = false)
     private String actor2Name;
+
+    @Column
+    private String actor2Profile;
 
     private String hashtag1;
 
     private String hashtag2;
 
-    private Long ratingAverage = 0L;
+    private String hashtag3;
 
-    private Long reivewCount = 0L;
+    private Double ratingAverage = 0D;
+
+    private Long reviewCount = 0L;
 
     @OneToMany(mappedBy = "pair")
     private List<Review> reviews = new ArrayList<>();

@@ -24,6 +24,6 @@ public class PairService {
         Pair pair =  pairRepository.findById(id)
                 .orElseThrow(() ->GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
 
-        return pair.getReivewCount();
+        return pair.getReviewCount();
     }
 }

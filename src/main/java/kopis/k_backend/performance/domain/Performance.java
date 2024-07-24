@@ -51,7 +51,7 @@ public class Performance {
 
     private String poster;
 
-    private Long ratingAverage = 0L;
+    private Double ratingAverage = 0D;
 
     private Long reviewCount = 0L;
 
