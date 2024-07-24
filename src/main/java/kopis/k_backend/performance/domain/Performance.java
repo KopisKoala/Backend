@@ -1,7 +1,7 @@
 package kopis.k_backend.performance.domain;
 
 import jakarta.persistence.*;
-import kopis.k_backend.pairing.domain.Pair;
+import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.review.domain.Review;
 import lombok.*;
 import java.time.LocalDate;
@@ -51,7 +51,7 @@ public class Performance {
 
     private String poster;
 
-    private Long likeCount = 0L;
+    private Long ratingAverage = 0L;
 
     private Long reviewCount = 0L;
 
