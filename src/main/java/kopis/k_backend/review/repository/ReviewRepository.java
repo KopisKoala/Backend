@@ -9,10 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import kopis.k_backend.review.domain.Review;
+import java.util.List;
 
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    List<Review> findByPerformance(Performance performance);
 
     // 리뷰 목록 조회
     @Query("SELECT r FROM Review r WHERE (r.performance = :performance) ORDER BY " +

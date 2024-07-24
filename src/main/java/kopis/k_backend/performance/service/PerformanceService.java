@@ -12,10 +12,17 @@ import kopis.k_backend.performance.domain.PerformanceType;
 import kopis.k_backend.performance.repository.ActorRepository;
 import kopis.k_backend.performance.repository.PerformanceActorRepository;
 import kopis.k_backend.performance.repository.PerformanceRepository;
+import kopis.k_backend.review.domain.Review;
+import kopis.k_backend.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +33,7 @@ public class PerformanceService {
     private final PairRepository pairRepository;
     private final PerformanceActorRepository performanceActorRepository;
     private final ActorRepository actorRepository;
+    private final ReviewRepository reviewRepository;
 
     public Performance findById(Long id) {
         return performanceRepository.findById(id)
@@ -46,6 +54,32 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    public void updateTopHashtags() {
+        List<Performance> performances = performanceRepository.findAll();
+        for (Performance performance : performances) { // 공연 하나씩 돌며 업데이트
+            List<Review> reviews = reviewRepository.findByPerformance(performance);
+            Map<String, Long> hashtagFrequency = new HashMap<>();
+
+            for (Review review : reviews) {
+                String hashtag = review.getHashtag();
+                if (hashtag != null && !hashtag.isEmpty()) {
+                    hashtagFrequency.put(hashtag, hashtagFrequency.getOrDefault(hashtag, 0L) + 1);
+                }
+            }
+
+            // 가장 빈도가 높은 해시태그 3개를 찾기
+            List<String> topHashtags = hashtagFrequency.entrySet()
+                    .stream()
+                    .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                    .limit(3)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+
+            performance.updateTopHashtags(topHashtags); // 해당 해시태그를 공연 엔티티에 저장
+            performanceRepository.save(performance); // 위 메소드 에서 엔티티 변경 후 트랜잭션이 끝날때 변경사항이 db에 반영되어 save 생략해도 됨
+        }
+    }
 
     // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
     @PostConstruct

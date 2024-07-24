@@ -31,6 +31,8 @@ public enum ErrorCode implements BaseCode {
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_4041", "존재하지 않는 리뷰입니다."),
     REVIEW_NOT_YOURS(HttpStatus.BAD_REQUEST, "REVIEW_4001", "작성자가 아니므로 삭제할 수 없습니다."),
+    REVIEW_ALREADY_LIKED(HttpStatus.BAD_REQUEST, "REVIEW_4002", "이미 좋아요를 누른 게시물입니다."),
+    REVIEW_LIKED_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_4042", "존재하지 않는 리뷰 좋아요 입니다."),
 
     // Performance
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE_4041", "존재하지 않는 공연입니다."),
