@@ -17,9 +17,6 @@ public class Actor {
     @Column(nullable = false)
     private String actorName;
 
-    @Column(nullable = false)
-    private String characterName;
-
     private String actorProfile;
 
 }

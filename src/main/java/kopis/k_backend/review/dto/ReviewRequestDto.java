@@ -16,9 +16,6 @@ public class ReviewRequestDto {
     @NoArgsConstructor
     public static class ReviewReqDto {
 
-        @Schema(description = "리뷰 작성자")
-        private String writer;
-
         @Schema(description = "공연 id")
         private Long performanceId;
 

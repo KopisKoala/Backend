@@ -20,12 +20,6 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 id")
         private Long id;
 
-        @Schema(description = "공연 별점")
-        private int performanceRating;
-
-        @Schema(description = "페어링 별점")
-        private int pairingRating;
-
         @Schema(description = "리뷰 작성자") // username
         private String writer;
 
@@ -35,8 +29,8 @@ public class ReviewResponseDto {
         @Schema(description = "작성자 == 사용자 여부")
         private Boolean isWriter;
 
-        @Schema(description = "좋아요 수")
-        private Long likeCount;
+        @Schema(description = "공연 별점 or 페어링 별점")
+        private Integer rating;
 
         @Schema(description = "해시 태그")
         private String hashTag;
@@ -44,6 +38,8 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 내용")
         private String content;
 
+        @Schema(description = "좋아요 수")
+        private Long likeCount;
     }
 
     @Schema(description = "ReviewListResDto")
@@ -55,6 +51,9 @@ public class ReviewResponseDto {
 
         @Schema(description = "리뷰 수")
         private Long reviewCount;
+
+        @Schema(description = "별점 평점")
+        private Double averageRating;
 
         @Schema(description = "리뷰 리스트")
         private List<ReviewResDto> reviewList;

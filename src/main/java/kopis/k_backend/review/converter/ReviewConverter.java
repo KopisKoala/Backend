@@ -29,27 +29,33 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static ReviewResDto simpleReviewDto(Review review, User user) {
+    public static ReviewResDto simpleReviewDto(Review review, String ratingType, User user) {
         Boolean isWriter = (Objects.equals(user.getUsername(), review.getWriter()));
+
+        Integer rating = 0;
+        if(Objects.equals(ratingType, "pair")) rating = review.getPairRatings();
+        else if(Objects.equals(ratingType, "performance")) rating = review.getPerformanceRatings();
 
         return ReviewResDto.builder()
                 .id(review.getId())
                 .writer(review.getUser().getNickname())
                 .writerProfileImage(review.getUser().getProfileImage())
                 .isWriter(isWriter)
+                .rating(rating)
                 .content(review.getContent())
                 .likeCount(review.getLikeCount())
                 .hashTag(review.getHashtag())
                 .build();
     }
 
-    public static ReviewListResDto reviewListResDto(List<Review> reviews, Long reviewCount, User user) {
+    public static ReviewListResDto reviewListResDto(List<Review> reviews, Long reviewCount, Double rating, String ratingType, User user) {
         List<ReviewResDto> reviewResDtos = reviews.stream()
-                .map(review -> simpleReviewDto(review, user))
+                .map(review -> simpleReviewDto(review, ratingType, user))
                 .collect(Collectors.toList());
 
         return ReviewListResDto.builder()
                 .reviewCount(reviewCount)
+                .averageRating(rating)
                 .reviewList(reviewResDtos)
                 .build();
     }

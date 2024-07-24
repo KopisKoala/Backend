@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.review.domain.Review;
 import lombok.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,15 @@ public class Performance {
 
     @Column(nullable = false)
     private PerformanceType performanceType;
+
+    @Column(length = 7)
+    private String hashtag1;
+
+    @Column(length = 7)
+    private String hashtag2;
+
+    @Column(length = 7)
+    private String hashtag3;
 
     @Column(nullable = false)
     private String district;
@@ -51,7 +62,7 @@ public class Performance {
 
     private String poster;
 
-    private Long ratingAverage = 0L;
+    private Double ratingAverage = 0.0;
 
     private Long reviewCount = 0L;
 
@@ -65,4 +76,24 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance")
     private List<PerformanceActor> performanceActors = new ArrayList<>();
+
+    public void increaseReviewCount(Long performanceId){
+        this.id = performanceId;
+        this.reviewCount += 1;
+    }
+
+    public void decreaseReviewCount(Long performanceId){
+        this.id = performanceId;
+        this.reviewCount -= 1;
+    }
+
+    public void updateRatingAverage(Long sum) {
+        if (this.reviewCount != 0) {
+            BigDecimal average = new BigDecimal((double) sum / this.reviewCount);
+            average = average.setScale(1, RoundingMode.HALF_UP); // 소수점 첫째 자리까지 반올림
+            this.ratingAverage = average.doubleValue();
+        } else {
+            this.ratingAverage = 0.0;
+        }
+    }
 }

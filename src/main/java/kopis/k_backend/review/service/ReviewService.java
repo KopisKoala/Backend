@@ -49,8 +49,18 @@ public class ReviewService {
     public Review create(ReviewReqDto reviewReqDto, User user, Performance performance, Pair pair) throws IOException {
 
         Review review = ReviewConverter.saveReview(reviewReqDto, user, performance, pair);
-
         reviewRepository.save(review);
+
+        // 리뷰 개수 증가
+        pair.increaseReviewCount(pair.getId());
+        performance.increaseReviewCount(performance.getId());
+
+        // 평균 레이팅 수정
+        Long PairRatingSum = getSumOfPairRatings(pair);
+        pair.updateRatingAverage(PairRatingSum);
+
+        Long PerformanceRatingSum = getSumOfPerformanceRatings(performance);
+        performance.updateRatingAverage(PerformanceRatingSum);
 
         return review;
     }
@@ -59,18 +69,33 @@ public class ReviewService {
     public void delete(Long id, User user) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
-        log.info("ReviewWriter: " + review.getWriter());
-        log.info("Nickname: " + user.getNickname());
 
-        if(Objects.equals(review.getWriter(), user.getNickname())) {
+        if(Objects.equals(review.getWriter(), user.getUsername())) {
             // 리뷰 삭제
             reviewRepository.deleteById(id);
 
             // 좋아요 삭제
             List<ReviewLike> reviewLikes = review.getReviewLikes();
             reviewLikeRepository.deleteAll(reviewLikes);
+
+            // 리뷰 개수 감소
+            Pair pair = pairRepository.findById(review.getPair().getId())
+                    .orElseThrow(() -> GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
+            Performance performance = performanceRepository.findById(review.getPerformance().getId())
+                    .orElseThrow(() -> GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
+
+            pair.decreaseReviewCount(pair.getId());
+            performance.decreaseReviewCount(performance.getId());
+
+            // 평균 레이팅 수정
+            Long PairRatingSum = getSumOfPairRatings(pair);
+            pair.updateRatingAverage(PairRatingSum);
+
+            Long PerformanceRatingSum = getSumOfPerformanceRatings(performance);
+            performance.updateRatingAverage(PerformanceRatingSum);
+
         }
-        else throw new GeneralException(ErrorCode.BAD_REQUEST);
+        else throw new GeneralException(ErrorCode.REVIEW_NOT_YOURS);
     }
 
     public List<Review> getPerformanceReviewList(Long performanceId, String way, Integer scrollPosition, Integer fetchSize) {
@@ -85,6 +110,14 @@ public class ReviewService {
                 .orElseThrow(() -> GeneralException.of(ErrorCode.PAIR_NOT_FOUND));
         Slice<Review> reviewSlice = reviewRepository.findReviewByPairAndWay(pair, way, PageRequest.of(scrollPosition, fetchSize));
         return reviewSlice.getContent();
+    }
+
+    public Long getSumOfPairRatings(Pair pair) {
+        return reviewRepository.sumPairRatingsByPair(pair);
+    }
+
+    public Long getSumOfPerformanceRatings(Performance performance) {
+        return reviewRepository.sumPerformanceRatingsByPerformance(performance);
     }
 
 }

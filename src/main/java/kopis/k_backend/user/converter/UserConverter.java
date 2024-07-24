@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserConverter {
-    public static User saveUser(UserRequestDto.UserReqDto userReqDto) {
+    public static User saveUser(UserRequestDto.UserReqDto userReqDto, String nick) {
+
         return User.builder()
                 .email(userReqDto.getEmail())
                 .username(userReqDto.getUsername())
                 .provider(userReqDto.getProvider())
-                .nickname("WhaShow01")
+                .nickname(nick)
                 .userRank(UserRank.B)
                 .address("경기도 고양시 덕양구 항공대학로 76")
                 .build();
