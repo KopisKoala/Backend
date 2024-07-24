@@ -25,6 +25,15 @@ public class Performance {
     @Column(nullable = false)
     private PerformanceType performanceType;
 
+    @Column(length = 7)
+    private String hashtag1;
+
+    @Column(length = 7)
+    private String hashtag2;
+
+    @Column(length = 7)
+    private String hashtag3;
+
     @Column(nullable = false)
     private String district;
 

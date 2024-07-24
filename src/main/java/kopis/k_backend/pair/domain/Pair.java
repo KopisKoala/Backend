@@ -34,10 +34,13 @@ public class Pair {
     @Column
     private String actor2Profile;
 
+    @Column(length = 7)
     private String hashtag1;
 
+    @Column(length = 7)
     private String hashtag2;
 
+    @Column(length = 7)
     private String hashtag3;
 
     private Double ratingAverage = 0D;

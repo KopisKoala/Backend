@@ -38,7 +38,7 @@ public class Review extends BaseEntity {
     @Column(length = 1000)
     private String content;
 
-    @Column(length = 20)
+    @Column(length = 7)
     private String hashtag;
 
     @Column
