@@ -24,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import kopis.k_backend.user.domain.User;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "리뷰", description = "리뷰 관련 api 입니다.")
@@ -105,10 +106,13 @@ public class ReviewController {
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = performanceService.getReviewCountById(performanceId);
         Double rating = performanceService.getAverageRatingById(performanceId);
+        Performance p = performanceService.findById(performanceId);
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add(p.getHashtag1()); hashtags.add(p.getHashtag2()); hashtags.add(p.getHashtag3());
         String ratingType = "performance";
 
         List<Review> reviews = reviewService.getPerformanceReviewList(performanceId, way, scrollPosition, fetchSize);
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, user));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
     }
 
     @Operation(summary = "페어 리뷰 목록 조회 메서드", description = "페어 리뷰 목록을 조회하는 메서드입니다.")
@@ -132,10 +136,13 @@ public class ReviewController {
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = pairService.getReviewCountById(pairId);
         Double rating = pairService.getAverageRatingById(pairId);
+        Pair p = pairService.findById(pairId);
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add(p.getHashtag1()); hashtags.add(p.getHashtag2()); hashtags.add(p.getHashtag3());
         String ratingType = "pair";
 
         List<Review> reviews = reviewService.getPairReviewList(pairId, way, scrollPosition, fetchSize);
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, user));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
     }
 
 }
