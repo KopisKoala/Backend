@@ -27,6 +27,10 @@ public class Performance {
     @Column(nullable = false)
     private PerformanceType performanceType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hall_id")
+    private Hall hall;
+
     @Column(length = 7)
     private String hashtag1;
 
@@ -35,15 +39,6 @@ public class Performance {
 
     @Column(length = 7)
     private String hashtag3;
-
-    @Column(nullable = false)
-    private String district;
-
-    @Column(nullable = false)
-    private String streetAddress;
-
-    @Column(nullable = false)
-    private String hallName;
 
     @Column(nullable = false)
     private LocalDate startDate;
