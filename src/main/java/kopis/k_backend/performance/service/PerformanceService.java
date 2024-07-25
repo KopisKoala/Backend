@@ -5,11 +5,9 @@ import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.pair.repository.PairRepository;
-import kopis.k_backend.performance.domain.Actor;
-import kopis.k_backend.performance.domain.Performance;
-import kopis.k_backend.performance.domain.PerformanceActor;
-import kopis.k_backend.performance.domain.PerformanceType;
+import kopis.k_backend.performance.domain.*;
 import kopis.k_backend.performance.repository.ActorRepository;
+import kopis.k_backend.performance.repository.HallRepository;
 import kopis.k_backend.performance.repository.PerformanceActorRepository;
 import kopis.k_backend.performance.repository.PerformanceRepository;
 import kopis.k_backend.review.domain.Review;
@@ -37,6 +35,7 @@ public class PerformanceService {
     private final PerformanceActorRepository performanceActorRepository;
     private final ActorRepository actorRepository;
     private final ReviewRepository reviewRepository;
+    private final HallRepository hallRepository;
 
     public Performance findById(Long id) {
         return performanceRepository.findById(id)
@@ -57,7 +56,7 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
-    @Scheduled(fixedRate = 600000, zone = "Asia/Seoul") // 10분 간격으로 실행
+    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul") // 1시간 간격으로 실행
     public void updateTopHashtags() {
         logger.info("updatePerfTopHashtags started");
 
@@ -90,16 +89,19 @@ public class PerformanceService {
     // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
     @PostConstruct
     public void data() {
+        // hall 객체 생성
+        Hall hall = Hall.builder()
+                .district("서울")
+                .streetAddress("서울시 중구 퇴계로 387")
+                .hallName("충무아트센터 대극장")
+                .build();
+        hallRepository.save(hall);
+
         // performance 객체 생성
         Performance performance = Performance.builder()
                 .title("데스노트")
                 .performanceType(PerformanceType.PLAY)
-                .hashtag1("짜릿하다")
-                .hashtag2("소름끼친다")
-                .hashtag3("심장멎는줄")
-                .district("서울")
-                .streetAddress("서울시 중구 퇴계로 387")
-                .hallName("충무아트센터 대극장")
+                .hall(hall)
                 .startDate(LocalDate.of(2023, 7, 1))
                 .endDate(LocalDate.of(2023, 7, 31))
                 .Duration(160)
@@ -120,9 +122,6 @@ public class PerformanceService {
                 .performance(p1)
                 .actor1Name("이동훈")
                 .actor2Name("박상신")
-                .hashtag1("잘생겼다")
-                .hashtag2("경이롭다")
-                .hashtag3("짜릿하다")
                 .ratingAverage(0.0)
                 .reviewCount(0L)
                 .build();
@@ -133,9 +132,6 @@ public class PerformanceService {
                 .performance(p1)
                 .actor1Name("이동훈")
                 .actor2Name("이은석")
-                .hashtag1("잘생겼다")
-                .hashtag2("경이롭다")
-                .hashtag3("짜릿하다")
                 .ratingAverage(0.0)
                 .reviewCount(0L)
                 .build();
@@ -185,12 +181,7 @@ public class PerformanceService {
         Performance performance3 = Performance.builder()
                 .title("시카고")
                 .performanceType(PerformanceType.PLAY)
-                .hashtag1("짜릿하다")
-                .hashtag2("소름끼친다")
-                .hashtag3("심장멎는줄")
-                .district("서울")
-                .streetAddress("서울시 중구 퇴계로 387")
-                .hallName("충무아트센터 대극장")
+                .hall(hall)
                 .startDate(LocalDate.of(2023, 7, 1))
                 .endDate(LocalDate.of(2023, 7, 31))
                 .Duration(160)
@@ -211,9 +202,6 @@ public class PerformanceService {
                 .performance(p2)
                 .actor1Name("이동훈1")
                 .actor2Name("박상신1")
-                .hashtag1("잘생겼다")
-                .hashtag2("경이롭다")
-                .hashtag3("짜릿하다")
                 .ratingAverage(0.0)
                 .reviewCount(0L)
                 .build();
@@ -224,9 +212,6 @@ public class PerformanceService {
                 .performance(p2)
                 .actor1Name("이동훈1")
                 .actor2Name("이은석1")
-                .hashtag1("잘생겼다")
-                .hashtag2("경이롭다")
-                .hashtag3("짜릿하다")
                 .ratingAverage(0.0)
                 .reviewCount(0L)
                 .build();
@@ -254,21 +239,20 @@ public class PerformanceService {
         PerformanceActor pa13 = PerformanceActor.builder()
                 .performance(p2)
                 .actor(a13)
-                .characterName("가")
+                .characterName("배역1")
                 .build();
         performanceActorRepository.save(pa13);
         PerformanceActor pa23 = PerformanceActor.builder()
                 .performance(p2)
                 .actor(a23)
-                .characterName("나")
+                .characterName("배역2")
                 .build();
         performanceActorRepository.save(pa23);
-
 
         PerformanceActor pa223 = PerformanceActor.builder()
                 .performance(p2)
                 .actor(a223)
-                .characterName("나")
+                .characterName("배역2")
                 .build();
         performanceActorRepository.save(pa223);
 
