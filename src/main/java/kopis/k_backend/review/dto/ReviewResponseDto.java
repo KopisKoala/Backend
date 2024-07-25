@@ -55,6 +55,9 @@ public class ReviewResponseDto {
         @Schema(description = "별점 평점")
         private Double averageRating;
 
+        @Schema(description = "해시태그들")
+        private List<String> hashtags;
+
         @Schema(description = "리뷰 리스트")
         private List<ReviewResDto> reviewList;
 
