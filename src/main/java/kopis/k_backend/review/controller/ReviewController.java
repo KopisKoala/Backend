@@ -50,7 +50,6 @@ public class ReviewController {
             @PathVariable(name = "performance-id") Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        User user = userService.findByUserName(customUserDetails.getUsername());
         Performance performance = performanceService.findById(id);
         List<Pair> pairs = pairService.findPairsByPerformance(performance);
 

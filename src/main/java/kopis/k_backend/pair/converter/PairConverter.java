@@ -2,7 +2,6 @@ package kopis.k_backend.pair.converter;
 
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.pair.dto.PairResponseDto;
-import kopis.k_backend.review.dto.ReviewResponseDto;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
