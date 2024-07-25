@@ -57,9 +57,9 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
-    @Scheduled(cron = "0 30 1 * * *", zone = "Asia/Seoul") //  초, 분, 시, 일, 월, 요일
+    @Scheduled(fixedRate = 600000, zone = "Asia/Seoul") // 10분 간격으로 실행
     public void updateTopHashtags() {
-        logger.info("updateTopHashtags started");
+        logger.info("updatePerfTopHashtags started");
 
         List<Performance> performances = performanceRepository.findAll();
         for (Performance performance : performances) { // 공연 하나씩 돌며 업데이트
@@ -84,7 +84,7 @@ public class PerformanceService {
             performance.updateTopHashtags(topHashtags); // 해당 해시태그를 공연 엔티티에 저장
             performanceRepository.save(performance); // 위 메소드 에서 엔티티 변경 후 트랜잭션이 끝날때 변경사항이 db에 반영되어 save 생략해도 됨
         }
-        logger.info("updateTopHashtags finished");
+        logger.info("updatePerfTopHashtags finished");
     }
 
     // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
