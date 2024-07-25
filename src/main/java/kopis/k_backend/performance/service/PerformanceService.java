@@ -86,8 +86,7 @@ public class PerformanceService {
         logger.info("updatePerfTopHashtags finished");
     }
 
-    // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
-    @PostConstruct
+    @PostConstruct // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
     public void data() {
         // hall 객체 생성
         Hall hall = Hall.builder()
@@ -98,7 +97,7 @@ public class PerformanceService {
         hallRepository.save(hall);
 
         // performance 객체 생성
-        Performance performance = Performance.builder()
+        Performance p1 = Performance.builder()
                 .title("데스노트")
                 .performanceType(PerformanceType.PLAY)
                 .hall(hall)
@@ -112,12 +111,9 @@ public class PerformanceService {
                 .reviewCount(0L)
                 .ticketingLink("http://example.com/tickets")
                 .build();
-        performanceRepository.save(performance);
+        performanceRepository.save(p1);
 
         // pair 객체 생성
-        Performance p1 = performanceRepository.findById(1L)
-                .orElseThrow(() ->GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
-
         Pair pair1 = Pair.builder()
                 .performance(p1)
                 .actor1Name("이동훈")
@@ -178,7 +174,7 @@ public class PerformanceService {
 
         // ------------------------------------------------------------------
         // performance 객체 생성
-        Performance performance3 = Performance.builder()
+        Performance p2 = Performance.builder()
                 .title("시카고")
                 .performanceType(PerformanceType.PLAY)
                 .hall(hall)
@@ -192,12 +188,9 @@ public class PerformanceService {
                 .reviewCount(0L)
                 .ticketingLink("http://example.com/tickets")
                 .build();
-        performanceRepository.save(performance3);
+        performanceRepository.save(p2);
 
         // pair 객체 생성
-        Performance p2 = performanceRepository.findById(2L)
-                .orElseThrow(() ->GeneralException.of(ErrorCode.PERFORMANCE_NOT_FOUND));
-
         Pair pair13 = Pair.builder()
                 .performance(p2)
                 .actor1Name("이동훈1")
