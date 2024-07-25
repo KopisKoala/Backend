@@ -16,6 +16,8 @@ import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class PerformanceService {
+    private static final Logger logger = LoggerFactory.getLogger(PerformanceService.class);
 
     private final PerformanceRepository performanceRepository;
     private final PairRepository pairRepository;
@@ -54,8 +57,10 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
-    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") //  초, 분, 시, 일, 월, 요일
+    @Scheduled(cron = "0 30 1 * * *", zone = "Asia/Seoul") //  초, 분, 시, 일, 월, 요일
     public void updateTopHashtags() {
+        logger.info("updateTopHashtags started");
+
         List<Performance> performances = performanceRepository.findAll();
         for (Performance performance : performances) { // 공연 하나씩 돌며 업데이트
             List<Review> reviews = reviewRepository.findByPerformance(performance);
@@ -79,6 +84,7 @@ public class PerformanceService {
             performance.updateTopHashtags(topHashtags); // 해당 해시태그를 공연 엔티티에 저장
             performanceRepository.save(performance); // 위 메소드 에서 엔티티 변경 후 트랜잭션이 끝날때 변경사항이 db에 반영되어 save 생략해도 됨
         }
+        logger.info("updateTopHashtags finished");
     }
 
     // 실행시킬 때마다 db에 예시 데이터 들어감. 본격적으로 db에 데이터 넣기 전까지 사용할 예정.
