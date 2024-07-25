@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
+import kopis.k_backend.pair.converter.PairConverter;
 import kopis.k_backend.pair.domain.Pair;
+import kopis.k_backend.pair.dto.PairResponseDto;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.service.PerformanceService;
 import kopis.k_backend.review.converter.ReviewConverter;
@@ -38,6 +40,21 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final PerformanceService performanceService;
     private final PairService pairService;
+
+    @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다. .")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAIR_2001", description = "공연에 맞는 페어들을 반환 완료했습니다.")
+    })
+    @GetMapping(value = "/{performance-id}/pairs")
+    public ApiResponse<PairResponseDto.PairListResDto> create(
+            @PathVariable(name = "performance-id") Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        Performance performance = performanceService.findById(id);
+        List<Pair> pairs = pairService.findPairsByPerformance(performance);
+
+        return ApiResponse.onSuccess(SuccessCode.PERFORMANCE_MATCH_PAIRS, PairConverter.pairListResDto(pairs));
+    }
 
     @Operation(summary = "리뷰 만들기 메서드", description = "리뷰를 만드는 메서드입니다.")
     @ApiResponses(value = {

@@ -4,6 +4,7 @@ import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.pair.repository.PairRepository;
+import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.service.PerformanceService;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.repository.ReviewRepository;
@@ -75,6 +76,10 @@ public class PairService {
             pairRepository.save(pair); // 위 메소드 에서 엔티티 변경 후 트랜잭션이 끝날때 변경사항이 db에 반영되어 save 생략해도 됨
         }
         logger.info("updatePairTopHashtags finished");
+    }
+
+    public List<Pair> findPairsByPerformance(Performance performance){
+        return pairRepository.findAllByPerformance(performance);
     }
 
 }
