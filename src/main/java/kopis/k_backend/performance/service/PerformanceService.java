@@ -54,7 +54,7 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") //  초, 분, 시, 일, 월, 요일
     public void updateTopHashtags() {
         List<Performance> performances = performanceRepository.findAll();
         for (Performance performance : performances) { // 공연 하나씩 돌며 업데이트
