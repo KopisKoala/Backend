@@ -123,9 +123,9 @@ public class ReviewController {
         User user = userService.findByUserName(customUserDetails.getUsername());
         Long reviewCount = performanceService.getReviewCountById(performanceId);
         Double rating = performanceService.getAverageRatingById(performanceId);
-        Performance p = performanceService.findById(performanceId);
+        Performance performance = performanceService.findById(performanceId);
         List<String> hashtags = new ArrayList<>();
-        hashtags.add(p.getHashtag1()); hashtags.add(p.getHashtag2()); hashtags.add(p.getHashtag3());
+        hashtags.add(performance.getHashtag1()); hashtags.add(performance.getHashtag2()); hashtags.add(performance.getHashtag3());
         String ratingType = "performance";
 
         List<Review> reviews = reviewService.getPerformanceReviewList(performanceId, way, scrollPosition, fetchSize);

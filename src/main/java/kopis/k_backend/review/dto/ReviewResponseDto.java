@@ -40,6 +40,9 @@ public class ReviewResponseDto {
 
         @Schema(description = "좋아요 수")
         private Long likeCount;
+
+        @Schema(description = "좋아요 누른 여부")
+        private Boolean isPressed;
     }
 
     @Schema(description = "ReviewListResDto")
