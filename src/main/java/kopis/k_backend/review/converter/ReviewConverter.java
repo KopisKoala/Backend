@@ -36,6 +36,9 @@ public class ReviewConverter {
         if(Objects.equals(ratingType, "pair")) rating = review.getPairRatings();
         else if(Objects.equals(ratingType, "performance")) rating = review.getPerformanceRatings();
 
+        boolean isPressed = review.getReviewLikes().stream()
+                .anyMatch(reviewLike -> reviewLike.getUser().equals(user));
+
         return ReviewResDto.builder()
                 .id(review.getId())
                 .writer(review.getUser().getNickname())
@@ -45,6 +48,7 @@ public class ReviewConverter {
                 .content(review.getContent())
                 .likeCount(review.getLikeCount())
                 .hashTag(review.getHashtag())
+                .isPressed(isPressed)
                 .build();
     }
 
