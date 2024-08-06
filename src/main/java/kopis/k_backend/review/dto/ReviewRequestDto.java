@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 // 클라이언트 -> 서버
 @NoArgsConstructor
 public class ReviewRequestDto {
@@ -33,6 +35,9 @@ public class ReviewRequestDto {
 
         @Schema(description = "리뷰 내용")
         private String content;
+
+        @Schema(description = "공연 관람일")
+        private LocalDate performanceDate;
 
     }
 

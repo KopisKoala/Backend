@@ -26,6 +26,7 @@ public class ReviewConverter {
                 .pairRatings(review.getPairRating())
                 .performanceRatings(review.getPerformanceRating())
                 .hashtag(review.getHashTag())
+                .performanceDate(review.getPerformanceDate())
                 .build();
     }
 
