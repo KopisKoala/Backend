@@ -47,7 +47,7 @@ public class Performance {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Integer Duration;
+    private Integer duration;
 
     @Column(nullable = false)
     private Integer lowestPrice;
