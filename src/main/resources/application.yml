@@ -3,6 +3,11 @@ spring:
   profiles:
     active: local
 
+  # Spring Cloud 호환성 검사기 비활성화
+  spring:
+    cloud:
+      compatibility-verifier: enabled=false
+
   # 용량 제한 늘리기
   servlet:
     multipart:
@@ -37,6 +42,11 @@ springdoc:
     disabled: true
   use-fqn: true
 
+# KOPIS API
+kopis:
+  key: ${KOPIS_KEY}
+  api-url: http://www.kopis.or.kr/openApi/restful
+
 ---
 
 # local profile
@@ -62,6 +72,7 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+
   servlet:
     multipart:
       enabled: true
