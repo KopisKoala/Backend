@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
+	id 'org.springframework.boot' version '3.2.0'
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -21,6 +21,16 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2023.0.0")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 dependencies {
@@ -44,6 +54,17 @@ dependencies {
 
 	// AWS S3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// Open Feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// JSONObject
+	implementation 'org.json:json:20230227'
+
+	// xml
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
 
 	// redis
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
