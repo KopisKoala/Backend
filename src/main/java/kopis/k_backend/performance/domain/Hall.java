@@ -6,6 +6,7 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Hall {
@@ -14,12 +15,42 @@ public class Hall {
     private Long id;
 
     @Column(nullable = false)
-    private String district;
+    private String sidonm;
+
+    @Column
+    private String gugunnm;
 
     @Column(nullable = false)
     private String streetAddress;
 
     @Column(nullable = false)
     private String hallName;
+
+    @Column(unique = true)
+    private String kopisHallId;
+
+    @Column
+    private String parkinglot;
+
+    @Column
+    private String restaurant;
+
+    @Column
+    private String cafe;
+
+    @Column
+    private String store;
+
+    @Column
+    private String nolibang;
+
+    @Column
+    private String suyu;
+
+    @Column
+    private String telno;
+
+    @Column
+    private String relateurl;
 
 }
