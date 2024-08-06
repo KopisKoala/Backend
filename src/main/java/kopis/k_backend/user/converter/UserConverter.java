@@ -16,8 +16,9 @@ public class UserConverter {
                 .username(userReqDto.getUsername())
                 .provider(userReqDto.getProvider())
                 .nickname(nick)
-                .userRank(UserRank.B)
+                .userRank(UserRank.A)
                 .address("경기도 고양시 덕양구 항공대학로 76")
+                .reviewCount(0L)
                 .build();
     }
 

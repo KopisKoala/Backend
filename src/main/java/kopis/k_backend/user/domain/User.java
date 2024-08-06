@@ -29,13 +29,15 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String provider;
 
+    private Long reviewCount = 0L;
+
     private String address;
 
     private String profileImage;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 5, nullable = false)
-    private UserRank userRank = UserRank.B; // rank는 예약어. 기본 값을 Rank.B로 설정
+    @Column(length = 10, nullable = false)
+    private UserRank userRank = UserRank.A; // rank는 예약어. 기본 값을 Rank.A로 설정
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
@@ -55,7 +57,25 @@ public class User extends BaseEntity {
         this.profileImage = profileImage;
     }
 
-    public void updateAddress(String address){
-        this.address = address;
+    public void updateAddress(String address) { this.address = address; }
+
+    public void increaseReviewCount() {
+        this.reviewCount += 1;
+    }
+
+    public void decreaseReviewCount() {
+        this.reviewCount -= 1;
+    }
+
+    public void updateUserRank() {
+        if (10 <= this.reviewCount && this.reviewCount < 30) {
+            this.userRank = UserRank.Superior;
+        }
+        else if (30 <= this.reviewCount && this.reviewCount < 50) {
+            this.userRank = UserRank.Royal;
+        }
+        else if (50 <= this.reviewCount) {
+            this.userRank = UserRank.VIP;
+        }
     }
 }
