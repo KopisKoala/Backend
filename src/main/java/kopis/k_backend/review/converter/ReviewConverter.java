@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 public class ReviewConverter {
     public static Review saveReview(ReviewReqDto review, User user, Performance performance, Pair pair){
         return Review.builder()
-                .user(user)
+                .writer(user)
                 .performance(performance)
                 .pair(pair)
-                .writer(user.getUsername())
+                .writerName(user.getUsername())
                 .likeCount(0L)
                 .content(review.getContent())
                 .pairRatings(review.getPairRating())
@@ -31,7 +31,7 @@ public class ReviewConverter {
     }
 
     public static ReviewResDto simpleReviewDto(Review review, String ratingType, User user) {
-        Boolean isWriter = (Objects.equals(user.getUsername(), review.getWriter()));
+        Boolean isWriter = (Objects.equals(user, review.getWriter()));
 
         Integer rating = 0;
         if(Objects.equals(ratingType, "pair")) rating = review.getPairRatings();
@@ -42,14 +42,15 @@ public class ReviewConverter {
 
         return ReviewResDto.builder()
                 .id(review.getId())
-                .writer(review.getUser().getNickname())
-                .writerProfileImage(review.getUser().getProfileImage())
+                .writer(review.getWriter().getNickname())
+                .writerProfileImage(review.getWriter().getProfileImage())
                 .isWriter(isWriter)
                 .rating(rating)
                 .content(review.getContent())
                 .likeCount(review.getLikeCount())
                 .hashTag(review.getHashtag())
                 .isPressed(isPressed)
+                .writerRank(review.getWriter().getUserRank())
                 .build();
     }
 

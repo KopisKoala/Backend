@@ -39,7 +39,7 @@ public class User extends BaseEntity {
     @Column(length = 10, nullable = false)
     private UserRank userRank = UserRank.A; // rank는 예약어. 기본 값을 Rank.A로 설정
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "writer")
     private List<Review> reviews = new ArrayList<>();
 
     public User(String username, String nickname, String email, String provider) {
