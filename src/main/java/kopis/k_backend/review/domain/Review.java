@@ -6,6 +6,8 @@ import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.user.domain.User;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,9 @@ public class Review extends BaseEntity {
 
     @Column
     private Integer pairRatings = 5;
+
+    @Column
+    private LocalDate performanceDate;
 
     @OneToMany(mappedBy = "review")
     private List<ReviewLike> reviewLikes = new ArrayList<>();

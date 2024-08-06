@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.pair.converter.PairConverter;
 import kopis.k_backend.pair.domain.Pair;
-import kopis.k_backend.pair.dto.PairResponseDto;
+import kopis.k_backend.pair.dto.PairResponseDto.PairListResDto;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.service.PerformanceService;
 import kopis.k_backend.review.converter.ReviewConverter;
@@ -46,7 +46,7 @@ public class ReviewController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAIR_2001", description = "공연에 맞는 페어들을 반환 완료했습니다.")
     })
     @GetMapping(value = "/{performance-id}/pairs")
-    public ApiResponse<PairResponseDto.PairListResDto> create(
+    public ApiResponse<PairListResDto> create(
             @PathVariable(name = "performance-id") Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
