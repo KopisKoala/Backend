@@ -17,6 +17,7 @@ import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
 import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.jwt.CustomUserDetails;
+import kopis.k_backend.user.service.RankService;
 import kopis.k_backend.user.service.UserService;
 import kopis.k_backend.pair.Service.PairService;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
@@ -40,6 +41,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final PerformanceService performanceService;
     private final PairService pairService;
+    private final RankService rankService;
 
     @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다. .")
     @ApiResponses(value = {
@@ -78,6 +80,8 @@ public class ReviewController {
 
             Review review = reviewService.create(reviewReqDto, user, performance, pair);
 
+            rankService.increaseReviewCount(user);
+
             return ApiResponse.onSuccess(SuccessCode.REVIEW_CREATED, review.getId());
 
         } catch (Exception e) {
@@ -98,6 +102,8 @@ public class ReviewController {
     ){
         User user = userService.findByUserName(customUserDetails.getUsername());
         reviewService.delete(id, user);
+
+        rankService.decreaseReviewCount(user);
 
         return ApiResponse.onSuccess(SuccessCode.REVIEW_DELETED, true);
     }
