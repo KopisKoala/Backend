@@ -1,0 +1,177 @@
+package kopis.k_backend.feign.kopis.hall;
+
+import kopis.k_backend.performance.domain.Hall;
+import kopis.k_backend.performance.repository.HallRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class KopisHallService {
+    private final KopisHallClient kopisHallClient;
+    private final HallRepository hallRepository;
+    private final String service;
+    private final Integer cpage;
+    private final Integer rows;
+
+    public KopisHallService(KopisHallClient kopisHallClient, HallRepository hallRepository,
+                            @Value("${kopis.key}") String apiKey) {
+        this.kopisHallClient = kopisHallClient;
+        this.hallRepository = hallRepository;
+        this.service = apiKey;
+        this.cpage = 1;
+        this.rows = 100; // 한 이름으로 된 공연장은 최대 100개 이하이지 않을까..
+    }
+
+    public List<String> getAllHallId() {
+        return hallRepository.findAllKopisHallIds();
+    }
+
+    public void putHallDetail(String hallId) {
+        // Kopis api에 요청을 보내기 전에 apiKey를 쿼리로 설정
+        ResponseEntity<String> response = kopisHallClient.getHall(service, hallId, "Y");
+
+        // API Response로부터 body 뽑아내기
+        String body = response.getBody();
+
+        try {
+            // XML 문서 빌더 생성
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
+
+            // 루트 엘리먼트 가져오기
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("db");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    String fcltynm = getElementValue(element, "fcltynm");
+                    String mt10id = getElementValue(element, "mt10id");
+                    String sidonm = getElementValue(element, "sidonm");
+                    String gugunnm = getElementValue(element, "gugunnm");
+                    String streetAddress = getElementValue(element, "adres");
+                    String restaurant = getElementValue(element, "restaurant");
+                    String cafe = getElementValue(element, "cafe");
+                    String store = getElementValue(element, "store");
+                    String nolibang = getElementValue(element, "nolibang");
+                    String suyu = getElementValue(element, "suyu");
+                    String parkinglot = getElementValue(element, "parkinglot");
+                    String telno = getElementValue(element, "telno");
+                    String relateurl = getElementValue(element, "relateurl");
+
+                    Optional<Hall> existingHall = hallRepository.findByKopisHallId(mt10id);
+                    if (existingHall.isPresent()) {
+                        Hall hall = existingHall.get();
+                        hall.setStreetAddress(streetAddress);
+                        hall.setRestaurant(restaurant);
+                        hall.setCafe(cafe);
+                        hall.setStore(store);
+                        hall.setNolibang(nolibang);
+                        hall.setSuyu(suyu);
+                        hall.setParkinglot(parkinglot);
+                        hall.setTelno(telno);
+                        hall.setRelateurl(relateurl);
+                        hallRepository.save(hall);
+                        System.out.println("Updated Hall: " + hall);
+                    } else {
+                        Hall hall = Hall.builder()
+                                .kopisHallId(mt10id)
+                                .hallName(fcltynm)
+                                .sidonm(sidonm)
+                                .gugunnm(gugunnm)
+                                .streetAddress(streetAddress)
+                                .restaurant(restaurant)
+                                .cafe(cafe)
+                                .store(store)
+                                .nolibang(nolibang)
+                                .suyu(suyu)
+                                .parkinglot(parkinglot)
+                                .telno(telno)
+                                .relateurl(relateurl)
+                                .build();
+                        hallRepository.save(hall);
+                        System.out.println("Saved Hall: " + hall);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error processing hall detail: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void putHallList(String hallName) {
+        // Kopis api에 요청을 보내기 전에 apiKey를 쿼리로 설정
+        ResponseEntity<String> response = kopisHallClient.getHalls(service, hallName, cpage, rows);
+
+        // API Response로부터 body 뽑아내기
+        String body = response.getBody();
+
+        try {
+            // XML 문서 빌더 생성
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
+
+            // 루트 엘리먼트 가져오기
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("db");
+
+            // 각 공연장 데이터 추출
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    String hallNameElement = getElementValue(element, "fcltynm");
+                    String hallIdElement = getElementValue(element, "mt10id");
+                    String sidonm = getElementValue(element, "sidonm");
+                    String gugunnm = getElementValue(element, "gugunnm");
+                    String streetAddress = ""; // XML 데이터에 streetAddress 정보가 없으므로 빈 문자열로 설정
+
+                    Optional<Hall> existingHall = hallRepository.findByKopisHallId(hallIdElement);
+                    if (existingHall.isPresent()) {
+                        System.out.println("Hall with kopisHallId " + hallIdElement + " already exists. Skipping.");
+                    } else {
+                        Hall newHall = Hall.builder()
+                                .hallName(hallNameElement)
+                                .kopisHallId(hallIdElement)
+                                .sidonm(sidonm)
+                                .gugunnm(gugunnm)
+                                .streetAddress(streetAddress)
+                                .build();
+                        hallRepository.save(newHall);
+                        System.out.println("Saved Hall: " + newHall);
+                    }
+
+                    System.out.println("hallName: " + hallNameElement);
+                    System.out.println("hallId: " + hallIdElement);
+                    System.out.println("district: " + sidonm + " " + gugunnm);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getElementValue(Element parent, String tagName) {
+        NodeList nodeList = parent.getElementsByTagName(tagName);
+        if (nodeList.getLength() > 0) {
+            return nodeList.item(0).getTextContent();
+        }
+        return "";
+    }
+}
