@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -113,25 +114,32 @@ public class KopisPerfService {
         List<String> generes = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
-        // 20240101부터의 공연 데이터 넣기
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
         for (String genere : generes) {
             for (String hallId : hallIds) {
                 for (int n = 1; n <= 13; n++) {
                     String formattedNumber = String.format("%02d", n);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240101, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
-                    String body = response.getBody();
+                    // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 
-                    try {
-                        assert body != null;
-                        putPerfListLogic(body, hallId);
-                    } catch (Exception e) {
-                        System.out.println("Error processing performance detail: " + e.getMessage());
-                        e.printStackTrace();
-                    }
+                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240101, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                        String body = response.getBody();
+                        try {
+                            assert body != null;
+                            putPerfListLogic(body, hallId);
+                        } catch (Exception e) {
+                            System.out.println("Error processing performance detail: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    });
+                    futures.add(future);
                 }
             }
         }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     private String getElementValue(Element parent, String tagName) {
