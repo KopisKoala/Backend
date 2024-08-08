@@ -12,6 +12,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 50MB
+      max-request-size: 100MB
 
 # 로그인 jwt
 jwt:
