@@ -24,6 +24,9 @@ public class Performance {
     @Column(nullable = false)
     private String title;
 
+    @Column
+    private String genere;
+
     @Column(unique = true)
     private String kopisPerfId;
 
