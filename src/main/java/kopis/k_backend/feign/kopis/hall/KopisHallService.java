@@ -29,7 +29,7 @@ public class KopisHallService {
         this.hallRepository = hallRepository;
         this.service = apiKey;
         this.cpage = 1;
-        this.rows = 100; // 한 이름으로 된 공연장은 최대 100개 이하이지 않을까..
+        this.rows = 1000;
     }
 
     public List<String> getAllHallId() {
@@ -47,6 +47,7 @@ public class KopisHallService {
             // XML 문서 빌더 생성
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
+            assert body != null;
             Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
 
             // 루트 엘리먼트 가져오기

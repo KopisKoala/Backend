@@ -22,7 +22,7 @@ public class KopisHallController {
 
     @Operation(summary = "공연장", description = "공연장을 db에 넣는 api입니다. ")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HALL_2012", description = "공연장이 DB에 저장되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_HALL_2012", description = "공연장이 DB에 저장되었습니다."),
     })
     @GetMapping("/detail")
     public ApiResponse<Boolean> putHall() {
@@ -36,7 +36,7 @@ public class KopisHallController {
 
     @Operation(summary = "공연장 목록", description = "공연장 목록을 db에 넣는 api입니다. ")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HALL_2011", description = "공연장 목록이 DB에 저장되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_HALL_2011", description = "공연장 목록이 DB에 저장되었습니다."),
     })
     @GetMapping("/list")
     public ApiResponse<Boolean> putHallList() {
