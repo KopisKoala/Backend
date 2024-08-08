@@ -13,7 +13,7 @@ public class RestTemplateConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        int timeout = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+        int timeout = 60 * 60 * 1000; // 1 hour in milliseconds
 
         CloseableHttpClient client = HttpClients.custom()
                 .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()

@@ -47,6 +47,14 @@ kopis:
   key: ${KOPIS_KEY}
   api-url: http://www.kopis.or.kr/openApi/restful
 
+# feign timeout
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 3600000   # 1 hour
+        readTimeout: 3600000      # 1 hour
+
 ---
 
 # local profile
