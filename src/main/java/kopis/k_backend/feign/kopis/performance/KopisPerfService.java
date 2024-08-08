@@ -164,7 +164,7 @@ public class KopisPerfService {
     public void putPerfListEveryDay() {
         //putPerfListForAllGenresAndHalls();
 
-        // 20240801부터의 공연 데이터 넣기
+        // 당일에 새로 생긴 공연 넣기
         List<String> generes = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
@@ -177,7 +177,7 @@ public class KopisPerfService {
                 for (int n = 1; n <= 13; n++) {
                     String formattedNumber = String.format("%02d", n);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
                     String body = response.getBody();
 
                     try {
@@ -196,6 +196,7 @@ public class KopisPerfService {
         List<String> generes = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
+        // 20240801부터의 공연 데이터 넣기
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
@@ -205,7 +206,7 @@ public class KopisPerfService {
                 for (int n = 1; n <= 13; n++) {
                     String formattedNumber = String.format("%02d", n);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
                     String body = response.getBody();
 
                     try {
