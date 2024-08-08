@@ -39,6 +39,8 @@ public enum SuccessCode implements BaseCode {
     DB_PERF_LIST_SUCCESS(HttpStatus.OK, "DB_PERF_2013", "공연장 리스트를 DB에 넣었습니다."),
     DB_PERF_DETAIL_SUCCESS(HttpStatus.OK, "DB_PERF_2014", "공연장 정보를 DB에 넣었습니다."),
 
+    // Open AI
+    OPEN_AI_API_SUCCESSS(HttpStatus.OK, "OPEN_2001", "GPT API 요청이 완료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;
