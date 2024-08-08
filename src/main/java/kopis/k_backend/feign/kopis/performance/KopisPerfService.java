@@ -54,6 +54,160 @@ public class KopisPerfService {
         return performanceRepository.findAllKopisPerfIds();
     }
 
+    // 모든 공연 다 돌면서 state가 "공연중"인거 날짜보고 완료 날짜가 오늘 이전이었다면 "공연완료"로 업데이트
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 1시에 실행
+    public void updatePerfStateEveryDay(){
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        // 공연 상태가 "공연중"인 모든 공연들을 찾기
+        List<Performance> ongoingPerformances = performanceRepository.findByState("공연중");
+
+        for (Performance performance : ongoingPerformances) {
+            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
+
+            // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
+            if (endDate.isBefore(today) || endDate.isEqual(today)) {
+                performance.setState("공연완료");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
+            }
+        }
+
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
+    public void putPerfListEveryDay() {
+        //putPerfListForAllGenresAndHalls();
+
+        // 당일에 새로 생긴 공연 넣기
+        List<String> generes = Arrays.asList("GGGA", "AAAA");
+        List<String> hallIds = kopisHallService.getAllHallId();
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        Integer formattedDate = Integer.valueOf(today.format(formatter));
+
+        for (String genere : generes) {
+            for (String hallId : hallIds) {
+                for (int n = 1; n <= 13; n++) {
+                    String formattedNumber = String.format("%02d", n);
+
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    String body = response.getBody();
+
+                    try {
+                        assert body != null;
+                        putPerfListLogic(body, hallId);
+                    } catch (Exception e) {
+                        System.out.println("Error processing performance detail: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    public void putPerfListForAllGenresAndHalls() {
+        List<String> generes = Arrays.asList("GGGA", "AAAA");
+        List<String> hallIds = kopisHallService.getAllHallId();
+
+        // 20240101부터의 공연 데이터 넣기
+        for (String genere : generes) {
+            for (String hallId : hallIds) {
+                for (int n = 1; n <= 13; n++) {
+                    String formattedNumber = String.format("%02d", n);
+
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240101, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    String body = response.getBody();
+
+                    try {
+                        assert body != null;
+                        putPerfListLogic(body, hallId);
+                    } catch (Exception e) {
+                        System.out.println("Error processing performance detail: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private String getElementValue(Element parent, String tagName) {
+        NodeList nodeList = parent.getElementsByTagName(tagName);
+        if (nodeList.getLength() > 0) {
+            return nodeList.item(0).getTextContent();
+        }
+        return "";
+    }
+
+    private void putPerfListLogic(String body, String hallId) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
+
+        doc.getDocumentElement().normalize();
+        NodeList nodeList = doc.getElementsByTagName("db");
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                String mt20id = getElementValue(element, "mt20id");
+                String prfnm = getElementValue(element, "prfnm");
+                String prfpdfrom = getElementValue(element, "prfpdfrom");
+                String prfpdto = getElementValue(element, "prfpdto");
+                String poster = getElementValue(element, "poster");
+                String genrenm = getElementValue(element, "genrenm");
+                String prfstate = getElementValue(element, "prfstate");
+                if(!Objects.equals(prfstate, "공연중")) continue;
+
+                System.out.println("Parsed performance: " + mt20id + ", " + prfnm + ", " + genrenm);
+
+                PerformanceType performanceType;
+                if ("뮤지컬".equals(genrenm)) {
+                    performanceType = PerformanceType.MUSICAL;
+                } else if ("연극".equals(genrenm)) {
+                    performanceType = PerformanceType.PLAY;
+                } else {
+                    continue;
+                }
+
+                Optional<Performance> existingPerformance = performanceRepository.findByKopisPerfId(mt20id);
+                if (existingPerformance.isPresent()) {
+                    System.out.println("Performance already exists: " + mt20id);
+                } else {
+                    Hall hall = hallRepository.findByKopisHallId(hallId)
+                            .orElseThrow(() -> new RuntimeException("Hall not found: " + hallId));
+
+                    Performance performance = Performance.builder()
+                            .kopisPerfId(mt20id)
+                            .title(prfnm)
+                            .performanceType(performanceType)
+                            .hall(hall)
+                            .startDate(prfpdfrom)
+                            .endDate(prfpdto)
+                            .poster(poster)
+                            .state(prfstate)
+                            .duration("-")
+                            .lowestPrice("-")
+                            .highestPrice("-")
+                            .price("-")
+                            .reviewCount(0L)
+                            .ratingAverage(0.0)
+                            .build();
+                    performanceRepository.save(performance);
+
+                    putPerfDetail(mt20id); // 디데일 넣기
+                    System.out.println("Saved Performance: " + mt20id + " " + prfnm);
+
+                }
+            }
+        }
+    }
+
     public void putPerfDetail(String perfId) {
         ResponseEntity<String> response = kopisPerfClient.getPerf(service, perfId, "Y");
         String body = response.getBody();
@@ -156,150 +310,6 @@ public class KopisPerfService {
         } catch (Exception e) {
             System.out.println("Error processing performance detail: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
-    public void putPerfListEveryDay() {
-        //putPerfListForAllGenresAndHalls();
-
-        // 20240801부터의 공연 데이터 넣기
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
-        List<String> hallIds = kopisHallService.getAllHallId();
-
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        Integer formattedDate = Integer.valueOf(today.format(formatter));
-
-        for (String genere : generes) {
-            for (String hallId : hallIds) {
-                for (int n = 1; n <= 13; n++) {
-                    String formattedNumber = String.format("%02d", n);
-
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
-                    String body = response.getBody();
-
-                    try {
-                        assert body != null;
-                        putPerfListLogic(body, hallId);
-                    } catch (Exception e) {
-                        System.out.println("Error processing performance detail: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-    public void putPerfListForAllGenresAndHalls() {
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
-        List<String> hallIds = kopisHallService.getAllHallId();
-
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        Integer formattedDate = Integer.valueOf(today.format(formatter));
-
-        for (String genere : generes) {
-            for (String hallId : hallIds) {
-                for (int n = 1; n <= 13; n++) {
-                    String formattedNumber = String.format("%02d", n);
-
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
-                    String body = response.getBody();
-
-                    try {
-                        assert body != null;
-                        putPerfListLogic(body, hallId);
-                    } catch (Exception e) {
-                        System.out.println("Error processing performance detail: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-    public void putPerfList(String genre, String hallId, String formattedHallId) {
-        System.out.println("Fetching performances for genre: " + genre + " and hallId: " + formattedHallId);
-
-        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240101, 99999999, genre, formattedHallId, cpage, rows, "Y");
-
-        String body = response.getBody();
-
-        try {
-            assert body != null;
-            putPerfListLogic(body, hallId);
-        } catch (Exception e) {
-            System.out.println("Error processing performance detail: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private String getElementValue(Element parent, String tagName) {
-        NodeList nodeList = parent.getElementsByTagName(tagName);
-        if (nodeList.getLength() > 0) {
-            return nodeList.item(0).getTextContent();
-        }
-        return "";
-    }
-
-    private void putPerfListLogic(String body, String hallId) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
-
-        doc.getDocumentElement().normalize();
-        NodeList nodeList = doc.getElementsByTagName("db");
-
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) node;
-                String mt20id = getElementValue(element, "mt20id");
-                String prfnm = getElementValue(element, "prfnm");
-                String prfpdfrom = getElementValue(element, "prfpdfrom");
-                String prfpdto = getElementValue(element, "prfpdto");
-                String poster = getElementValue(element, "poster");
-                String genrenm = getElementValue(element, "genrenm");
-                String prfstate = getElementValue(element, "prfstate");
-
-                System.out.println("Parsed performance: " + mt20id + ", " + prfnm + ", " + genrenm);
-
-                PerformanceType performanceType;
-                if ("뮤지컬".equals(genrenm)) {
-                    performanceType = PerformanceType.MUSICAL;
-                } else if ("연극".equals(genrenm)) {
-                    performanceType = PerformanceType.PLAY;
-                } else {
-                    continue;
-                }
-
-                Optional<Performance> existingPerformance = performanceRepository.findByKopisPerfId(mt20id);
-                if (existingPerformance.isPresent()) {
-                    System.out.println("Performance already exists: " + mt20id);
-                } else {
-                    Hall hall = hallRepository.findByKopisHallId(hallId)
-                            .orElseThrow(() -> new RuntimeException("Hall not found: " + hallId));
-
-                    Performance performance = Performance.builder()
-                            .kopisPerfId(mt20id)
-                            .title(prfnm)
-                            .performanceType(performanceType)
-                            .hall(hall)
-                            .startDate(prfpdfrom)
-                            .endDate(prfpdto)
-                            .poster(poster)
-                            .state(prfstate)
-                            .duration(String.valueOf(0))
-                            .lowestPrice(String.valueOf(0))
-                            .highestPrice(String.valueOf(0))
-                            .build();
-                    performanceRepository.save(performance);
-                    System.out.println("Saved Performance: " + mt20id + " " + prfnm);
-                }
-            }
         }
     }
 }

@@ -24,6 +24,9 @@ public class Performance {
     @Column(nullable = false)
     private String title;
 
+    @Column
+    private String genere;
+
     @Column(unique = true)
     private String kopisPerfId;
 
@@ -61,10 +64,10 @@ public class Performance {
     @Column(nullable = false)
     private String price;
 
-    @Column
+    @Column(nullable = false)
     private Double ratingAverage = 0.0;
 
-    @Column
+    @Column(nullable = false)
     private Long reviewCount = 0L;
 
     @Column(length = 7)
