@@ -6,12 +6,12 @@ import kopis.k_backend.review.domain.Review;
 import lombok.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -24,12 +24,48 @@ public class Performance {
     @Column(nullable = false)
     private String title;
 
+    @Column(unique = true)
+    private String kopisPerfId;
+
     @Column(nullable = false)
     private PerformanceType performanceType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hall_id")
     private Hall hall;
+
+    @Column(nullable = false)
+    private String startDate;
+
+    @Column(nullable = false)
+    private String endDate;
+
+    @Column
+    private String poster;
+
+    @Column
+    private String ticketingLink;
+
+    @Column
+    private String state;
+
+    @Column(nullable = false)
+    private String duration;
+
+    @Column(nullable = false)
+    private String lowestPrice;
+
+    @Column(nullable = false)
+    private String highestPrice;
+
+    @Column(nullable = false)
+    private String price;
+
+    @Column
+    private Double ratingAverage = 0.0;
+
+    @Column
+    private Long reviewCount = 0L;
 
     @Column(length = 7)
     private String hashtag1;
@@ -39,29 +75,6 @@ public class Performance {
 
     @Column(length = 7)
     private String hashtag3;
-
-    @Column(nullable = false)
-    private LocalDate startDate;
-
-    @Column(nullable = false)
-    private LocalDate endDate;
-
-    @Column(nullable = false)
-    private Integer Duration;
-
-    @Column(nullable = false)
-    private Integer lowestPrice;
-
-    @Column(nullable = false)
-    private Integer highestPrice;
-
-    private String poster;
-
-    private Double ratingAverage = 0.0;
-
-    private Long reviewCount = 0L;
-
-    private String ticketingLink;
 
     @OneToMany(mappedBy = "performance")
     private List<Pair> pairs = new ArrayList<>();
