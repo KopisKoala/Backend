@@ -282,7 +282,10 @@ public class KopisPerfService {
                             .ratingAverage(0.0)
                             .build();
                     performanceRepository.save(performance);
+
+                    putPerfDetail(mt20id); // 디데일 넣기
                     System.out.println("Saved Performance: " + mt20id + " " + prfnm);
+
                 }
             }
         }
