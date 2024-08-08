@@ -24,10 +24,10 @@ public class Review extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User writer;
 
     @Column(length = 20, nullable = false)
-    private String writer; // username
+    private String writerName; // username
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")

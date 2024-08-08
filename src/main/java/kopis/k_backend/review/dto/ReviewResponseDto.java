@@ -1,6 +1,7 @@
 package kopis.k_backend.review.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import kopis.k_backend.user.domain.UserRank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +44,9 @@ public class ReviewResponseDto {
 
         @Schema(description = "좋아요 누른 여부")
         private Boolean isPressed;
+
+        @Schema(description = "리뷰 작성자 랭크")
+        private UserRank writerRank;
     }
 
     @Schema(description = "ReviewListResDto")
