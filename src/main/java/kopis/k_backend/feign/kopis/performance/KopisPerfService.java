@@ -54,111 +54,28 @@ public class KopisPerfService {
         return performanceRepository.findAllKopisPerfIds();
     }
 
-    public void putPerfDetail(String perfId) {
-        ResponseEntity<String> response = kopisPerfClient.getPerf(service, perfId, "Y");
-        String body = response.getBody();
+    // 모든 공연 다 돌면서 state가 "공연중"인거 날짜보고 완료 날짜가 오늘 이전이었다면 "공연완료"로 업데이트
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 1시에 실행
+    public void updatePerfStateEveryDay(){
 
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-            doc.getDocumentElement().normalize();
-            NodeList nodeList = doc.getElementsByTagName("db");
+        // 공연 상태가 "공연중"인 모든 공연들을 찾기
+        List<Performance> ongoingPerformances = performanceRepository.findByState("공연중");
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
+        for (Performance performance : ongoingPerformances) {
+            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
 
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    String mt20id = getElementValue(element, "mt20id");
-                    String prfnm = getElementValue(element, "prfnm");
-                    String prfpdfrom = getElementValue(element, "prfpdfrom");
-                    String prfpdto = getElementValue(element, "prfpdto");
-                    String fcltynm = getElementValue(element, "fcltynm");
-                    String prfruntime = getElementValue(element, "prfruntime");
-                    String pcseguidance = getElementValue(element, "pcseguidance");
-                    String genrenm = getElementValue(element, "genrenm");
-                    String poster = getElementValue(element, "poster");
-                    String prfstate = getElementValue(element, "prfstate");
-                    String relateurl = getElementValue(element, "relateurl");
-
-                    PerformanceType performanceType;
-                    if ("뮤지컬".equals(genrenm)) {
-                        performanceType = PerformanceType.MUSICAL;
-                    } else if ("연극".equals(genrenm)) {
-                        performanceType = PerformanceType.PLAY;
-                    } else {
-                        System.out.println("Skipping non-musical/play genre: " + genrenm);
-                        continue;
-                    }
-
-                    System.out.println("price: " + pcseguidance);
-                    // 가격 추출 로직 수정
-                    Set<Integer> priceSet = Pattern.compile("(\\d{1,3}(,\\d{3})*)원")
-                            .matcher(pcseguidance)
-                            .results()
-                            .map(matchResult -> matchResult.group(1).replaceAll(",", ""))
-                            .map(Integer::parseInt)
-                            .collect(Collectors.toSet()); // 중복 제거를 위한 Set 사용
-
-                    List<Integer> prices = priceSet.stream()
-                            .sorted() // 오름차순 정렬
-                            .toList();
-
-                    // collection 출력
-                    for(int price : prices){
-                        System.out.println(price + " ");
-                    }
-                    int lowestPrice = 0;
-                    int highestPrice = 0;
-
-                    if (!prices.isEmpty()) {
-                        lowestPrice = Collections.min(prices);
-                        highestPrice = Collections.max(prices);
-                    }
-                    System.out.println("lowest: " + lowestPrice + " / highest " + highestPrice);
-
-                    Optional<Performance> existingPerformance = performanceRepository.findByKopisPerfId(mt20id);
-                    if (existingPerformance.isPresent()) {
-                        Performance performance = existingPerformance.get();
-                        performance.setDuration(prfruntime);
-                        performance.setPrice(pcseguidance);
-                        performance.setLowestPrice(String.valueOf(lowestPrice));
-                        performance.setHighestPrice(String.valueOf(highestPrice));
-                        performance.setTicketingLink(relateurl);
-                        performanceRepository.save(performance);
-                        System.out.println("Updated Performance: " + performance);
-                    } else {
-                        Hall hall = hallRepository.findByKopisHallId(fcltynm)
-                                .orElseThrow(() -> new RuntimeException("Hall not found: " + fcltynm));
-
-                        Performance performance = Performance.builder()
-                                .kopisPerfId(mt20id)
-                                .title(prfnm)
-                                .performanceType(performanceType)
-                                .hall(hall)
-                                .startDate(prfpdfrom)
-                                .endDate(prfpdto)
-                                .poster(poster)
-                                .state(prfstate)
-                                .duration(prfruntime)
-                                .price(pcseguidance)
-                                .lowestPrice(String.valueOf(lowestPrice))
-                                .highestPrice(String.valueOf(highestPrice))
-                                .ticketingLink(relateurl)
-                                .build();
-                        performanceRepository.save(performance);
-                        System.out.println("Saved Performance: " + mt20id + " " + prfnm);
-                    }
-                }
+            // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
+            if (endDate.isBefore(today) || endDate.isEqual(today)) {
+                performance.setState("공연완료");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
-        } catch (Exception e) {
-            System.out.println("Error processing performance detail: " + e.getMessage());
-            e.printStackTrace();
         }
-    }
 
+    }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
     public void putPerfListEveryDay() {
@@ -288,6 +205,111 @@ public class KopisPerfService {
 
                 }
             }
+        }
+    }
+
+    public void putPerfDetail(String perfId) {
+        ResponseEntity<String> response = kopisPerfClient.getPerf(service, perfId, "Y");
+        String body = response.getBody();
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
+
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("db");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    String mt20id = getElementValue(element, "mt20id");
+                    String prfnm = getElementValue(element, "prfnm");
+                    String prfpdfrom = getElementValue(element, "prfpdfrom");
+                    String prfpdto = getElementValue(element, "prfpdto");
+                    String fcltynm = getElementValue(element, "fcltynm");
+                    String prfruntime = getElementValue(element, "prfruntime");
+                    String pcseguidance = getElementValue(element, "pcseguidance");
+                    String genrenm = getElementValue(element, "genrenm");
+                    String poster = getElementValue(element, "poster");
+                    String prfstate = getElementValue(element, "prfstate");
+                    String relateurl = getElementValue(element, "relateurl");
+
+                    PerformanceType performanceType;
+                    if ("뮤지컬".equals(genrenm)) {
+                        performanceType = PerformanceType.MUSICAL;
+                    } else if ("연극".equals(genrenm)) {
+                        performanceType = PerformanceType.PLAY;
+                    } else {
+                        System.out.println("Skipping non-musical/play genre: " + genrenm);
+                        continue;
+                    }
+
+                    System.out.println("price: " + pcseguidance);
+                    // 가격 추출 로직 수정
+                    Set<Integer> priceSet = Pattern.compile("(\\d{1,3}(,\\d{3})*)원")
+                            .matcher(pcseguidance)
+                            .results()
+                            .map(matchResult -> matchResult.group(1).replaceAll(",", ""))
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toSet()); // 중복 제거를 위한 Set 사용
+
+                    List<Integer> prices = priceSet.stream()
+                            .sorted() // 오름차순 정렬
+                            .toList();
+
+                    // collection 출력
+                    for(int price : prices){
+                        System.out.println(price + " ");
+                    }
+                    int lowestPrice = 0;
+                    int highestPrice = 0;
+
+                    if (!prices.isEmpty()) {
+                        lowestPrice = Collections.min(prices);
+                        highestPrice = Collections.max(prices);
+                    }
+                    System.out.println("lowest: " + lowestPrice + " / highest " + highestPrice);
+
+                    Optional<Performance> existingPerformance = performanceRepository.findByKopisPerfId(mt20id);
+                    if (existingPerformance.isPresent()) {
+                        Performance performance = existingPerformance.get();
+                        performance.setDuration(prfruntime);
+                        performance.setPrice(pcseguidance);
+                        performance.setLowestPrice(String.valueOf(lowestPrice));
+                        performance.setHighestPrice(String.valueOf(highestPrice));
+                        performance.setTicketingLink(relateurl);
+                        performanceRepository.save(performance);
+                        System.out.println("Updated Performance: " + performance);
+                    } else {
+                        Hall hall = hallRepository.findByKopisHallId(fcltynm)
+                                .orElseThrow(() -> new RuntimeException("Hall not found: " + fcltynm));
+
+                        Performance performance = Performance.builder()
+                                .kopisPerfId(mt20id)
+                                .title(prfnm)
+                                .performanceType(performanceType)
+                                .hall(hall)
+                                .startDate(prfpdfrom)
+                                .endDate(prfpdto)
+                                .poster(poster)
+                                .state(prfstate)
+                                .duration(prfruntime)
+                                .price(pcseguidance)
+                                .lowestPrice(String.valueOf(lowestPrice))
+                                .highestPrice(String.valueOf(highestPrice))
+                                .ticketingLink(relateurl)
+                                .build();
+                        performanceRepository.save(performance);
+                        System.out.println("Saved Performance: " + mt20id + " " + prfnm);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error processing performance detail: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

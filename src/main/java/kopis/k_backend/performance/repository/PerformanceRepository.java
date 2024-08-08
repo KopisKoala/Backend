@@ -13,4 +13,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     @Query("SELECT h.kopisPerfId FROM Performance h WHERE h.kopisPerfId IS NOT NULL")
     List<String> findAllKopisPerfIds();
 
+    List<Performance> findByState(String state);
+
 }
