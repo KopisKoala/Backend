@@ -27,6 +27,9 @@ public class Performance {
     @Column
     private String genere;
 
+    @Column
+    private String cast;
+
     @Column(unique = true)
     private String kopisPerfId;
 

@@ -48,7 +48,7 @@ public class PairService {
         return pair.getRatingAverage();
     }
 
-    @Scheduled(fixedRate = 600000, zone = "Asia/Seoul") // 10분 간격으로 실행
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 하루 간격으로 갱신
     public void updateTopHashtags() {
         logger.info("updatePairTopHashtags started");
 
