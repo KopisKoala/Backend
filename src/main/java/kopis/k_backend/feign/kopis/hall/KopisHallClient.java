@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface KopisHallClient {
     @GetMapping("/prfplc")
     ResponseEntity<String> getHalls(@RequestParam("service") String service,
-                                    @RequestParam("shprfnmfct") String shprfnmfct,
+                                    //@RequestParam("shprfnmfct") String shprfnmfct,
                                     @RequestParam("cpage") Integer cpage,
                                     @RequestParam("rows") Integer rows);
-
     @GetMapping("/prfplc/{hall-id}")
     ResponseEntity<String> getHall(@RequestParam("service") String service,
                                     @RequestParam("hall-id") String hall,

@@ -4,6 +4,7 @@ import kopis.k_backend.performance.domain.Hall;
 import kopis.k_backend.performance.repository.HallRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,6 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,7 +31,7 @@ public class KopisHallService {
         this.hallRepository = hallRepository;
         this.service = apiKey;
         this.cpage = 1;
-        this.rows = 1000;
+        this.rows = 10000;
     }
 
     public List<String> getAllHallId() {
@@ -114,9 +116,11 @@ public class KopisHallService {
         }
     }
 
-    public void putHallList(String hallName) {
+
+    @Scheduled(cron = "0 0 0 2 * *", zone = "Asia/Seoul") // 매달 1일 2시에 공연장 재탐색 -> 새로운 공연장 추가 + 기존 공연장 정보 수정
+    public void putHallList() {
         // Kopis api에 요청을 보내기 전에 apiKey를 쿼리로 설정
-        ResponseEntity<String> response = kopisHallClient.getHalls(service, hallName, cpage, rows);
+        ResponseEntity<String> response = kopisHallClient.getHalls(service, cpage, rows);
 
         // API Response로부터 body 뽑아내기
         String body = response.getBody();
@@ -145,7 +149,12 @@ public class KopisHallService {
 
                     Optional<Hall> existingHall = hallRepository.findByKopisHallId(hallIdElement);
                     if (existingHall.isPresent()) {
+
+                        if(Objects.equals(hallIdElement, "FC001176")) continue; // 한얼소극장 데이터가 이상함
+                        putHallDetail(hallIdElement); // 기존 공연장 내용 수정
+
                         System.out.println("Hall with kopisHallId " + hallIdElement + " already exists. Skipping.");
+
                     } else {
                         Hall newHall = Hall.builder()
                                 .hallName(hallNameElement)
@@ -155,12 +164,14 @@ public class KopisHallService {
                                 .streetAddress(streetAddress)
                                 .build();
                         hallRepository.save(newHall);
+
+                        if(Objects.equals(hallIdElement, "FC001176")) continue; // 한얼소극장 데이터가 이상함
+                        putHallDetail(hallIdElement); // 새로운 공연장 정보 추가
+
                         System.out.println("Saved Hall: " + newHall);
                     }
 
-                    System.out.println("hallName: " + hallNameElement);
-                    System.out.println("hallId: " + hallIdElement);
-                    System.out.println("district: " + sidonm + " " + gugunnm);
+                    System.out.println("hallName: " + hallNameElement + " / hallId: " + hallIdElement);
                 }
             }
         } catch (Exception e) {
