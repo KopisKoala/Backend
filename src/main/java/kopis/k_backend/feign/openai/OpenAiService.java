@@ -33,9 +33,9 @@ import java.util.Map;
 public class OpenAiService {
 
     private final OpenAiConfig openAiConfig;
-    private PerformanceRepository performanceRepository;
-    private ReviewRepository reviewRepository;
-    private PairRepository pairRepository;
+    private final PerformanceRepository performanceRepository;
+    private final ReviewRepository reviewRepository;
+    private final PairRepository pairRepository;
 
     @Value("${openai.url.prompt}")
     private String promptUrl;
@@ -66,8 +66,14 @@ public class OpenAiService {
     @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul")
     public void updatePerformanceReviewSummary() {
         List<Performance> performances = performanceRepository.findAll();
+
+        // 요약할 리뷰 수
+        int summaryCount = 3;
+
         for (Performance performance : performances) {
-            List<Review> reviews = reviewRepository.findReviewByPerformanceAndWay(performance, "like", PageRequest.of(0, 3)).toList();
+            if (performance.getReviewCount() < summaryCount) continue;
+
+            List<Review> reviews = reviewRepository.findReviewByPerformanceAndWay(performance, "like", PageRequest.of(0, summaryCount)).toList();
 
             StringBuilder reviewsContent = new StringBuilder();
 
@@ -75,7 +81,7 @@ public class OpenAiService {
                 reviewsContent.append(review.getContent()).append("\n");
             }
 
-            CompletionDto completionDto = new CompletionDto("gpt-3.5-turbo-instruct", reviewsContent.append("리뷰를 짧게 요약해줘").toString(), 0f, 16);
+            CompletionDto completionDto = new CompletionDto("gpt-3.5-turbo-instruct", reviewsContent.append("위 리뷰들을 합쳐 새로운 한 줄 리뷰를 추가 설명 없이 만들어 주세요.").toString(), 0f, 100);
             Map<String, Object> response = prompt(completionDto);
 
             String reviewSummary = "";
@@ -88,6 +94,7 @@ public class OpenAiService {
             }
 
             performance.updateReviewSummary(reviewSummary);
+            performanceRepository.save(performance);
         }
     }
 
@@ -95,16 +102,21 @@ public class OpenAiService {
     @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul")
     public void updatePairReviewSummary() {
         List<Pair> pairs = pairRepository.findAll();
+
+        // 요약할 리뷰 수
+        int summaryCount = 3;
+
         for (Pair pair : pairs) {
-            List<Review> reviews = reviewRepository.findReviewByPairAndWay(pair, "like", PageRequest.of(0, 3)).toList();
+            if (pair.getReviewCount() < summaryCount) continue;
+
+            List<Review> reviews = reviewRepository.findReviewByPairAndWay(pair, "like", PageRequest.of(0, summaryCount)).toList();
 
             StringBuilder reviewsContent = new StringBuilder();
-
             for (Review review : reviews) {
                 reviewsContent.append(review.getContent()).append("\n");
             }
 
-            CompletionDto completionDto = new CompletionDto("gpt-3.5-turbo-instruct", reviewsContent.append("리뷰를 짧게 요약해줘").toString(), 0f, 16);
+            CompletionDto completionDto = new CompletionDto("gpt-3.5-turbo-instruct", reviewsContent.append("위 리뷰들을 합쳐 새로운 한 줄 리뷰를 추가 설명 없이 만들어 주세요.").toString(), 0f, 100);
             Map<String, Object> response = prompt(completionDto);
 
             String reviewSummary = "";
@@ -117,6 +129,7 @@ public class OpenAiService {
             }
 
             pair.updateReviewSummary(reviewSummary);
+            pairRepository.save(pair);
         }
     }
 }

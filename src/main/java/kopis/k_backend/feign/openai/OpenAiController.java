@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
+import kopis.k_backend.user.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -30,6 +32,20 @@ public class OpenAiController {
 
         } catch (Exception e) {
             log.error("Error during GPT API", e);
+            throw e;
+        }
+    }
+
+    @Operation(summary = "Performance Review Summary Test", description = "각 공연별 Review Summary를 진행합니다.")
+    @GetMapping("/summary")
+    public ApiResponse<Boolean> updatePerformanceReviewSummaryTest(
+    ) throws IOException {
+        try {
+            openAiService.updatePerformanceReviewSummary();
+
+            return ApiResponse.onSuccess(SuccessCode.OPEN_AI_PERFORMANCE_REVIEW_SUMMARY, true);
+        } catch (Exception e) {
+            log.error("Error during review summary", e);
             throw e;
         }
     }

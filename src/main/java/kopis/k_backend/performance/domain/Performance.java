@@ -79,7 +79,7 @@ public class Performance {
     @Column(length = 7)
     private String hashtag3;
 
-    @Column(length = 30)
+    @Column
     private String reviewSummary;
 
     @OneToMany(mappedBy = "performance")
