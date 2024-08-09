@@ -39,6 +39,9 @@ public class Pair {
     @Column(length = 7)
     private String hashtag3;
 
+    @Column(length = 30)
+    private String reviewSummary;
+
     private Double ratingAverage = 0D;
 
     private Long reviewCount = 0L;
@@ -70,6 +73,10 @@ public class Pair {
         this.hashtag1 = !topHashtags.isEmpty() ? topHashtags.get(0) : null;
         this.hashtag2 = topHashtags.size() > 1 ? topHashtags.get(1) : null;
         this.hashtag3 = topHashtags.size() > 2 ? topHashtags.get(2) : null;
+    }
+
+    public void updateReviewSummary(String reviewSummary) {
+        this.reviewSummary = reviewSummary;
     }
 
 }

@@ -1,4 +1,4 @@
-package kopis.k_backend.openai;
+package kopis.k_backend.feign.openai;
 
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package kopis.k_backend.openai;
+package kopis.k_backend.feign.openai;
 
 import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,8 +7,6 @@ import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
