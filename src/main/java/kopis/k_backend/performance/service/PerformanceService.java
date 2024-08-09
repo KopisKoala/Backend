@@ -52,7 +52,7 @@ public class PerformanceService {
         return perf.getRatingAverage();
     }
 
-    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul") // 1시간 간격으로 실행
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 하루 간격으로 실행
     public void updateTopHashtags() {
         System.out.println("updatePerfTopHashtags started");
 
