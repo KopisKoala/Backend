@@ -47,14 +47,6 @@ kopis:
   key: ${KOPIS_KEY}
   api-url: http://www.kopis.or.kr/openApi/restful
 
-# feign timeout
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 3600000   # 1 hour
-        readTimeout: 3600000      # 1 hour
-
 ---
 
 # local profile
@@ -62,11 +54,21 @@ spring:
   config:
     activate:
       on-profile: local
+
   datasource:
     url: ${local.db.url}
     username: ${local.db.username}
     password: ${local.db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      minimum-idle: 20
+      maximum-pool-size: 100 # 스레드 풀 설정
+      idle-timeout: 3600000
+      validation-timeout: 500000
+      connection-timeout: 3600000 # tinmeout 설정
+      max-lifetime: 18000000
+
   sql:
     init:
       mode: never
@@ -109,7 +111,7 @@ spring:
         #        show_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: create
+          auto: update
         default_batch_fetch_size: 1000
 
 # application.yml
