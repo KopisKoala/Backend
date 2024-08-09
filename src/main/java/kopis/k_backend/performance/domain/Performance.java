@@ -82,6 +82,9 @@ public class Performance {
     @Column(length = 7)
     private String hashtag3;
 
+    @Column
+    private String reviewSummary;
+
     @OneToMany(mappedBy = "performance")
     private List<Pair> pairs = new ArrayList<>();
 
@@ -116,4 +119,9 @@ public class Performance {
         this.hashtag2 = topHashtags.size() > 1 ? topHashtags.get(1) : null;
         this.hashtag3 = topHashtags.size() > 2 ? topHashtags.get(2) : null;
     }
+
+    public void updateReviewSummary(String reviewSummary) {
+        this.reviewSummary = reviewSummary;
+    }
+
 }

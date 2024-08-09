@@ -82,7 +82,8 @@ public class PerformanceService {
         System.out.println("updatePerfTopHashtags finished");
     }
 
-    /*@PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
+    /*
+    @PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
     public void data() {
         System.out.println("Starting data initialization");
         try {
@@ -100,15 +101,16 @@ public class PerformanceService {
                     .title("데스노트")
                     .performanceType(PerformanceType.PLAY)
                     .hall(hall)
-                    .startDate(LocalDate.of(2023, 7, 1))
-                    .endDate(LocalDate.of(2023, 7, 31))
-                    .duration(160)
-                    .lowestPrice(10000)
-                    .highestPrice(150000)
+                    .startDate("20230731")
+                    .endDate("20230731")
+                    .duration("160")
+                    .lowestPrice("10000")
+                    .highestPrice("150000")
                     .poster("포스터.img")
                     .ratingAverage(0.0)
                     .reviewCount(0L)
                     .ticketingLink("http://example.com/tickets")
+                    .price("100000")
                     .build();
             performanceRepository.save(p1);
 
@@ -178,15 +180,16 @@ public class PerformanceService {
                     .title("시카고")
                     .performanceType(PerformanceType.PLAY)
                     .hall(hall)
-                    .startDate(LocalDate.of(2023, 7, 1))
-                    .endDate(LocalDate.of(2023, 7, 31))
-                    .duration(160)
-                    .lowestPrice(10000)
-                    .highestPrice(150000)
+                    .startDate("20230731")
+                    .endDate("20230731")
+                    .duration("160")
+                    .lowestPrice("100000")
+                    .highestPrice("150000")
                     .poster("포스터.img")
                     .ratingAverage(0.0)
                     .reviewCount(0L)
                     .ticketingLink("http://example.com/tickets")
+                    .price("100000")
                     .build();
             performanceRepository.save(p2);
 
@@ -254,5 +257,6 @@ public class PerformanceService {
             System.out.println("Error initializing data: " + e.getMessage());
             e.printStackTrace();
         }
-    }*/
+    }
+    */
 }
