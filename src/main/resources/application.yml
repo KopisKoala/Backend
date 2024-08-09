@@ -4,14 +4,19 @@ spring:
     active: local
 
   # Spring Cloud 호환성 검사기 비활성화
-  spring:
-    cloud:
-      compatibility-verifier: enabled=false
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
   # 용량 제한 늘리기
   servlet:
     multipart:
       max-file-size: 50MB
+      max-request-size: 100MB
+
+  sql:
+    init:
+      mode: never
 
 # 로그인 jwt
 jwt:
@@ -65,29 +70,21 @@ spring:
       minimum-idle: 20
       maximum-pool-size: 100 # 스레드 풀 설정
       idle-timeout: 3600000
-      validation-timeout: 500000
-      connection-timeout: 3600000 # tinmeout 설정
-      max-lifetime: 18000000
+      validation-timeout: 5000
+      connection-timeout: 30000 # tinmeout 설정
+      max-lifetime: 1800000
 
-  sql:
-    init:
-      mode: never
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         #        format_sql: true
         #        show_sql: true
-        use_sql_comments: true
+        #        use_sql_comments: true
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 50MB
-      max-request-size: 100MB
 ---
 
 # develop profile
@@ -95,28 +92,28 @@ spring:
   config:
     activate:
       on-profile: develop
+
   datasource:
     url: ${aws.db.url}
     username: ${aws.db.username}
     password: ${aws.db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  sql:
-    init:
-      mode: never
+
+    hikari:
+      minimum-idle: 20
+      maximum-pool-size: 100 # 스레드 풀 설정
+      idle-timeout: 3600000
+      validation-timeout: 5000
+      connection-timeout: 30000 # tinmeout 설정
+      max-lifetime: 1800000
+
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         #        format_sql: true
         #        show_sql: true
-        use_sql_comments: true
+        #        use_sql_comments: true
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-
-# application.yml
-logging:
-  level:
-    org:
-      springframework:
-        boot: DEBUG
