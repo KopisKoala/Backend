@@ -110,7 +110,7 @@ public class KopisPerfService {
         }
     }
 
-    public void putPerfListForAllGenresAndHalls() {
+    public void putPerfListForAllGenresAndHalls() { // test
         List<String> generes = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
@@ -243,6 +243,7 @@ public class KopisPerfService {
                     String mt20id = getElementValue(element, "mt20id");
                     String prfnm = getElementValue(element, "prfnm");
                     String prfpdfrom = getElementValue(element, "prfpdfrom");
+                    String prfcast = getElementValue(element, "prfcast");
                     String prfpdto = getElementValue(element, "prfpdto");
                     String fcltynm = getElementValue(element, "fcltynm");
                     String prfruntime = getElementValue(element, "prfruntime");
@@ -293,6 +294,7 @@ public class KopisPerfService {
                         Performance performance = existingPerformance.get();
                         performance.setDuration(prfruntime);
                         performance.setPrice(pcseguidance);
+                        performance.setCast(prfcast);
                         performance.setLowestPrice(String.valueOf(lowestPrice));
                         performance.setHighestPrice(String.valueOf(highestPrice));
                         performance.setTicketingLink(relateurl);
