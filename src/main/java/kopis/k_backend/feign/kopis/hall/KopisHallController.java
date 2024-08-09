@@ -41,40 +41,7 @@ public class KopisHallController {
     @GetMapping("/list")
     public ApiResponse<Boolean> putHallList() {
 
-        List<String> concertHalls = Arrays.asList(
-                "예술의전당",
-                "콘서트홀",
-                "아트센터",
-                "블루스퀘어",
-                "충무아트센터",
-                "백주년기념관",
-                "코엑스아티움",
-                "평화의전당",
-                "체육관",
-                "라이브홀",
-                "에스플렉스센터",
-                "올림픽홀",
-                "코엑스",
-                "실내체육관",
-                "아트센터",
-                "아트리움",
-                "문화예술의전당",
-                "아람누리",
-                "문화예술회관",
-                "오페라하우스",
-                "문화회관",
-                "시민회관",
-                "문화예술회관",
-                "세계문화엑스포공원",
-                "아트홀",
-                "문예회관"
-        );
-
-        int idx = 0;
-        while(idx < concertHalls.size()){
-            String hallName = concertHalls.get(idx++);
-            kopisHallService.putHallList(hallName);
-        }
+        kopisHallService.putHallList();
 
         return ApiResponse.onSuccess(SuccessCode.DB_HALL_LIST_SUCCESS, true);
 

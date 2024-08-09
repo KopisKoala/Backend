@@ -135,6 +135,13 @@ public class KopisPerfService {
                         }
                     });
                     futures.add(future);
+
+                    // 딜레이 추가
+                    try {
+                        Thread.sleep(100); // 100ms 딜레이
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
