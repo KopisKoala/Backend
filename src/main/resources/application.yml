@@ -24,6 +24,12 @@ jwt:
   accessExpirationTime: ${JWT_EXPIRATION}
   refreshExpirationTime: ${JWT_REFRESH_EXPIRATION}
 
+# Open Ai
+openai:
+  secret-key: ${OPENAI_SECRET_KEY}
+  url:
+    prompt: https://api.openai.com/v1/completions
+
 # s3
 cloud:
   aws:
@@ -115,5 +121,5 @@ spring:
         #        show_sql: true
         #        use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: create
         default_batch_fetch_size: 1000
