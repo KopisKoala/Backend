@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class KopisPerfService {
         this.rows = 5000;
 
         // 스레드 풀 사이즈를 명시적으로 제한 -> 한 번에 처리할 수 있는 작업의 수 제한하여 서버 폭주하는 것 방지
-        this.asyncExecutor = Executors.newFixedThreadPool(20);
+        this.asyncExecutor = Executors.newFixedThreadPool(40);
     }
 
     public List<String> getAllPerfId() {
@@ -61,7 +62,7 @@ public class KopisPerfService {
     }
 
     // 모든 공연 다 돌면서 state가 "공연중"인거 날짜보고 완료 날짜가 오늘 이전이었다면 "공연완료"로 업데이트
-    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 1시에 실행
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
     public void updatePerfStateEveryDay(){
 
         LocalDate today = LocalDate.now();
@@ -83,37 +84,56 @@ public class KopisPerfService {
 
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 1시에 실행
     public void putPerfListEveryDay() {
-        //putPerfListForAllGenresAndHalls();
-
-        // 당일에 새로 생긴 공연 넣기
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
+        List<String> genres = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
-        for (String genere : generes) {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (String genre : genres) {
             for (String hallId : hallIds) {
                 for (int n = 1; n <= 13; n++) {
                     String formattedNumber = String.format("%02d", n);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, cpage, rows, "Y");
-                    String body = response.getBody();
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                                try {
+                                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genre, hallId + "-" + formattedNumber, cpage, rows, "Y");
+                                    String body = response.getBody();
+                                    if (body != null) {
+                                        putPerfListLogic(body, hallId);
+                                    } else {
+                                        System.out.println("Received empty body for hall: " + hallId + ", genre: " + genre);
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Error processing performance detail for hall: " + hallId + ", genre: " + genre + ". Error: " + e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            }, asyncExecutor).orTimeout(3, TimeUnit.MINUTES) // 타임아웃 설정
+                            .exceptionally(ex -> {
+                                System.err.println("Failed to process hall: " + hallId + ", genre: " + genre + ". Timeout or other error: " + ex.getMessage());
+                                return null;
+                            });
 
+                    futures.add(future);
+
+                    // 딜레이 추가
                     try {
-                        assert body != null;
-                        putPerfListLogic(body, hallId);
-                    } catch (Exception e) {
-                        System.out.println("Error processing performance detail: " + e.getMessage());
-                        e.printStackTrace();
+                        Thread.sleep(100); // 100ms 딜레이
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
         }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
+
 
     public void putPerfListForAllGenresAndHalls(int hallNum) { // test
         List<String> genres = Arrays.asList("GGGA", "AAAA");
