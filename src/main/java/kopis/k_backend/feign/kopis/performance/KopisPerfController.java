@@ -26,10 +26,9 @@ public class KopisPerfController {
     })
     @GetMapping("/list")
     public ApiResponse<Boolean> putPerfs(
-            @RequestParam("hall-num") Integer hallNum,
-            @RequestParam("genre") String genre
+            @RequestParam("hall-num") Integer hallNum
     ) {
-        kopisPerfService.putPerfListForAllGenresAndHalls(genre, hallNum);
+        kopisPerfService.putPerfListForAllGenresAndHalls(hallNum);
         return ApiResponse.onSuccess(SuccessCode.DB_PERF_LIST_SUCCESS, true);
     }
 

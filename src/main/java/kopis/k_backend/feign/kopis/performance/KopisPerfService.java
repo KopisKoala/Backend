@@ -115,13 +115,13 @@ public class KopisPerfService {
         }
     }
 
-    public void putPerfListForAllGenresAndHalls(String genre, int hallNum) { // test
+    public void putPerfListForAllGenresAndHalls(int hallNum) { // test
         List<String> genres = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        //for (String genre : genres) {
+        for (String genre : genres) {
             for (String hallId : hallIds) {
                 //for (int n = 1; n <= 13; n++) { // 01~13
                     String formattedNumber = String.format("%02d", hallNum);
@@ -149,7 +149,7 @@ public class KopisPerfService {
                     }
                 //}
             }
-        //}
+        }
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
