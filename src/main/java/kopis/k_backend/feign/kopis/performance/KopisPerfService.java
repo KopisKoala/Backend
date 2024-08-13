@@ -74,7 +74,7 @@ public class KopisPerfService {
             LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
-            if (endDate.isBefore(today) || endDate.isEqual(today)) {
+            if (endDate.isBefore(today)) {
                 performance.setState("공연완료");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
