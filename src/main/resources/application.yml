@@ -58,6 +58,10 @@ kopis:
   key: ${KOPIS_KEY}
   api-url: http://www.kopis.or.kr/openApi/restful
 
+logging:
+  level:
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: TRACE
+
 ---
 
 # local profile
@@ -76,9 +80,9 @@ spring:
       minimum-idle: 20 # 최소 유지할 연결의 수
       maximum-pool-size: 50 # 최대 풀 크기
       idle-timeout: 600 # 10분. 사용되지 않는 연결이 유지될 최대 시간
-      validation-timeout: 1000 # 1초. 연결 유효성 검사를 위한 타임아웃
-      connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
-      max-lifetime: 3600 # 1시간. 연결의 최대 수명
+      validation-timeout: 5000 # 5초. 연결 유효성 검사를 위한 타임아웃
+      connection-timeout: 30000 # 30초. 연결을 시도할 때 최대 기다릴 시간
+      max-lifetime: 5400 # 1시간 30분. 연결의 최대 수명
 
   jpa:
     properties:
@@ -109,9 +113,9 @@ spring:
       minimum-idle: 20 # 최소 유지할 연결의 수
       maximum-pool-size: 50 # 최대 풀 크기
       idle-timeout: 600 # 10분. 사용되지 않는 연결이 유지될 최대 시간
-      validation-timeout: 1000 # 1초. 연결 유효성 검사를 위한 타임아웃
-      connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
-      max-lifetime: 3600 # 1시간. 연결의 최대 수명
+      validation-timeout: 5000 # 5초. 연결 유효성 검사를 위한 타임아웃
+      connection-timeout: 30000 # 30초. 연결을 시도할 때 최대 기다릴 시간
+      max-lifetime: 5400 # 1시간 30분. 연결의 최대 수명
 
   jpa:
     properties:
