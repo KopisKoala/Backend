@@ -73,12 +73,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
-      minimum-idle: 20
-      maximum-pool-size: 100 # 스레드 풀 설정
-      idle-timeout: 3600000
-      validation-timeout: 5000
-      connection-timeout: 30000 # tinmeout 설정
-      max-lifetime: 1800000
+      minimum-idle: 20 # 최소 유지할 연결의 수
+      maximum-pool-size: 50 # 최대 풀 크기
+      idle-timeout: 600 # 10분. 사용되지 않는 연결이 유지될 최대 시간
+      validation-timeout: 1000 # 1초. 연결 유효성 검사를 위한 타임아웃
+      connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
+      max-lifetime: 3600 # 1시간. 연결의 최대 수명
 
   jpa:
     properties:
@@ -106,12 +106,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
-      minimum-idle: 20
-      maximum-pool-size: 100 # 스레드 풀 설정
-      idle-timeout: 3600000
-      validation-timeout: 5000
-      connection-timeout: 30000 # tinmeout 설정
-      max-lifetime: 1800000
+      minimum-idle: 20 # 최소 유지할 연결의 수
+      maximum-pool-size: 50 # 최대 풀 크기
+      idle-timeout: 600 # 10분. 사용되지 않는 연결이 유지될 최대 시간
+      validation-timeout: 1000 # 1초. 연결 유효성 검사를 위한 타임아웃
+      connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
+      max-lifetime: 3600 # 1시간. 연결의 최대 수명
 
   jpa:
     properties:
