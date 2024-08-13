@@ -66,7 +66,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	// JSONObject
-	implementation 'org.json:json:20230227'
+//	implementation 'org.json:json:20230227'
 
 	// xml
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
