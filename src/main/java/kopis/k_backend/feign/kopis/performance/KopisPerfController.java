@@ -24,9 +24,12 @@ public class KopisPerfController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_PERF_2013", description = "공연이 DB에 저장되었습니다."),
     })
-    @GetMapping("/list/{hall-num}")
-    public ApiResponse<Boolean> putPerfs(@RequestParam("hall-num") Integer hallNum) {
-        kopisPerfService.putPerfListForAllGenresAndHalls(hallNum);
+    @GetMapping("/list")
+    public ApiResponse<Boolean> putPerfs(
+            @RequestParam("hall-num") Integer hallNum,
+            @RequestParam("genre") String genre
+    ) {
+        kopisPerfService.putPerfListForAllGenresAndHalls(genre, hallNum);
         return ApiResponse.onSuccess(SuccessCode.DB_PERF_LIST_SUCCESS, true);
     }
 

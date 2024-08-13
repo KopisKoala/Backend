@@ -115,13 +115,13 @@ public class KopisPerfService {
         }
     }
 
-    public void putPerfListForAllGenresAndHalls(int hallNum) { // test
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
+    public void putPerfListForAllGenresAndHalls(String genre, int hallNum) { // test
+        List<String> genres = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        for (String genere : generes) {
+        //for (String genre : genres) {
             for (String hallId : hallIds) {
                 //for (int n = 1; n <= 13; n++) { // 01~13
                     String formattedNumber = String.format("%02d", hallNum);
@@ -129,7 +129,7 @@ public class KopisPerfService {
                     // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 
-                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
                         String body = response.getBody();
                         try {
                             assert body != null;
@@ -149,7 +149,7 @@ public class KopisPerfService {
                     }
                 //}
             }
-        }
+        //}
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
