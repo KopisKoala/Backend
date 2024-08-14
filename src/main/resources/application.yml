@@ -58,10 +58,6 @@ kopis:
   key: ${KOPIS_KEY}
   api-url: http://www.kopis.or.kr/openApi/restful
 
-logging:
-  level:
-    org.springframework.web.servlet.handler.HandlerMappingIntrospector: TRACE
-
 ---
 
 # local profile
