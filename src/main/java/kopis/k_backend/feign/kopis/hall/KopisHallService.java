@@ -78,15 +78,7 @@ public class KopisHallService {
                     Optional<Hall> existingHall = hallRepository.findByKopisHallId(mt10id);
                     if (existingHall.isPresent()) {
                         Hall hall = existingHall.get();
-                        hall.setStreetAddress(streetAddress);
-                        hall.setRestaurant(restaurant);
-                        hall.setCafe(cafe);
-                        hall.setStore(store);
-                        hall.setNolibang(nolibang);
-                        hall.setSuyu(suyu);
-                        hall.setParkinglot(parkinglot);
-                        hall.setTelno(telno);
-                        hall.setRelateurl(relateurl);
+                        hall.updateExistingHall(streetAddress, restaurant, cafe, store, nolibang, suyu, parkinglot, telno, relateurl);
                         hallRepository.save(hall);
                         System.out.println("Updated Hall: " + hall);
                     } else {
