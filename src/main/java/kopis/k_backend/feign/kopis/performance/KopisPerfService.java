@@ -69,6 +69,11 @@ public class KopisPerfService {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
+        String jobId = today.format(formatter);
+        String jobType = "PERFORMANCE_STATE";
+        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        jobRepository.save(jobEntity);
+
         // 공연 상태가 "공연중"인 모든 공연들을 찾기
         List<Performance> ongoingPerformances = performanceRepository.findByState("공연중");
 
@@ -82,7 +87,7 @@ public class KopisPerfService {
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
         }
-
+        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
     }
 
     private CompletableFuture<Void> executeWithRetry(int attempt, String genre, String hallId, String formattedNumber, Integer formattedDate) {
