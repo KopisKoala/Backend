@@ -82,7 +82,7 @@ public class KopisPerfService {
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
             if (endDate.isBefore(today)) {
-                performance.setState("공연완료");
+                performance.updateState("공연완료");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
@@ -348,12 +348,7 @@ public class KopisPerfService {
                     Optional<Performance> existingPerformance = performanceRepository.findByKopisPerfId(mt20id);
                     if (existingPerformance.isPresent()) {
                         Performance performance = existingPerformance.get();
-                        performance.setDuration(prfruntime);
-                        performance.setPrice(pcseguidance);
-                        performance.setCast(prfcast);
-                        performance.setLowestPrice(String.valueOf(lowestPrice));
-                        performance.setHighestPrice(String.valueOf(highestPrice));
-                        performance.setTicketingLink(relateurl);
+                        performance.updateExistingPerformance(prfruntime, pcseguidance, prfcast, String.valueOf(lowestPrice), String.valueOf(highestPrice), relateurl);
                         performanceRepository.save(performance);
                         System.out.println("Updated Performance: " + performance);
                     } else {
