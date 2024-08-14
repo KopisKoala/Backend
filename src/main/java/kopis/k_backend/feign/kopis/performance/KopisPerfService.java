@@ -116,7 +116,7 @@ public class KopisPerfService {
     public void putPerfListEveryDay() {
         LocalDate today = LocalDate.now();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
         String jobId = today.format(formatter);
