@@ -55,7 +55,7 @@ public class KopisPerfService {
         this.rows = 5000;
 
         // 스레드 풀 사이즈를 명시적으로 제한 -> 한 번에 처리할 수 있는 작업의 수 제한하여 서버 폭주하는 것 방지
-        this.asyncExecutor = Executors.newFixedThreadPool(40);
+        this.asyncExecutor = Executors.newFixedThreadPool(20);
     }
 
     public List<String> getAllPerfId() {
@@ -86,7 +86,7 @@ public class KopisPerfService {
     }
 
     private CompletableFuture<Void> executeWithRetry(int attempt, String genre, String hallId, String formattedNumber, Integer formattedDate) {
-        return CompletableFuture.runAsync(() -> {
+        return CompletableFuture.runAsync(() -> { // 각 공연장에 대한 작업을 비동기적으로 실행 => 모든 공연장에 대해 비동기 처리하여 동시에 여러 작업 처리할 수 있도록 함
             try {
                 ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genre, hallId + "-" + formattedNumber, cpage, rows, "Y");
                 String body = response.getBody();
@@ -119,7 +119,7 @@ public class KopisPerfService {
         Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
-        CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> { // 전체 작업을 별도의 비동기 스레드에서 실행하도록 함
             List<String> genres = Arrays.asList("GGGA", "AAAA");
             List<String> hallIds = kopisHallService.getAllHallId();
 
