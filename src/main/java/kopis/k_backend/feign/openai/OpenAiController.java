@@ -28,7 +28,7 @@ public class OpenAiController {
     ) throws IOException {
         try {
             Map<String, Object> result = openAiService.prompt(completionDto);
-            return ApiResponse.onSuccess(SuccessCode.OPEN_AI_API_SUCCESSS, result);
+            return ApiResponse.onSuccess(SuccessCode.OPEN_AI_API_SUCCESS, result);
 
         } catch (Exception e) {
             log.error("Error during GPT API", e);

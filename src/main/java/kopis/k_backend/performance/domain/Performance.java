@@ -25,7 +25,7 @@ public class Performance {
     private String title;
 
     @Column
-    private String genere;
+    private String genre;
 
     @Column
     private String cast;
