@@ -75,10 +75,10 @@ spring:
     hikari:
       minimum-idle: 20 # 최소 유지할 연결의 수
       maximum-pool-size: 50 # 최대 풀 크기
-      idle-timeout: 60 # 1분. 사용되지 않는 연결이 유지될 최대 시간
+      idle-timeout: 60000 # 1분. 사용되지 않는 연결이 유지될 최대 시간
       validation-timeout: 5000 # 5초. 연결 유효성 검사를 위한 타임아웃
       connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
-      max-lifetime: 5400 # 1시간 30분. 연결의 최대 수명
+      max-lifetime: 5400000 # 1시간 30분. 연결의 최대 수명
 
   jpa:
     properties:
@@ -108,10 +108,10 @@ spring:
     hikari:
       minimum-idle: 20 # 최소 유지할 연결의 수
       maximum-pool-size: 50 # 최대 풀 크기
-      idle-timeout: 60 # 1분. 사용되지 않는 연결이 유지될 최대 시간
+      idle-timeout: 60000 # 1분. 사용되지 않는 연결이 유지될 최대 시간
       validation-timeout: 5000 # 5초. 연결 유효성 검사를 위한 타임아웃
       connection-timeout: 10000 # 10초. 연결을 시도할 때 최대 기다릴 시간
-      max-lifetime: 5400 # 1시간 30분. 연결의 최대 수명
+      max-lifetime: 5400000 # 1시간 30분. 연결의 최대 수명
 
   jpa:
     properties:
