@@ -8,6 +8,7 @@ import kopis.k_backend.global.api_payload.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,8 +25,10 @@ public class KopisPerfController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_PERF_2013", description = "공연이 DB에 저장되었습니다."),
     })
     @GetMapping("/list")
-    public ApiResponse<Boolean> putPerfs() {
-        kopisPerfService.putPerfListForAllGenresAndHalls();
+    public ApiResponse<Boolean> putPerfs(
+            @RequestParam("hall-num") Integer hallNum
+    ) {
+        kopisPerfService.putPerfListForAllGenresAndHalls(hallNum);
         return ApiResponse.onSuccess(SuccessCode.DB_PERF_LIST_SUCCESS, true);
     }
 

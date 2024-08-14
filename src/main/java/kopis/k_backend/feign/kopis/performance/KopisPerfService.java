@@ -24,12 +24,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class KopisPerfService {
-
+    private final Executor asyncExecutor;
     private final KopisPerfClient kopisPerfClient;
     private final PerformanceRepository performanceRepository;
     private final HallRepository hallRepository;
@@ -49,6 +51,9 @@ public class KopisPerfService {
         this.service = apiKey;
         this.cpage = 1;
         this.rows = 5000;
+
+        // 스레드 풀 사이즈를 명시적으로 제한 -> 한 번에 처리할 수 있는 작업의 수 제한하여 서버 폭주하는 것 방지
+        this.asyncExecutor = Executors.newFixedThreadPool(20);
     }
 
     public List<String> getAllPerfId() {
@@ -95,7 +100,7 @@ public class KopisPerfService {
                 for (int n = 1; n <= 13; n++) {
                     String formattedNumber = String.format("%02d", n);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, cpage, rows, "Y");
                     String body = response.getBody();
 
                     try {
@@ -110,21 +115,21 @@ public class KopisPerfService {
         }
     }
 
-    public void putPerfListForAllGenresAndHalls() { // test
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
+    public void putPerfListForAllGenresAndHalls(int hallNum) { // test
+        List<String> genres = Arrays.asList("GGGA", "AAAA");
         List<String> hallIds = kopisHallService.getAllHallId();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        for (String genere : generes) {
+        for (String genre : genres) {
             for (String hallId : hallIds) {
-                for (int n = 1; n <= 13; n++) {
-                    String formattedNumber = String.format("%02d", n);
+                //for (int n = 1; n <= 13; n++) { // 01~13
+                    String formattedNumber = String.format("%02d", hallNum);
 
                     // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 
-                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240101, 99999999, genere, hallId + "-" + formattedNumber, 1, 10, "Y");
+                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
                         String body = response.getBody();
                         try {
                             assert body != null;
@@ -142,7 +147,7 @@ public class KopisPerfService {
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
-                }
+                //}
             }
         }
 

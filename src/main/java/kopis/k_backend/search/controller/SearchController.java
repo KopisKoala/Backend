@@ -30,7 +30,7 @@ public class SearchController {
     private final UserService userService;
     private final SearchService searchService;
 
-    @Operation(summary = "홈 화면 검색 결과 조회", description = "검색어가 포함된 배우와 공연 목록을 조회하는 메서드입니다.")
+    @Operation(summary = "홈 화면 검색 결과 조회", description = "검색어가 포함된 배우와 공연 목록을 조회하는 메서드입니다. (page: 0부터 시작, size: 한 페이지 크기, sort: asc/desc")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_2001", description = "홈 화면 검색 결과 반환 완료했습니다.")
     })
@@ -40,7 +40,7 @@ public class SearchController {
             @PageableDefault final Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        // final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
         final SearchResDto searchResDto = searchService.getSearchResponseDto(query, pageable);
 
         return ApiResponse.onSuccess(SuccessCode.SEARCH_HOME_SUCCESS, searchResDto);
