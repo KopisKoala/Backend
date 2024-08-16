@@ -37,7 +37,7 @@ public class ScrapPlayDbService {
     @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
     private void scrapeActorsEveryDay(){
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "SCRAPE_PLAYDB_ACTORS";

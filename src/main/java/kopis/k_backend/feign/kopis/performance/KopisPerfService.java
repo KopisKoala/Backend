@@ -65,7 +65,7 @@ public class KopisPerfService {
 
     public void updatePerfState(){
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "PERFORMANCE_STATE";
@@ -97,7 +97,7 @@ public class KopisPerfService {
         LocalDate today = LocalDate.now();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
         String jobId = today.format(formatter_2);
