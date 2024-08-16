@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "kopisPerfClient", url = "${kopis.api-url}")
+@FeignClient(name = "KopisPopularClient", url = "${kopis.api-url}")
 
 public interface KopisPopularClient {
     @GetMapping("/prfstsPrfBy")
