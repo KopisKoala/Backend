@@ -212,8 +212,8 @@ public class ScrapPlayDbService {
         List<Performance> performances = performanceRepository.findAll();
 
         for (Performance performance : performances) {
-            // cast 컬럼 값이 "playDB"가 아닌 경우 id를 리스트에 추가한다.
-            if (!"PLAYDB".equals(performance.getCast())) {
+            // cast 컬럼 값이 "playDB" 혹은 "no cast in playdb"가 아닌 경우 id를 리스트에 추가한다.
+            if (!"PLAYDB".equals(performance.getCast()) || !"no cast in playdb".equals(performance.getCast())) {
                 performanceIds.add(performance.getId());
             }
         }
