@@ -34,10 +34,9 @@ public enum SuccessCode implements BaseCode {
 
     // DB
     DB_HALL_LIST_SUCCESS(HttpStatus.OK, "DB_HALL_2011", "공연장 리스트를 DB에 넣었습니다."),
-    DB_HALL_DETAIL_SUCCESS(HttpStatus.OK, "DB_HALL_2012", "공연장 정보를 DB에 넣었습니다."),
 
-    DB_PERF_LIST_SUCCESS(HttpStatus.OK, "DB_PERF_2013", "공연 리스트를 DB에 넣었습니다."),
-    DB_PERF_DETAIL_SUCCESS(HttpStatus.OK, "DB_PERF_2014", "공연 정보를 DB에 넣었습니다."),
+    DB_PERF_STATE_UPDATE_SUCCESS(HttpStatus.OK, "DB_PERF_2013", "공연 상태를 업데이트하는 api입니다."),
+    DB_PERF_LIST_SUCCESS(HttpStatus.OK, "DB_PERF_2014", "공연 리스트를 DB에 넣었습니다."),
 
     // Scrap
     SCRAP_PERF_PUT_ACTOR_SUCCESS(HttpStatus.OK, "SCRAP_PERF_2011", "PLAYDB의 공연 배우 정보를 DB에 넣었습니다."),
