@@ -6,6 +6,7 @@ import kopis.k_backend.performance.domain.PerformanceActor;
 import kopis.k_backend.performance.repository.ActorRepository;
 import kopis.k_backend.performance.repository.PerformanceActorRepository;
 import kopis.k_backend.performance.repository.PerformanceRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -28,7 +30,7 @@ public class ScrapPlayDbService {
     private final PerformanceRepository performanceRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-
+    // controller에서 호출
     public void scrapeAndSaveActors(Long performanceId) {
 
         Performance performance = performanceRepository.findById(performanceId)
@@ -94,6 +96,7 @@ public class ScrapPlayDbService {
                 String hall = venueElement.text().trim();
                 System.out.println("Hall: " + hall);
 
+                assert endDateElement != null;
                 String endDateText = endDateElement.text().split("~")[1].trim(); // 종료 날짜만 추출
                 LocalDate endDate = LocalDate.parse(endDateText, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
 
@@ -138,11 +141,12 @@ public class ScrapPlayDbService {
         String castUrl = "http://m.playdb.co.kr/Play/CAST/" + performanceId;
         String response = restTemplate.getForObject(castUrl, String.class);
 
+        assert response != null;
         Document doc = Jsoup.parse(response);
         List<ActorAndRole> actorsAndRoles = new ArrayList<>();
 
         for (Element roleElement : doc.select(".goods_cast_detail > li")) {
-            String role = roleElement.select("p").first().text();
+            String role = Objects.requireNonNull(roleElement.select("p").first()).text();
             if(role.endsWith("역")) role = role.substring(0, role.length() - 1);
             System.out.println("role: " + role);
 
@@ -219,6 +223,7 @@ public class ScrapPlayDbService {
 
 
     // 내부 클래스 정의: Actor와 배역 이름을 함께 저장하기 위한 클래스
+    @Getter
     private static class ActorAndRole {
         private final String actorName;
         private final String role;
@@ -230,16 +235,5 @@ public class ScrapPlayDbService {
             this.actorProfile = actorProfile;
         }
 
-        public String getActorName() {
-            return actorName;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public String getActorProfile() {
-            return actorProfile;
-        }
     }
 }
