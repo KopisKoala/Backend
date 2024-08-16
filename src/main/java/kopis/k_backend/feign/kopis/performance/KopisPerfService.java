@@ -23,6 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
@@ -64,12 +66,12 @@ public class KopisPerfService {
     }
 
     public void updatePerfState(){
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "PERFORMANCE_STATE";
-        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
         // 공연 상태가 "공연중"인 모든 공연들을 찾기
@@ -79,13 +81,16 @@ public class KopisPerfService {
             LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
-            if (endDate.isBefore(today)) {
+            if (endDate.isBefore(ChronoLocalDate.from(today))) {
                 performance.updateState("공연완료");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
         }
-        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobRepository.save(jobEntity); // 완료
     }
 
     @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 1시에 실행
@@ -95,14 +100,15 @@ public class KopisPerfService {
 
     public void putPerfList() {
         LocalDate today = LocalDate.now();
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
-        String jobId = today.format(formatter_2);
+        LocalDateTime today_2 = LocalDateTime.now();
+        DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        String jobId = today_2.format(formatter_2);
+
         String jobType = "PERFORMANCE_SYNC";
-        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
         CompletableFuture.runAsync(() -> { // 전체 작업을 별도의 비동기 스레드에서 실행하도록 함
@@ -137,9 +143,18 @@ public class KopisPerfService {
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-            jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+            jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+            jobRepository.save(jobEntity); // 완료
+
         }, asyncExecutor).exceptionally(ex -> {
-            jobEntity.setStatus("FAILED"); jobRepository.save(jobEntity); // 실패
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+            jobEntity.setStatus("FAILED"); jobEntity.setEnd(now.format(now_formatter));
+            jobRepository.save(jobEntity); // 실패
+
             System.err.println("Scheduled job failed. Error: " + ex.getMessage());
             return null;
         });

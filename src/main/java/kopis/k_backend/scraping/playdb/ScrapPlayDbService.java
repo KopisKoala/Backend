@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,14 @@ public class ScrapPlayDbService {
     private final JobRepository jobRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
+    @Scheduled(cron = "0 53 15 * * *", zone = "Asia/Seoul") // 매일 아침 7시
     private void scrapeActorsEveryDay(){
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "SCRAPE_PLAYDB_ACTORS";
-        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
         List<Long> performanceIds = findPerformancesWithNonPlayDBCast();
@@ -50,7 +51,10 @@ public class ScrapPlayDbService {
             scrapeAndSaveActors(id);
         }
 
-        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobRepository.save(jobEntity); // 완료
     }
 
     // controller에서 호출
@@ -59,8 +63,18 @@ public class ScrapPlayDbService {
         Performance performance = performanceRepository.findByIdWithHall(performanceId)
                 .orElseThrow(() -> new RuntimeException("Performance not found"));
 
-        String title = performance.getTitle(); System.out.println("title: " + title);
-        List<String> performanceLinks = searchPerformances(title);
+        String originalTitle = performance.getTitle();
+        System.out.println("Original title: " + originalTitle);
+
+        // 다양한 변형된 제목 생성
+        List<String> titlesToSearch = generateTitleVariations(originalTitle);
+        System.out.println("Titles to search: " + titlesToSearch);
+
+        List<String> performanceLinks = new ArrayList<>();
+        for (String title : titlesToSearch) {
+            List<String> links = searchPerformances(title); // 각 변형된 제목으로 검색
+            performanceLinks.addAll(links); // 결과를 전체 리스트에 추가
+        }
 
         String hallName = performance.getHall().getHallName(); System.out.println("hallName: " + hallName);
         Optional<String> matchingPerformanceLink = findMatchingPerformance(performanceLinks, hallName);
@@ -77,6 +91,31 @@ public class ScrapPlayDbService {
             performance.updateCast("no performance in playdb");
             performanceRepository.save(performance);
         }
+    }
+
+    private List<String> generateTitleVariations(String originalTitle) {
+        List<String> titles = new ArrayList<>();
+        titles.add(originalTitle);
+
+        // [] 제거
+        String titleWithoutBrackets = originalTitle.replaceAll("\\[.*?\\]", "").trim();
+        if (!titleWithoutBrackets.equals(originalTitle)) {
+            titles.add(titleWithoutBrackets);
+        }
+
+        // () 제거
+        String titleWithoutParentheses = originalTitle.replaceAll("\\(.*?\\)", "").trim();
+        if (!titleWithoutParentheses.equals(originalTitle)) {
+            titles.add(titleWithoutParentheses);
+        }
+
+        // []와 () 모두 제거
+        String titleWithoutBracketsAndParentheses = titleWithoutBrackets.replaceAll("\\(.*?\\)", "").trim();
+        if (!titleWithoutBracketsAndParentheses.equals(originalTitle) && !titles.contains(titleWithoutBracketsAndParentheses)) {
+            titles.add(titleWithoutBracketsAndParentheses);
+        }
+
+        return titles;
     }
 
     // 공연 검색

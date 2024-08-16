@@ -11,27 +11,32 @@ import lombok.Getter;
 @Getter
 @Table(name = "job")
 public class Job {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  // 고유 식별자
 
-    private String jobId;
+    private String start;
+    private String end;
     private String status;
-    private String jobType; // 작업 유형
+    private String type; // 작업 유형
+
 
     // 기본 생성자
     public Job() {
     }
 
     // 생성자
-    public Job(String jobId, String status, String jobType) {
-        this.jobId = jobId;
+    public Job(String start, String end, String status, String type) {
+        this.start = start;
+        this.end = end;
         this.status = status;
-        this.jobType = jobType;
+        this.type = type;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public void setEnd(String end) {
+        this.end = end;
     }
 }

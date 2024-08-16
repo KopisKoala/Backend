@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -47,12 +48,12 @@ public class KopisHallService {
 
     @Scheduled(cron = "0 0 23 1 * ?", zone = "Asia/Seoul") // 매달 1일 23시에 공연장 재탐색 -> 새로운 공연장 추가 + 기존 공연장 정보 수정
     public void putHallList() {
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "HALL_SYNC";
-        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
         // Kopis api에 요청을 보내기 전에 apiKey를 쿼리로 설정
@@ -115,7 +116,11 @@ public class KopisHallService {
             e.printStackTrace();
         }
 
-        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobRepository.save(jobEntity); // 완료
     }
 
     private String getElementValue(Element parent, String tagName) {
