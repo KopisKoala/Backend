@@ -1,6 +1,8 @@
 package kopis.k_backend.feign.kopis.performance;
 
 import kopis.k_backend.feign.kopis.hall.KopisHallService;
+import kopis.k_backend.job.Job;
+import kopis.k_backend.job.JobRepository;
 import kopis.k_backend.performance.domain.Hall;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.domain.PerformanceType;
@@ -23,9 +25,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,7 @@ public class KopisPerfService {
     private final PerformanceRepository performanceRepository;
     private final HallRepository hallRepository;
     private final KopisHallService kopisHallService;
+    private final JobRepository jobRepository;
 
     private final String service;
     private final Integer cpage;
@@ -43,11 +44,12 @@ public class KopisPerfService {
 
     public KopisPerfService(KopisPerfClient kopisPerfClient, PerformanceRepository performanceRepository,
                             HallRepository hallRepository, KopisHallService kopisHallService,
-                            @Value("${kopis.key}") String apiKey) {
+                            JobRepository jobRepository, @Value("${kopis.key}") String apiKey) {
         this.kopisPerfClient = kopisPerfClient;
         this.performanceRepository = performanceRepository;
         this.hallRepository = hallRepository;
         this.kopisHallService = kopisHallService;
+        this.jobRepository = jobRepository;
         this.service = apiKey;
         this.cpage = 1;
         this.rows = 5000;
@@ -61,11 +63,16 @@ public class KopisPerfService {
     }
 
     // 모든 공연 다 돌면서 state가 "공연중"인거 날짜보고 완료 날짜가 오늘 이전이었다면 "공연완료"로 업데이트
-    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 1시에 실행
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
     public void updatePerfStateEveryDay(){
 
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        String jobId = today.format(formatter);
+        String jobType = "PERFORMANCE_STATE";
+        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        jobRepository.save(jobEntity);
 
         // 공연 상태가 "공연중"인 모든 공연들을 찾기
         List<Performance> ongoingPerformances = performanceRepository.findByState("공연중");
@@ -74,46 +81,89 @@ public class KopisPerfService {
             LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
-            if (endDate.isBefore(today) || endDate.isEqual(today)) {
+            if (endDate.isBefore(today)) {
                 performance.setState("공연완료");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
         }
-
+        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
+    private CompletableFuture<Void> executeWithRetry(int attempt, String genre, String hallId, String formattedNumber, Integer formattedDate) {
+        return CompletableFuture.runAsync(() -> { // 각 공연장에 대한 작업을 비동기적으로 실행 => 모든 공연장에 대해 비동기 처리하여 동시에 여러 작업 처리할 수 있도록 함
+            try {
+                ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genre, hallId + "-" + formattedNumber, cpage, rows, "Y");
+                String body = response.getBody();
+                if (body != null) {
+                    putPerfListLogic(body, hallId);
+                } else {
+                    System.out.println("Received empty body for hall: " + hallId + ", genre: " + genre);
+                }
+            } catch (Exception e) {
+                if (attempt < 3) { // 최대 3번까지 재시도
+                    System.out.println("Retrying... Attempt: " + (attempt + 1));
+                    executeWithRetry(attempt + 1, genre, hallId, formattedNumber, formattedDate).join(); // 재귀적으로 호출하여 재시도
+                } else {
+                    System.out.println("Max retry attempts reached for hall: " + hallId + ", genre: " + genre);
+                    e.printStackTrace();
+                }
+            }
+        }, asyncExecutor);
+    }
+
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 1시에 실행
     public void putPerfListEveryDay() {
-        //putPerfListForAllGenresAndHalls();
-
-        // 당일에 새로 생긴 공연 넣기
-        List<String> generes = Arrays.asList("GGGA", "AAAA");
-        List<String> hallIds = kopisHallService.getAllHallId();
-
         LocalDate today = LocalDate.now();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
-        for (String genere : generes) {
-            for (String hallId : hallIds) {
-                for (int n = 1; n <= 13; n++) {
-                    String formattedNumber = String.format("%02d", n);
+        String jobId = today.format(formatter);
+        String jobType = "PERFORMANCE_SYNC";
+        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        jobRepository.save(jobEntity);
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, formattedDate, 99999999, genere, hallId + "-" + formattedNumber, cpage, rows, "Y");
-                    String body = response.getBody();
+        CompletableFuture.runAsync(() -> { // 전체 작업을 별도의 비동기 스레드에서 실행하도록 함
+            List<String> genres = Arrays.asList("GGGA", "AAAA");
+            List<String> hallIds = kopisHallService.getAllHallId();
 
-                    try {
-                        assert body != null;
-                        putPerfListLogic(body, hallId);
-                    } catch (Exception e) {
-                        System.out.println("Error processing performance detail: " + e.getMessage());
-                        e.printStackTrace();
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+            for (String genre : genres) {
+                for (String hallId : hallIds) {
+                    for (int n = 1; n <= 13; n++) {
+                        String formattedNumber = String.format("%02d", n);
+
+                        CompletableFuture<Void> future = executeWithRetry(0, genre, hallId, formattedNumber, formattedDate) // 첫 시도
+                                .orTimeout(10, TimeUnit.MINUTES) // 타임아웃 설정
+                                .exceptionally(ex -> {
+                                    System.err.println("Failed to process hall: " + hallId + ", genre: " + genre + ". Timeout or other error: " + ex.getMessage());
+                                    return null; // 실패한 작업에 대해 로직이 중단되지 않도록 함
+                                });
+
+                        futures.add(future);
+
+                        // 딜레이 추가
+                        try {
+                            Thread.sleep(200); // 200ms 딜레이
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
             }
-        }
+
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+        }, asyncExecutor).exceptionally(ex -> {
+            jobEntity.setStatus("FAILED"); jobRepository.save(jobEntity); // 실패
+            System.err.println("Scheduled job failed. Error: " + ex.getMessage());
+            return null;
+        });
     }
+
 
     public void putPerfListForAllGenresAndHalls(int hallNum) { // test
         List<String> genres = Arrays.asList("GGGA", "AAAA");
@@ -124,29 +174,30 @@ public class KopisPerfService {
         for (String genre : genres) {
             for (String hallId : hallIds) {
                 //for (int n = 1; n <= 13; n++) { // 01~13
-                    String formattedNumber = String.format("%02d", hallNum);
+                String formattedNumber = String.format("%02d", hallNum);
 
-                    // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
-                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 
-                        ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
-                        String body = response.getBody();
-                        try {
-                            assert body != null;
-                            putPerfListLogic(body, hallId);
-                        } catch (Exception e) {
-                            System.out.println("Error processing performance detail: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    });
-                    futures.add(future);
-
-                    // 딜레이 추가
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    String body = response.getBody();
+                    System.out.println("GET BODY - 잘 실행되고 있나 확인하는 용");
                     try {
-                        Thread.sleep(100); // 100ms 딜레이
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                        assert body != null;
+                        putPerfListLogic(body, hallId);
+                    } catch (Exception e) {
+                        System.out.println("Error processing performance detail: " + e.getMessage());
+                        e.printStackTrace();
                     }
+                });
+                futures.add(future);
+
+                // 딜레이 추가
+                try {
+                    Thread.sleep(100); // 100ms 딜레이
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
                 //}
             }
         }
@@ -220,7 +271,7 @@ public class KopisPerfService {
                             .build();
                     performanceRepository.save(performance);
 
-                    putPerfDetail(mt20id); // 디데일 넣기
+                    putPerfDetail(mt20id); // 디테일 넣기
                     System.out.println("Saved Performance: " + mt20id + " " + prfnm);
 
                 }
