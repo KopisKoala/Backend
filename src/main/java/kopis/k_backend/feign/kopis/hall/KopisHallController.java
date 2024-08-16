@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Arrays;
-import java.util.List;
 
 //공연장 정보는 전체를 미리 db에 넣어두어야 함. 넣기 쉽게 controller 작성
 @Tag(name = "DB에 데이터 삽입", description = "공연장 관련 정보를 db에 넣는 api입니다.")

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @Tag(name = "DB에 데이터 삽입", description = "공연 관련 정보를 db에 넣는 api입니다.")
 @RequiredArgsConstructor
 @RestController
