@@ -20,20 +20,6 @@ import java.util.List;
 public class KopisHallController {
     private final KopisHallService kopisHallService;
 
-    @Operation(summary = "공연장", description = "공연장을 db에 넣는 api입니다. ")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_HALL_2012", description = "공연장이 DB에 저장되었습니다."),
-    })
-    @GetMapping("/detail")
-    public ApiResponse<Boolean> putHall() {
-
-        List<String> hallIds = kopisHallService.getAllHallId();
-        for (String hallId : hallIds) {
-            kopisHallService.putHallDetail(hallId);
-        }
-        return ApiResponse.onSuccess(SuccessCode.DB_HALL_DETAIL_SUCCESS, true);
-    }
-
     @Operation(summary = "공연장 목록", description = "공연장 목록을 db에 넣는 api입니다. ")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DB_HALL_2011", description = "공연장 목록이 DB에 저장되었습니다."),
