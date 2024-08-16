@@ -44,7 +44,7 @@ public class KopisPerfServiceLocal {
                 // Java의 CompletableFuture를 사용하여 병렬 처리로 전환하여 로직 최적화
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 
-                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240801, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
+                    ResponseEntity<String> response = kopisPerfClient.getPerfs(service, 20240814, 99999999, genre, hallId + "-" + formattedNumber, 1, 10, "Y");
                     String body = response.getBody();
                     System.out.println("GET BODY - 잘 실행되고 있나 확인하는 용");
                     try {
