@@ -35,7 +35,7 @@ public class ScrapPlayDbService {
     private final JobRepository jobRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(cron = "0 18 17 * * *", zone = "Asia/Seoul") // 매일 아침 7시
+    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
     private void scrapeActorsEveryDay(){
         LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
@@ -317,9 +317,9 @@ public class ScrapPlayDbService {
 
         for (Performance performance : performances) {
             // cast 컬럼 값이 "playDB" 혹은 "no cast in playdb"가 아닌 경우 id를 리스트에 추가한다.
-            //if (!"PLAYDB".equals(performance.getCast()) && !"no cast in playdb".equals(performance.getCast())) {
+            if (!"PLAYDB".equals(performance.getCast()) && !"no cast in playdb".equals(performance.getCast())) {
                 performanceIds.add(performance.getId());
-            //}
+            }
         }
 
         return performanceIds;
