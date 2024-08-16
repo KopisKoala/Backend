@@ -109,7 +109,7 @@ public class KopisHallService {
     }
 
 
-    @Scheduled(cron = "0 0 0 2 * *", zone = "Asia/Seoul") // 매달 1일 2시에 공연장 재탐색 -> 새로운 공연장 추가 + 기존 공연장 정보 수정
+    @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul") // 매달 1일 자정에 공연장 재탐색 -> 새로운 공연장 추가 + 기존 공연장 정보 수정
     public void putHallList() {
         // Kopis api에 요청을 보내기 전에 apiKey를 쿼리로 설정
         ResponseEntity<String> response = kopisHallClient.getHalls(service, cpage, rows);
@@ -121,6 +121,7 @@ public class KopisHallService {
             // XML 문서 빌더 생성
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
+            assert body != null; // body가 null인 경우 프로그램 중단
             Document doc = builder.parse(new ByteArrayInputStream(body.getBytes()));
 
             // 루트 엘리먼트 가져오기
