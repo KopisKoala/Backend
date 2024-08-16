@@ -60,7 +60,7 @@ kopis:
 
 ---
 
-# local profile:
+# local profile
 spring:
   config:
     activate:

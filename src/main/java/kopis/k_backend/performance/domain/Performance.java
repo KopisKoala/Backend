@@ -11,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -122,6 +121,23 @@ public class Performance {
 
     public void updateReviewSummary(String reviewSummary) {
         this.reviewSummary = reviewSummary;
+    }
+
+    public void updateCast(String cast){
+        this.cast = cast;
+    }
+
+    public void updateState(String state){
+        this.state = state;
+    }
+
+    public void updateExistingPerformance(String duration, String price, String cast, String lowestPrice, String highestPrice, String ticketingLink){
+        this.duration = duration;
+        this.price = price;
+        this.cast = cast;
+        this.lowestPrice = lowestPrice;
+        this.highestPrice = highestPrice;
+        this.ticketingLink = ticketingLink;
     }
 
 }

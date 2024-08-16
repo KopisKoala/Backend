@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Hall {
@@ -53,4 +52,15 @@ public class Hall {
     @Column
     private String relateurl;
 
+    public void updateExistingHall(String streetAddress, String restaurant, String cafe, String store, String nolibang, String suyu, String parkinglot, String telno, String relateurl){
+        this.streetAddress = streetAddress;
+        this.restaurant = restaurant;
+        this.cafe = cafe;
+        this.store = store;
+        this.nolibang = nolibang;
+        this.suyu = suyu;
+        this.parkinglot = parkinglot;
+        this.telno = telno;
+        this.relateurl = relateurl;
+    }
 }
