@@ -1,5 +1,7 @@
 package kopis.k_backend.scraping.playdb;
 
+import kopis.k_backend.job.Job;
+import kopis.k_backend.job.JobRepository;
 import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.domain.PerformanceActor;
@@ -9,6 +11,7 @@ import kopis.k_backend.performance.repository.PerformanceRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,12 +31,32 @@ public class ScrapPlayDbService {
     private final ActorRepository actorRepository;
     private final PerformanceActorRepository performanceActorRepository;
     private final PerformanceRepository performanceRepository;
+    private final JobRepository jobRepository;
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
+    private void scrapeActorsEveryDay(){
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        String jobId = today.format(formatter);
+        String jobType = "SCRAPE_PLAYDB_ACTORS";
+        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        jobRepository.save(jobEntity);
+
+        List<Long> performanceIds = findPerformancesWithNonPlayDBCast();
+
+        for(Long id : performanceIds){
+            scrapeAndSaveActors(id);
+        }
+
+        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+    }
 
     // controller에서 호출
     public void scrapeAndSaveActors(Long performanceId) {
 
-        Performance performance = performanceRepository.findById(performanceId)
+        Performance performance = performanceRepository.findByIdWithHall(performanceId)
                 .orElseThrow(() -> new RuntimeException("Performance not found"));
 
         String title = performance.getTitle(); System.out.println("title: " + title);
@@ -61,6 +84,7 @@ public class ScrapPlayDbService {
         String searchUrl = "http://m.playdb.co.kr/Search/View?query=" + title;
         String response = restTemplate.getForObject(searchUrl, String.class);
 
+        assert response != null;
         Document doc = Jsoup.parse(response);
         List<String> performanceLinks = new ArrayList<>();
 
@@ -85,6 +109,7 @@ public class ScrapPlayDbService {
             String performanceUrl = "http://m.playdb.co.kr" + link;
             String response = restTemplate.getForObject(performanceUrl, String.class);
 
+            assert response != null;
             Document doc = Jsoup.parse(response);
 
             // "장소"와 관련된 dd 요소를 찾기
@@ -213,7 +238,7 @@ public class ScrapPlayDbService {
 
         for (Performance performance : performances) {
             // cast 컬럼 값이 "playDB" 혹은 "no cast in playdb"가 아닌 경우 id를 리스트에 추가한다.
-            if (!"PLAYDB".equals(performance.getCast()) || !"no cast in playdb".equals(performance.getCast())) {
+            if (!"PLAYDB".equals(performance.getCast()) && !"no cast in playdb".equals(performance.getCast())) {
                 performanceIds.add(performance.getId());
             }
         }
