@@ -88,8 +88,8 @@ public class KopisPerfService {
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
             // 종료 날짜가 오늘 이후이고, 시작 날짜가 오늘 이전라면 상태를 "공연중"으로 업데이트
-            else if(startDate.isBefore(today) && !Objects.equals(performance.getState(), "공연중")){
-                performance.setState("공연중");
+            else if(startDate.isBefore(ChronoLocalDate.from(today)) && !Objects.equals(performance.getState(), "공연중")){
+                performance.updateState("공연중");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연중'");
             }
