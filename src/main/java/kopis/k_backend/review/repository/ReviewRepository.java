@@ -2,6 +2,7 @@ package kopis.k_backend.review.repository;
 
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
+import kopis.k_backend.user.domain.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import kopis.k_backend.review.domain.Review;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -59,4 +62,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT SUM(r.performanceRatings) FROM Review r WHERE r.performance = :performance")
     Long sumPerformanceRatingsByPerformance(@Param("performance") Performance performance);
 
+    // 특정 사용자와 날짜 범위에 해당하는 리뷰 조회
+    List<Review> findAllByWriterAndCreatedAtBetween(User writer, LocalDateTime start, LocalDateTime end);
 }

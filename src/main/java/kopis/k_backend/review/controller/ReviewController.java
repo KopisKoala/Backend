@@ -15,6 +15,7 @@ import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
+import kopis.k_backend.review.dto.ReviewResponseDto;
 import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.RankService;
@@ -27,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import kopis.k_backend.user.domain.User;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class ReviewController {
     private final PairService pairService;
     private final RankService rankService;
 
-    @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다. .")
+    @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAIR_2001", description = "공연에 맞는 페어들을 반환 완료했습니다.")
     })
@@ -166,6 +168,25 @@ public class ReviewController {
 
         List<Review> reviews = reviewService.getPairReviewList(pairId, way, scrollPosition, fetchSize);
         return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
+    }
+
+    @Operation(summary = "월 리뷰 목록 조회", description = "사용자가 해당 월에 작성한 리뷰 목록을 반환하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2005", description = "월 리뷰 목록 반환이 완료되었습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "month", description = "조회하고 싶은 월의 첫째날")
+    })
+    @GetMapping(value = "/month/reviews")
+    public ApiResponse<ReviewResponseDto.MonthReviewListResDto> getMonthReviews(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(name = "month") LocalDate month
+    ){
+        User user = userService.findByUserName(customUserDetails.getUsername());
+        List<Review> monthReviewList = reviewService.getMonthReviewList(user, month);
+        String ratingType = "performance";
+        Long reviewCount = (long) monthReviewList.size();
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MONTH_SUCCESS, ReviewConverter.monthReviewListResDto(monthReviewList, ratingType, user, reviewCount));
     }
 
 }

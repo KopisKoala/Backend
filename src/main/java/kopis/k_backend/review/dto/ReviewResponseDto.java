@@ -69,4 +69,18 @@ public class ReviewResponseDto {
         private List<ReviewResDto> reviewList;
 
     }
+
+    @Schema(description = "MonthReviewListResDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MonthReviewListResDto {
+        @Schema(description = "리뷰 수")
+        private Long reviewCount;
+
+        @Schema(description = "리뷰 리스트")
+        private List<ReviewResDto> reviewList;
+
+    }
 }

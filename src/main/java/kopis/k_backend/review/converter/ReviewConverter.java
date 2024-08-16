@@ -4,6 +4,7 @@ import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewListResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
 import kopis.k_backend.user.domain.User;
@@ -66,4 +67,16 @@ public class ReviewConverter {
                 .reviewList(reviewResDtos)
                 .build();
     }
+
+    public static MonthReviewListResDto monthReviewListResDto(List<Review> reviews, String ratingType, User user, Long reviewCount) {
+        List<ReviewResDto> reviewResDtos = reviews.stream()
+                .map(review -> simpleReviewDto(review, ratingType, user))
+                .collect(Collectors.toList());
+
+        return MonthReviewListResDto.builder()
+                .reviewCount(reviewCount)
+                .reviewList(reviewResDtos)
+                .build();
+    }
+
 }
