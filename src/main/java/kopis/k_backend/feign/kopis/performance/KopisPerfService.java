@@ -79,12 +79,19 @@ public class KopisPerfService {
 
         for (Performance performance : ongoingPerformances) {
             LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
+            LocalDate startDate = LocalDate.parse(performance.getStartDate(), formatter);
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
             if (endDate.isBefore(today)) {
                 performance.setState("공연완료");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
+            }
+            // 종료 날짜가 오늘 이후이고, 시작 날짜가 오늘 이전라면 상태를 "공연중"으로 업데이트
+            else if(startDate.isBefore(today) && !Objects.equals(performance.getState(), "공연중")){
+                performance.setState("공연중");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연중'");
             }
         }
         jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
@@ -233,7 +240,7 @@ public class KopisPerfService {
                 String poster = getElementValue(element, "poster");
                 String genrenm = getElementValue(element, "genrenm");
                 String prfstate = getElementValue(element, "prfstate");
-                if(!Objects.equals(prfstate, "공연중")) continue;
+                if(Objects.equals(prfstate, "공연완료")) continue; // 우선 공연완료 된 건 받지 않기
 
                 System.out.println("Parsed performance: " + mt20id + ", " + prfnm + ", " + genrenm);
 
