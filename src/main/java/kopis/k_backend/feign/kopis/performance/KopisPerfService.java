@@ -117,7 +117,7 @@ public class KopisPerfService {
                         String formattedNumber = String.format("%02d", n);
 
                         CompletableFuture<Void> future = executeWithRetry(0, genre, hallId, formattedNumber, formattedDate) // 첫 시도
-                                .orTimeout(10, TimeUnit.MINUTES) // 타임아웃 설정
+                                .orTimeout(30, TimeUnit.MINUTES) // 타임아웃 설정
                                 .exceptionally(ex -> {
                                     System.err.println("Failed to process hall: " + hallId + ", genre: " + genre + ". Timeout or other error: " + ex.getMessage());
                                     return null; // 실패한 작업에 대해 로직이 중단되지 않도록 함
