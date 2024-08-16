@@ -83,7 +83,7 @@ public class PerformanceService {
     }
 
 
-    @PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
+    /*@PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
     public void data() {
         System.out.println("Starting data initialization");
         try {
@@ -257,6 +257,6 @@ public class PerformanceService {
             System.out.println("Error initializing data: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    }*/
 
 }
