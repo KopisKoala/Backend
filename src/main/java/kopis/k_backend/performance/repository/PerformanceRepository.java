@@ -1,6 +1,8 @@
 package kopis.k_backend.performance.repository;
 
 import kopis.k_backend.performance.domain.Performance;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +17,5 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
 
     List<Performance> findByState(String state);
 
+    Page<Performance> findByTitleContaining(String title, Pageable pageable);
 }

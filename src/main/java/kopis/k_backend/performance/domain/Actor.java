@@ -18,5 +18,4 @@ public class Actor {
     private String actorName;
 
     private String actorProfile;
-
 }
