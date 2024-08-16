@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,14 @@ public class ScrapPlayDbService {
     private final JobRepository jobRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
+    @Scheduled(cron = "0 18 17 * * *", zone = "Asia/Seoul") // 매일 아침 7시
     private void scrapeActorsEveryDay(){
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
         String jobId = today.format(formatter);
         String jobType = "SCRAPE_PLAYDB_ACTORS";
-        Job jobEntity = new Job(jobId, "IN_PROGRESS", jobType);
+        Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
 
         List<Long> performanceIds = findPerformancesWithNonPlayDBCast();
@@ -50,20 +51,33 @@ public class ScrapPlayDbService {
             scrapeAndSaveActors(id);
         }
 
-        jobEntity.setStatus("COMPLETED"); jobRepository.save(jobEntity); // 완료
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobRepository.save(jobEntity); // 완료
     }
 
-    // controller에서 호출
+    // 호출되는 로직
     public void scrapeAndSaveActors(Long performanceId) {
 
         Performance performance = performanceRepository.findByIdWithHall(performanceId)
                 .orElseThrow(() -> new RuntimeException("Performance not found"));
 
-        String title = performance.getTitle(); System.out.println("title: " + title);
-        List<String> performanceLinks = searchPerformances(title);
+        String originalTitle = performance.getTitle();
+        System.out.println("Original title: " + originalTitle);
+
+        // 다양한 변형된 제목 생성
+        List<String> titlesToSearch = generateTitleVariations(originalTitle);
+        System.out.println("Titles to search: " + titlesToSearch);
+
+        List<String> performanceLinks = new ArrayList<>();
+        for (String title : titlesToSearch) {
+            List<String> links = searchPerformances(title); // 각 변형된 제목으로 검색
+            performanceLinks.addAll(links); // 결과를 전체 리스트에 추가
+        }
 
         String hallName = performance.getHall().getHallName(); System.out.println("hallName: " + hallName);
-        Optional<String> matchingPerformanceLink = findMatchingPerformance(performanceLinks, hallName);
+        Optional<String> matchingPerformanceLink = findMatchingPerformance(performance.getStartDate(), performance.getEndDate(), performanceLinks, hallName);
         System.out.println("matchingPerformanceLink: " + matchingPerformanceLink);
 
         if (matchingPerformanceLink.isPresent()) {
@@ -77,6 +91,64 @@ public class ScrapPlayDbService {
             performance.updateCast("no performance in playdb");
             performanceRepository.save(performance);
         }
+    }
+
+    private List<String> generateTitleVariations(String originalTitle) {
+        List<String> titles = new ArrayList<>();
+        titles.add(originalTitle);
+
+        // [] 제거
+        String titleWithoutBrackets = originalTitle.replaceAll("\\[.*?\\]", "").trim();
+        if (!titleWithoutBrackets.equals(originalTitle)) {
+            titles.add(titleWithoutBrackets);
+            // [] 제거한 제목도 분할
+            titles.addAll(splitTitle(titleWithoutBrackets));
+        }
+
+        // () 제거
+        String titleWithoutParentheses = originalTitle.replaceAll("\\(.*?\\)", "").trim();
+        if (!titleWithoutParentheses.equals(originalTitle)) {
+            titles.add(titleWithoutParentheses);
+            // () 제거한 제목도 분할
+            titles.addAll(splitTitle(titleWithoutParentheses));
+        }
+
+        // []와 () 모두 제거
+        String titleWithoutBracketsAndParentheses = titleWithoutBrackets.replaceAll("\\(.*?\\)", "").trim();
+        if (!titleWithoutBracketsAndParentheses.equals(originalTitle) && !titles.contains(titleWithoutBracketsAndParentheses)) {
+            titles.add(titleWithoutBracketsAndParentheses);
+            // []와 () 모두 제거한 제목도 분할
+            titles.addAll(splitTitle(titleWithoutBracketsAndParentheses));
+        }
+
+        // 원래 제목도 분할
+        titles.addAll(splitTitle(originalTitle));
+
+        return titles;
+    }
+
+    private List<String> splitTitle(String title) {
+        List<String> splitTitles = new ArrayList<>();
+
+        // ','를 기준으로 제목 분할
+        String[] splitByComma = title.split(",");
+        for (String part : splitByComma) {
+            part = part.trim();
+            if (!splitTitles.contains(part)) {
+                splitTitles.add(part);
+            }
+
+            // ':'를 기준으로 제목 분할
+            String[] splitByColon = part.split(":");
+            for (String subPart : splitByColon) {
+                subPart = subPart.trim();
+                if (!splitTitles.contains(subPart)) {
+                    splitTitles.add(subPart);
+                }
+            }
+        }
+
+        return splitTitles;
     }
 
     // 공연 검색
@@ -100,10 +172,14 @@ public class ScrapPlayDbService {
     }
 
     // 공연 찾기
-    private Optional<String> findMatchingPerformance(List<String> performanceLinks, String hallName) {
+    private Optional<String> findMatchingPerformance(String perfStartDate, String perfEndDate, List<String> performanceLinks, String hallName) {
         String bestMatchLink = null;
         int maxCommonLength = 0;
-        LocalDate today = LocalDate.now();
+
+        // String으로 받은 시작일과 종료일을 LocalDate로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        LocalDate perfStart = LocalDate.parse(perfStartDate, formatter);
+        LocalDate perfEnd = LocalDate.parse(perfEndDate, formatter);
 
         for (String link : performanceLinks) {
             String performanceUrl = "http://m.playdb.co.kr" + link;
@@ -125,8 +201,11 @@ public class ScrapPlayDbService {
                 String endDateText = endDateElement.text().split("~")[1].trim(); // 종료 날짜만 추출
                 LocalDate endDate = LocalDate.parse(endDateText, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
 
-                // 공연 종료일이 오늘 이후인지 확인
-                if (endDate.isAfter(today)) {
+                String startDateText = endDateElement.text().split("~")[0].trim(); // 시작 날짜만 추출
+                LocalDate startDate = LocalDate.parse(startDateText, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+
+                // 공연 종료일이 주어진 perfEndDate 이후이고, 시작일이 perfStartDate 이전인지 확인
+                if (endDate.isAfter(perfEnd.minusDays(3)) && startDate.isBefore(perfStart.plusDays(3))) {
                     // 공통 부분 문자열의 길이 계산
                     int commonLength = longestCommonSubstring(hallName, hall);
 
@@ -238,9 +317,9 @@ public class ScrapPlayDbService {
 
         for (Performance performance : performances) {
             // cast 컬럼 값이 "playDB" 혹은 "no cast in playdb"가 아닌 경우 id를 리스트에 추가한다.
-            if (!"PLAYDB".equals(performance.getCast()) && !"no cast in playdb".equals(performance.getCast())) {
+            //if (!"PLAYDB".equals(performance.getCast()) && !"no cast in playdb".equals(performance.getCast())) {
                 performanceIds.add(performance.getId());
-            }
+            //}
         }
 
         return performanceIds;
