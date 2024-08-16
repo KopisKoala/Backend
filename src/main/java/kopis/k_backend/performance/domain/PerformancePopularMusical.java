@@ -8,14 +8,17 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "actor")
-public class Actor {
+@Table(name = "performance_popular_musical")
+public class PerformancePopularMusical {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String actorName;
+    private Integer performanceRank;
 
-    private String actorProfile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "performance_id")
+    private Performance performance;
+
 }

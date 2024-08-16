@@ -1,9 +1,7 @@
 package kopis.k_backend.performance.service;
 
-import jakarta.annotation.PostConstruct;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
-import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.pair.repository.PairRepository;
 import kopis.k_backend.performance.domain.*;
 import kopis.k_backend.performance.repository.ActorRepository;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class PerformanceService {
-    private final PerformanceRepository performanceRepository;
-    private final PairRepository pairRepository;
-    private final PerformanceActorRepository performanceActorRepository;
-    private final ActorRepository actorRepository;
+    private final PerformanceRepository performanceRepository;;
     private final ReviewRepository reviewRepository;
-    private final HallRepository hallRepository;
 
     public Performance findById(Long id) {
         return performanceRepository.findById(id)
@@ -82,8 +75,8 @@ public class PerformanceService {
         System.out.println("updatePerfTopHashtags finished");
     }
 
-    /*
-    @PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
+
+    /*@PostConstruct // 실행시킬 때마다 DB에 예시 데이터 들어감. 본격적으로 DB에 데이터 넣기 전까지 사용할 예정.
     public void data() {
         System.out.println("Starting data initialization");
         try {
@@ -257,6 +250,6 @@ public class PerformanceService {
             System.out.println("Error initializing data: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-    */
+    }*/
+
 }

@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
-import kopis.k_backend.user.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -28,7 +26,7 @@ public class OpenAiController {
     ) throws IOException {
         try {
             Map<String, Object> result = openAiService.prompt(completionDto);
-            return ApiResponse.onSuccess(SuccessCode.OPEN_AI_API_SUCCESSS, result);
+            return ApiResponse.onSuccess(SuccessCode.OPEN_AI_API_SUCCESS, result);
 
         } catch (Exception e) {
             log.error("Error during GPT API", e);
