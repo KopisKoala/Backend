@@ -17,7 +17,6 @@ public class ReviewRequestDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReviewReqDto {
-
         @Schema(description = "공연 id")
         private Long performanceId;
 
@@ -38,7 +37,5 @@ public class ReviewRequestDto {
 
         @Schema(description = "공연 관람일")
         private LocalDate performanceDate;
-
     }
-
 }

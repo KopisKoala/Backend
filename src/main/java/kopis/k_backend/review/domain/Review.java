@@ -55,6 +55,12 @@ public class Review extends BaseEntity {
     @Column
     private LocalDate performanceDate;
 
+    @Column
+    private ViewingPartner viewingPartner = ViewingPartner.NULL;
+
+    @Column(length = 1000)
+    private String memo;
+
     @OneToMany(mappedBy = "review")
     private List<ReviewLike> reviewLikes = new ArrayList<>();
 
@@ -68,4 +74,28 @@ public class Review extends BaseEntity {
         return this.likeCount;
     }
 
+    public void updateViewingPartner(Integer partnerNumber) {
+        if (partnerNumber == 0) {
+            viewingPartner = ViewingPartner.NULL;
+        }
+        else if (partnerNumber == 1) {
+            viewingPartner = ViewingPartner.FAMILY;
+        }
+        else if (partnerNumber == 2) {
+            viewingPartner = ViewingPartner.FRIEND;
+        }
+        else if (partnerNumber == 3) {
+            viewingPartner = ViewingPartner.COUPLE;
+        }
+        else if(partnerNumber == 4) {
+            viewingPartner = ViewingPartner.ALONE;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid partner number: " + partnerNumber);
+        }
+    }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
 }

@@ -13,8 +13,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/performance")
 public class PerformanceController {
-
     private final PerformanceService performanceService;
-
-
 }
