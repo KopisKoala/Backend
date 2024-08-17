@@ -1,4 +1,4 @@
-package kopis.k_backend.scraping.playdb;
+package kopis.k_backend.scraping.actor;
 
 import kopis.k_backend.job.Job;
 import kopis.k_backend.job.JobRepository;
