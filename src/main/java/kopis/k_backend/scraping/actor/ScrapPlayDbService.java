@@ -38,9 +38,9 @@ public class ScrapPlayDbService {
     @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
     private void scrapeActorsEveryDay(){
         LocalDateTime today = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        DateTimeFormatter jobFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
-        String jobId = today.format(formatter);
+        String jobId = today.format(jobFormatter);
         String jobType = "SCRAPE_PLAYDB_ACTORS";
         Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
@@ -52,8 +52,7 @@ public class ScrapPlayDbService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
-        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(jobFormatter));
         jobRepository.save(jobEntity); // 완료
     }
 

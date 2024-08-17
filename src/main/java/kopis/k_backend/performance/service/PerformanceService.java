@@ -2,11 +2,7 @@ package kopis.k_backend.performance.service;
 
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
-import kopis.k_backend.pair.repository.PairRepository;
 import kopis.k_backend.performance.domain.*;
-import kopis.k_backend.performance.repository.ActorRepository;
-import kopis.k_backend.performance.repository.HallRepository;
-import kopis.k_backend.performance.repository.PerformanceActorRepository;
 import kopis.k_backend.performance.repository.PerformanceRepository;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.repository.ReviewRepository;
