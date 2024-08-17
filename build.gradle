@@ -89,6 +89,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	implementation 'javax.annotation:javax.annotation-api:1.3.2'
 }
 
 tasks.named('test') {
