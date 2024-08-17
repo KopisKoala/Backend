@@ -1,4 +1,4 @@
-package kopis.k_backend.scraping.playdb;
+package kopis.k_backend.scraping.actor;
 
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
