@@ -193,12 +193,9 @@ public class ReviewController {
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2006", description = "리뷰 반환이 완료되었습니다.")
     })
-    @Parameters({
-            @Parameter(name = "reviewId", description = "조회하고 싶은 리뷰 id")
-    })
-    @GetMapping(value = "/myPage/review")
+    @GetMapping(value = "/myPage/review/{review-id}")
     public ApiResponse<MyReviewResDto> getMyReview(
-            @RequestParam(name = "reviewId") Long reviewId
+            @PathVariable(name = "review-id") Long reviewId
     ){
         Review review = reviewService.findById(reviewId);
 
@@ -206,6 +203,20 @@ public class ReviewController {
 
     }
 
+    @Operation(summary = "함께 본 사람 수정", description = "리뷰에 함께 본 사람을 적는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2007", description = "함꼐 본 사람 수정이 완료되었습니다.")
+    })
+    @PatchMapping(value = "/myPage/viewingPartner/update/{review-id}")
+    @Parameters({
+            @Parameter(name = "partnerNumber", description = "0: 미입력, 1: 가족, 2: 친구, 3: 연인, 4: 혼자")
+    })
+    public void updateViewingPartner(
+            @PathVariable(name = "review-id") Long reviewId,
+            @RequestParam(name = "partnerNumber") Integer partnerNumber
+    ){
+        Review review = reviewService.findById(reviewId);
 
-
+        reviewService.updateViewingPartner(review, partnerNumber);
+    }
 }

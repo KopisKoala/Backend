@@ -3,6 +3,7 @@ package kopis.k_backend.review.converter;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.review.domain.Review;
+import kopis.k_backend.review.domain.ViewingPartner;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.MyReviewResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewResDto;
@@ -30,6 +31,7 @@ public class ReviewConverter {
                 .performanceRatings(review.getPerformanceRating())
                 .hashtag(review.getHashTag())
                 .performanceDate(review.getPerformanceDate())
+                .viewingPartner(ViewingPartner.NULL)
                 .build();
     }
 

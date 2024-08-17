@@ -133,5 +133,11 @@ public class ReviewService {
     public Long getSumOfPerformanceRatings(Performance performance) {
         return reviewRepository.sumPerformanceRatingsByPerformance(performance);
     }
+
+    @Transactional
+    public void updateViewingPartner(Review review, Integer partnerNumber) {
+        review.updateViewingPartner(partnerNumber);
+        reviewRepository.save(review);
+    }
 }
 
