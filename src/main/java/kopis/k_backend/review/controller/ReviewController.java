@@ -15,18 +15,21 @@ import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
+import kopis.k_backend.review.dto.ReviewResponseDto.MyReviewResDto;
 import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.RankService;
 import kopis.k_backend.user.service.UserService;
 import kopis.k_backend.pair.Service.PairService;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewListResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import kopis.k_backend.user.domain.User;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class ReviewController {
     private final PairService pairService;
     private final RankService rankService;
 
-    @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다. .")
+    @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAIR_2001", description = "공연에 맞는 페어들을 반환 완료했습니다.")
     })
@@ -168,4 +171,64 @@ public class ReviewController {
         return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
     }
 
+    @Operation(summary = "마이페이지 월 리뷰 목록 조회", description = "사용자가 해당 월에 작성한 리뷰 목록을 반환하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2005", description = "월 리뷰 목록 반환이 완료되었습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "month", description = "조회하고 싶은 월의 첫째날 ex) 2024-08-01")
+    })
+    @GetMapping(value = "/myPage/reviews")
+    public ApiResponse<MonthReviewListResDto> getMonthReviews(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(name = "month") LocalDate month
+    ){
+        User user = userService.findByUserName(customUserDetails.getUsername());
+        List<Review> monthReviewList = reviewService.getMonthReviewList(user, month);
+        Long reviewCount = (long) monthReviewList.size();
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MONTH_SUCCESS, ReviewConverter.monthReviewListResDto(monthReviewList, reviewCount));
+    }
+
+    @Operation(summary = "마이페이지 리뷰 조회", description = "리뷰 id에 따른 리뷰 정보를 반환하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2006", description = "리뷰 반환이 완료되었습니다.")
+    })
+    @GetMapping(value = "/myPage/review/{review-id}")
+    public ApiResponse<MyReviewResDto> getMyReview(
+            @PathVariable(name = "review-id") Long reviewId
+    ){
+        Review review = reviewService.findById(reviewId);
+
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MY_SUCCESS, ReviewConverter.myReviewResDto(review));
+
+    }
+
+    @Operation(summary = "함께 본 사람 수정", description = "리뷰에 함께 본 사람을 적는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2007", description = "함꼐 본 사람 수정이 완료되었습니다.")
+    })
+    @PatchMapping(value = "/myPage/viewingPartner/update/{review-id}")
+    @Parameters({
+            @Parameter(name = "partnerNumber", description = "0: 미입력, 1: 가족, 2: 친구, 3: 연인, 4: 혼자")
+    })
+    public void updateViewingPartner(
+            @PathVariable(name = "review-id") Long reviewId,
+            @RequestParam(name = "partnerNumber") Integer partnerNumber
+    ){
+        Review review = reviewService.findById(reviewId);
+        reviewService.updateViewingPartner(review, partnerNumber);
+    }
+
+    @Operation(summary = "리뷰 메모 추가", description = "리뷰에 메모를 적는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2008", description = "메모 추가가 완료되었습니다.")
+    })
+    @PatchMapping(value = "/myPage/memo/update/{review-id}")
+    public void updateMemo(
+            @PathVariable(name = "review-id") Long reviewId,
+            @RequestBody String memo
+    ){
+        Review review = reviewService.findById(reviewId);
+        reviewService.updateMemo(review, memo);
+    }
 }

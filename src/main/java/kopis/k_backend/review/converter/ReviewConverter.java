@@ -3,7 +3,11 @@ package kopis.k_backend.review.converter;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.review.domain.Review;
+import kopis.k_backend.review.domain.ViewingPartner;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MyReviewResDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewResDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewListResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
 import kopis.k_backend.user.domain.User;
@@ -27,6 +31,8 @@ public class ReviewConverter {
                 .performanceRatings(review.getPerformanceRating())
                 .hashtag(review.getHashTag())
                 .performanceDate(review.getPerformanceDate())
+                .viewingPartner(ViewingPartner.NULL)
+                .memo("아직 작성된 메모가 없습니다.")
                 .build();
     }
 
@@ -64,6 +70,41 @@ public class ReviewConverter {
                 .hashtags(hashtags)
                 .reviewCount(reviewCount)
                 .reviewList(reviewResDtos)
+                .build();
+    }
+
+    public static MonthReviewResDto monthReviewResDto(Review review) {
+
+        return MonthReviewResDto.builder()
+                .id(review.getId())
+                .poster(review.getPerformance().getPoster())
+                .performanceDate(review.getPerformanceDate())
+                .build();
+    }
+
+    public static MonthReviewListResDto monthReviewListResDto(List<Review> reviews, Long reviewCount) {
+        List<MonthReviewResDto> monthReviewResDtoList = reviews.stream()
+                .map(ReviewConverter::monthReviewResDto)
+                .toList();
+
+        return MonthReviewListResDto.builder()
+                .reviewCount(reviewCount)
+                .reviewList(monthReviewResDtoList)
+                .build();
+    }
+
+    public static MyReviewResDto myReviewResDto(Review review) {
+        return MyReviewResDto.builder()
+                .id(review.getId())
+                .performanceName(review.getPerformance().getTitle())
+                .poster(review.getPerformance().getPoster())
+                .performanceType(review.getPerformance().getPerformanceType())
+                .performanceDate(review.getPerformanceDate())
+                .performanceRatings(review.getPerformanceRatings())
+                .pairRatings(review.getPairRatings())
+                .hashtag(review.getHashtag())
+                .viewingPartner(review.getViewingPartner())
+                .memo(review.getMemo())
                 .build();
     }
 }

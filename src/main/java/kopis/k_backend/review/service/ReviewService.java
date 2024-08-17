@@ -21,6 +21,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,6 +115,17 @@ public class ReviewService {
         return reviewSlice.getContent();
     }
 
+    public List<Review> getMonthReviewList(User user, LocalDate month) {
+        // 해당 월의 시작 일
+        LocalDateTime startOfMonth = month.withDayOfMonth(1).atStartOfDay();
+
+        // 해당 월의 마지막 일
+        LocalDateTime endOfMonth = month.withDayOfMonth(month.lengthOfMonth()).atTime(23, 59, 59);
+
+        // 해당 월에 작성된 리뷰 조회
+        return reviewRepository.findAllByWriterAndCreatedAtBetween(user, startOfMonth, endOfMonth);
+    }
+
     public Long getSumOfPairRatings(Pair pair) {
         return reviewRepository.sumPairRatingsByPair(pair);
     }
@@ -120,5 +134,16 @@ public class ReviewService {
         return reviewRepository.sumPerformanceRatingsByPerformance(performance);
     }
 
+    @Transactional
+    public void updateViewingPartner(Review review, Integer partnerNumber) {
+        review.updateViewingPartner(partnerNumber);
+        reviewRepository.save(review);
+    }
+
+    @Transactional
+    public void updateMemo(Review review, String memo) {
+        review.updateMemo(memo);
+        reviewRepository.save(review);
+    }
 }
 

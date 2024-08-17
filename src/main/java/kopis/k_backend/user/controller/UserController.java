@@ -8,6 +8,7 @@ import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.api_payload.SuccessCode;
 import kopis.k_backend.global.exception.GeneralException;
+import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.converter.UserConverter;
 import kopis.k_backend.user.domain.User;
 import kopis.k_backend.user.dto.JwtDto;
@@ -23,13 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-
 @Tag(name = "회원", description = "회원 관련 api 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final ReviewService reviewService;
 
     @Operation(summary = "로그아웃", description = "로그아웃하는 메서드입니다.")
     @ApiResponses({
