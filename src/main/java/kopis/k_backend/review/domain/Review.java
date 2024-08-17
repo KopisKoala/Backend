@@ -55,6 +55,12 @@ public class Review extends BaseEntity {
     @Column
     private LocalDate performanceDate;
 
+    @Column
+    private ViewingPartner viewingPartner;
+
+    @Column(length = 1000)
+    private String memo;
+
     @OneToMany(mappedBy = "review")
     private List<ReviewLike> reviewLikes = new ArrayList<>();
 

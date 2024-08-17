@@ -15,13 +15,14 @@ import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
-import kopis.k_backend.review.dto.ReviewResponseDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MyReviewResDto;
 import kopis.k_backend.review.service.ReviewService;
 import kopis.k_backend.user.jwt.CustomUserDetails;
 import kopis.k_backend.user.service.RankService;
 import kopis.k_backend.user.service.UserService;
 import kopis.k_backend.pair.Service.PairService;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
+import kopis.k_backend.review.dto.ReviewResponseDto.MonthReviewListResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -170,23 +171,41 @@ public class ReviewController {
         return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
     }
 
-    @Operation(summary = "월 리뷰 목록 조회", description = "사용자가 해당 월에 작성한 리뷰 목록을 반환하는 메서드입니다.")
+    @Operation(summary = "마이페이지 월 리뷰 목록 조회", description = "사용자가 해당 월에 작성한 리뷰 목록을 반환하는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2005", description = "월 리뷰 목록 반환이 완료되었습니다.")
     })
     @Parameters({
-            @Parameter(name = "month", description = "조회하고 싶은 월의 첫째날")
+            @Parameter(name = "month", description = "조회하고 싶은 월의 첫째날 ex) 2024-08-01")
     })
-    @GetMapping(value = "/month/reviews")
-    public ApiResponse<ReviewResponseDto.MonthReviewListResDto> getMonthReviews(
+    @GetMapping(value = "/myPage/reviews")
+    public ApiResponse<MonthReviewListResDto> getMonthReviews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(name = "month") LocalDate month
     ){
         User user = userService.findByUserName(customUserDetails.getUsername());
         List<Review> monthReviewList = reviewService.getMonthReviewList(user, month);
-        String ratingType = "performance";
         Long reviewCount = (long) monthReviewList.size();
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_MONTH_SUCCESS, ReviewConverter.monthReviewListResDto(monthReviewList, ratingType, user, reviewCount));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MONTH_SUCCESS, ReviewConverter.monthReviewListResDto(monthReviewList, reviewCount));
     }
+
+    @Operation(summary = "마이페이지 리뷰 조회", description = "리뷰 id에 따른 리뷰 정보를 반환하는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2006", description = "리뷰 반환이 완료되었습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "reviewId", description = "조회하고 싶은 리뷰 id")
+    })
+    @GetMapping(value = "/myPage/review")
+    public ApiResponse<MyReviewResDto> getMyReview(
+            @RequestParam(name = "reviewId") Long reviewId
+    ){
+        Review review = reviewService.findById(reviewId);
+
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MY_SUCCESS, ReviewConverter.myReviewResDto(review));
+
+    }
+
+
 
 }
