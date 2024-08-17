@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.jaxb.SpringDataJaxb.PageDto;
-import org.w3c.dom.ls.LSException;
-
-import java.util.List;
 
 @NoArgsConstructor
 public class SearchResponseDto {

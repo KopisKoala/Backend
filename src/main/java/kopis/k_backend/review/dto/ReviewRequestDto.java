@@ -17,7 +17,6 @@ public class ReviewRequestDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReviewReqDto {
-
         @Schema(description = "공연 id")
         private Long performanceId;
 
