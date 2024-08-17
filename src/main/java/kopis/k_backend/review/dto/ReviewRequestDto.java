@@ -38,7 +38,5 @@ public class ReviewRequestDto {
 
         @Schema(description = "공연 관람일")
         private LocalDate performanceDate;
-
     }
-
 }

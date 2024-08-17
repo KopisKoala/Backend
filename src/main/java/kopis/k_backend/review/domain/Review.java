@@ -75,10 +75,6 @@ public class Review extends BaseEntity {
     }
 
     public void updateViewingPartner(Integer partnerNumber) {
-        if (partnerNumber < 0 || partnerNumber > 4) {
-            throw new IllegalArgumentException("Invalid partner number: " + partnerNumber);
-        }
-
         if (partnerNumber == 0) {
             viewingPartner = ViewingPartner.NULL;
         }
@@ -94,5 +90,12 @@ public class Review extends BaseEntity {
         else if(partnerNumber == 4) {
             viewingPartner = ViewingPartner.ALONE;
         }
+        else {
+            throw new IllegalArgumentException("Invalid partner number: " + partnerNumber);
+        }
+    }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
     }
 }

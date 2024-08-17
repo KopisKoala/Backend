@@ -216,7 +216,19 @@ public class ReviewController {
             @RequestParam(name = "partnerNumber") Integer partnerNumber
     ){
         Review review = reviewService.findById(reviewId);
-
         reviewService.updateViewingPartner(review, partnerNumber);
+    }
+
+    @Operation(summary = "리뷰 메모 추가", description = "리뷰에 메모를 적는 메서드입니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2008", description = "메모 추가가 완료되었습니다.")
+    })
+    @PatchMapping(value = "/myPage/memo/update/{review-id}")
+    public void updateMemo(
+            @PathVariable(name = "review-id") Long reviewId,
+            @RequestBody String memo
+    ){
+        Review review = reviewService.findById(reviewId);
+        reviewService.updateMemo(review, memo);
     }
 }

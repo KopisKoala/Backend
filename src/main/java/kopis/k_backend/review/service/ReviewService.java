@@ -139,5 +139,11 @@ public class ReviewService {
         review.updateViewingPartner(partnerNumber);
         reviewRepository.save(review);
     }
+
+    @Transactional
+    public void updateMemo(Review review, String memo) {
+        review.updateMemo(memo);
+        reviewRepository.save(review);
+    }
 }
 

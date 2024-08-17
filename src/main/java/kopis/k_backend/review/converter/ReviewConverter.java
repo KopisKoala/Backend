@@ -32,6 +32,7 @@ public class ReviewConverter {
                 .hashtag(review.getHashTag())
                 .performanceDate(review.getPerformanceDate())
                 .viewingPartner(ViewingPartner.NULL)
+                .memo("아직 작성된 메모가 없습니다.")
                 .build();
     }
 
