@@ -60,7 +60,7 @@ public class KopisPerfService {
     }
 
     // 공연 상태 공연예정 -> 공연중 & 공연중 -> 공연완료 업데이트
-    @Scheduled(cron = "0 9 2 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
     private void updatePerfStateEveryDayDev(){
         updatePerfState();
     }
