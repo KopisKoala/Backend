@@ -31,6 +31,10 @@ public enum SuccessCode implements BaseCode {
     REVIEW_MONTH_SUCCESS(HttpStatus.OK, "REVIEW_2005", "회원이 해당 월에 작성한 리뷰 목록 반환이 완료되었습니다."),
     REVIEW_MY_SUCCESS(HttpStatus.OK, "REVIEW_2006", "리뷰 조회가 완료되었습니다."),
 
+    // Performance
+    POPULAR_MUSICAL_LIST_SUCCESS(HttpStatus.OK, "POPULAR_MUSICAL_LIST_2001", "뮤지컬 인기 순위를 반환헀습니다."),
+    POPULAR_PLAY_LIST_SUCCESS(HttpStatus.OK, "POPULAR_PLAY_LIST_2002", "연극 인기 순위를 반환헀습니다."),
+
     // Pair
     PERFORMANCE_MATCH_PAIRS(HttpStatus.OK, "PAIR_2001", "공연에 맞는 페어들을 반환 완료했습니다."),
 
