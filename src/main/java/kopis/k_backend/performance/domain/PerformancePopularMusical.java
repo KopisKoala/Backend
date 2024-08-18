@@ -15,7 +15,10 @@ public class PerformancePopularMusical {
     private Long id;
 
     @Column(nullable = false)
-    private Integer performanceRank;
+    private Integer ranking;
+
+    @Column(nullable = false)
+    private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
