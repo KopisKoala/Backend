@@ -6,10 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.global.api_payload.ApiResponse;
 import kopis.k_backend.global.api_payload.SuccessCode;
 import kopis.k_backend.performance.converter.PerformanceConverter;
+import kopis.k_backend.performance.domain.PerformanceAdvertise;
 import kopis.k_backend.performance.domain.PerformancePopularMusical;
 import kopis.k_backend.performance.domain.PerformancePopularPlay;
 import kopis.k_backend.performance.dto.PerformanceResponseDto;
-import kopis.k_backend.performance.service.PerformancePopularService;
+import kopis.k_backend.performance.service.PerformanceRankingService;
 import kopis.k_backend.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,18 +27,18 @@ import java.util.List;
 @RequestMapping("/performance")
 public class PerformanceController {
     private final PerformanceService performanceService;
-    private final PerformancePopularService performancePopularService;
+    private final PerformanceRankingService performanceRankingService;
 
     @Operation(summary = "뮤지컬 인기 순위", description = "뮤지컬 인기 순위를 반환하는 api입니다. ")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "POPULAR_MUSICAL_LIST_2001", description = "뮤지컬 인기 순위를 반환헀습니다."),
     })
     @GetMapping("/popular/musicals")
-    public ApiResponse<PerformanceResponseDto.PopularPerformanceListDto> popularMusicals() {
+    public ApiResponse<PerformanceResponseDto.RankPerformanceListDto> popularMusicals() {
         // 일단은 날짜 픽스. 후에 셀레니움 사용해서 순위 데이터 끌어와서 데이터 업데이트하고 해당 날짜로 가져올 것임
-        List<PerformancePopularMusical> musicals = performancePopularService.popularMusicalList("2024.08.18");
+        List<PerformancePopularMusical> musicals = performanceRankingService.popularMusicalList("2024.08.18");
 
-        PerformanceResponseDto.PopularPerformanceListDto popularPerformanceListDto = PerformanceConverter.popularMusicalListDto(musicals);
+        PerformanceResponseDto.RankPerformanceListDto popularPerformanceListDto = PerformanceConverter.popularMusicalListDto(musicals);
         return ApiResponse.onSuccess(SuccessCode.POPULAR_MUSICAL_LIST_SUCCESS, popularPerformanceListDto);
     }
 
@@ -46,12 +47,26 @@ public class PerformanceController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "POPULAR_PLAY_LIST_2002", description = "연극 인기 순위를 반환헀습니다."),
     })
     @GetMapping("/popular/plays")
-    public ApiResponse<PerformanceResponseDto.PopularPerformanceListDto> popularPlays() {
+    public ApiResponse<PerformanceResponseDto.RankPerformanceListDto> popularPlays() {
         // 일단은 날짜 픽스. 후에 셀레니움 사용해서 순위 데이터 끌어와서 데이터 업데이트하고 해당 날짜로 가져올 것임
-        List<PerformancePopularPlay> plays = performancePopularService.popularPlayList("2024.08.18");
+        List<PerformancePopularPlay> plays = performanceRankingService.popularPlayList("2024.08.18");
 
-        PerformanceResponseDto.PopularPerformanceListDto popularPerformanceListDto = PerformanceConverter.popularPlayListDto(plays);
+        PerformanceResponseDto.RankPerformanceListDto popularPerformanceListDto = PerformanceConverter.popularPlayListDto(plays);
         return ApiResponse.onSuccess(SuccessCode.POPULAR_PLAY_LIST_SUCCESS, popularPerformanceListDto);
     }
+
+    @Operation(summary = "광고 공연", description = "광고 공연 리스트를 반환하는 api입니다. ")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ADVERTISE_PERFORMANCE_LIST_2003", description = "공연 추천 리스트를 반환헀습니다."),
+    })
+    @GetMapping("/advertise")
+    public ApiResponse<PerformanceResponseDto.RankPerformanceListDto> advertisePerformances() {
+        // 일단은 날짜 픽스. 후에 셀레니움 사용해서 순위 데이터 끌어와서 데이터 업데이트하고 해당 날짜로 가져올 것임
+        List<PerformanceAdvertise> advertisements = performanceRankingService.advertisePerofrmanceList("2024.08.18");
+
+        PerformanceResponseDto.RankPerformanceListDto advertisePerformanceListDto = PerformanceConverter.performanceAdvertiseListDto(advertisements);
+        return ApiResponse.onSuccess(SuccessCode.ADVERTISE_PERFORMANCE_LIST_SUCCESS, advertisePerformanceListDto);
+    }
+    
 
 }

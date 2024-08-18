@@ -46,12 +46,12 @@ public class PerformanceResponseDto {
         private List<PerformanceResDto> performanceList;
     }
 
-    @Schema(description = "SimplePopularPerformanceDto")
+    @Schema(description = "SimpleRankPerformanceDto")
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SimplePopularPerformanceDto {
+    public static class SimpleRankPerformanceDto {
 
         @Schema(description = "공연 id")
         private Long perfId;
@@ -73,15 +73,15 @@ public class PerformanceResponseDto {
 
     }
 
-    @Schema(description = "PopularPerformanceListDto")
+    @Schema(description = "RankPerformanceListDto")
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PopularPerformanceListDto {
+    public static class RankPerformanceListDto {
 
         @Schema(description = "공연 리스트")
-        private List<SimplePopularPerformanceDto> performanceList;
+        private List<SimpleRankPerformanceDto> performanceList;
 
     }
 }

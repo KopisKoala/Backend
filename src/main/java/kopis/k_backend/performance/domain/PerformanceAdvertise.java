@@ -15,7 +15,10 @@ public class PerformanceAdvertise {
     private Long id;
 
     @Column(nullable = false)
-    private Integer performanceNumber;
+    private Integer number;
+
+    @Column(nullable = false)
+    private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")

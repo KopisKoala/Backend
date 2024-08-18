@@ -34,6 +34,7 @@ public enum SuccessCode implements BaseCode {
     // Performance
     POPULAR_MUSICAL_LIST_SUCCESS(HttpStatus.OK, "POPULAR_MUSICAL_LIST_2001", "뮤지컬 인기 순위를 반환헀습니다."),
     POPULAR_PLAY_LIST_SUCCESS(HttpStatus.OK, "POPULAR_PLAY_LIST_2002", "연극 인기 순위를 반환헀습니다."),
+    ADVERTISE_PERFORMANCE_LIST_SUCCESS(HttpStatus.OK, "ADVERTISE_PERFORMANCE_LIST_2003", "공연 추천 리스트를 반환헀습니다."),
 
     // Pair
     PERFORMANCE_MATCH_PAIRS(HttpStatus.OK, "PAIR_2001", "공연에 맞는 페어들을 반환 완료했습니다."),

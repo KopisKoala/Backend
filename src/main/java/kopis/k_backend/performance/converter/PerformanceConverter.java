@@ -1,6 +1,7 @@
 package kopis.k_backend.performance.converter;
 
 import kopis.k_backend.performance.domain.Performance;
+import kopis.k_backend.performance.domain.PerformanceAdvertise;
 import kopis.k_backend.performance.domain.PerformancePopularMusical;
 import kopis.k_backend.performance.domain.PerformancePopularPlay;
 import kopis.k_backend.performance.dto.PerformanceResponseDto;
@@ -29,10 +30,10 @@ public class PerformanceConverter {
                 .build();
     }
 
-    public static PerformanceResponseDto.SimplePopularPerformanceDto simplePopularMusicalDto(PerformancePopularMusical popularMusical){
+    public static PerformanceResponseDto.SimpleRankPerformanceDto simplePopularMusicalDto(PerformancePopularMusical popularMusical){
         String dur = popularMusical.getPerformance().getStartDate() + " ~ " + popularMusical.getPerformance().getEndDate();
 
-        return PerformanceResponseDto.SimplePopularPerformanceDto.builder()
+        return PerformanceResponseDto.SimpleRankPerformanceDto.builder()
                 .perfId(popularMusical.getPerformance().getId())
                 .title(popularMusical.getPerformance().getTitle())
                 .poster(popularMusical.getPerformance().getPoster())
@@ -42,20 +43,20 @@ public class PerformanceConverter {
                 .build();
     }
 
-    public static PerformanceResponseDto.PopularPerformanceListDto popularMusicalListDto(List<PerformancePopularMusical> musicalList){
-        List<PerformanceResponseDto.SimplePopularPerformanceDto> musicalResDtos = musicalList.stream()
+    public static PerformanceResponseDto.RankPerformanceListDto popularMusicalListDto(List<PerformancePopularMusical> musicalList){
+        List<PerformanceResponseDto.SimpleRankPerformanceDto> musicalResDtos = musicalList.stream()
                 .map(PerformanceConverter::simplePopularMusicalDto)
                 .toList();
 
-        return PerformanceResponseDto.PopularPerformanceListDto.builder()
+        return PerformanceResponseDto.RankPerformanceListDto.builder()
                 .performanceList(musicalResDtos)
                 .build();
     }
 
-    public static PerformanceResponseDto.SimplePopularPerformanceDto simplePopularPlayDto(PerformancePopularPlay popularPlay){
+    public static PerformanceResponseDto.SimpleRankPerformanceDto simplePopularPlayDto(PerformancePopularPlay popularPlay){
         String dur = popularPlay.getPerformance().getStartDate() + " ~ " + popularPlay.getPerformance().getEndDate();
 
-        return PerformanceResponseDto.SimplePopularPerformanceDto.builder()
+        return PerformanceResponseDto.SimpleRankPerformanceDto.builder()
                 .perfId(popularPlay.getPerformance().getId())
                 .title(popularPlay.getPerformance().getTitle())
                 .poster(popularPlay.getPerformance().getPoster())
@@ -65,13 +66,36 @@ public class PerformanceConverter {
                 .build();
     }
 
-    public static PerformanceResponseDto.PopularPerformanceListDto popularPlayListDto(List<PerformancePopularPlay> playList){
-        List<PerformanceResponseDto.SimplePopularPerformanceDto> musicalResDtos = playList.stream()
+    public static PerformanceResponseDto.RankPerformanceListDto popularPlayListDto(List<PerformancePopularPlay> playList){
+        List<PerformanceResponseDto.SimpleRankPerformanceDto> musicalResDtos = playList.stream()
                 .map(PerformanceConverter::simplePopularPlayDto)
                 .toList();
 
-        return PerformanceResponseDto.PopularPerformanceListDto.builder()
+        return PerformanceResponseDto.RankPerformanceListDto.builder()
                 .performanceList(musicalResDtos)
+                .build();
+    }
+
+    public static PerformanceResponseDto.SimpleRankPerformanceDto simpleAdvertisePerformanceDto(PerformanceAdvertise performanceAdvertise){
+        String dur = performanceAdvertise.getPerformance().getStartDate() + " ~ " + performanceAdvertise.getPerformance().getEndDate();
+
+        return PerformanceResponseDto.SimpleRankPerformanceDto.builder()
+                .perfId(performanceAdvertise.getPerformance().getId())
+                .title(performanceAdvertise.getPerformance().getTitle())
+                .poster(performanceAdvertise.getPerformance().getPoster())
+                .rank(performanceAdvertise.getNumber())
+                .hall(performanceAdvertise.getPerformance().getHall().getHallName())
+                .duration(dur)
+                .build();
+    }
+
+    public static PerformanceResponseDto.RankPerformanceListDto performanceAdvertiseListDto(List<PerformanceAdvertise> advertiseList){
+        List<PerformanceResponseDto.SimpleRankPerformanceDto> advertiseResDtos = advertiseList.stream()
+                .map(PerformanceConverter::simpleAdvertisePerformanceDto)
+                .toList();
+
+        return PerformanceResponseDto.RankPerformanceListDto.builder()
+                .performanceList(advertiseResDtos)
                 .build();
     }
 
