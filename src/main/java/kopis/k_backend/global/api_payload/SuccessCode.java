@@ -34,6 +34,9 @@ public enum SuccessCode implements BaseCode {
     // Pair
     PERFORMANCE_MATCH_PAIRS(HttpStatus.OK, "PAIR_2001", "공연에 맞는 페어들을 반환 완료했습니다."),
 
+    // Goods
+    GOODS_LIST_VIEW_SUCCESS(HttpStatus.OK, "GOODS_2001", "굿즈 리스트 조회가 완료되었습니다."),
+
     // DB
     DB_HALL_LIST_SUCCESS(HttpStatus.OK, "DB_HALL_2011", "공연장 리스트를 DB에 넣었습니다."),
 
