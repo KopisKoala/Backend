@@ -21,5 +21,5 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     Page<Performance> findByTitleContaining(String title, Pageable pageable);
 
     @Query("SELECT p FROM Performance p WHERE p.reviewCount > :minReviews AND p.state != '공연완료' ORDER BY p.ratingAverage DESC, p.reviewCount ASC")
-    List<Performance> findTop10ByMinReviewsOrderByRatingAndReviewCount(Long minReviews);
+    List<Performance> findTop10ByMinReviewsOrderByRatingAndReviewCount(@Param("minReviews") Long minReviews);
 }
