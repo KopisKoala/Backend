@@ -6,17 +6,19 @@ import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.pair.dto.PairResponseDto;
 import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.repository.ActorRepository;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class PairConverter {
 
-    private static ActorRepository actorRepository;
+    private final ActorRepository actorRepository;
 
-    public static PairResponseDto.SimplePairResDto simplePairResDto(Pair pair){
+    public PairResponseDto.SimplePairResDto simplePairResDto(Pair pair) {
         Actor actor_1 = actorRepository.findById(pair.getActor1())
                 .orElseThrow(() -> GeneralException.of(ErrorCode.ACTOR_NOT_FOUND));
 
@@ -30,9 +32,9 @@ public class PairConverter {
                 .build();
     }
 
-    public static PairResponseDto.PairListResDto pairListResDto(List<Pair> pairs) {
+    public PairResponseDto.PairListResDto pairListResDto(List<Pair> pairs) {
         List<PairResponseDto.SimplePairResDto> pairResDtos = pairs.stream()
-                .map(PairConverter::simplePairResDto)
+                .map(this::simplePairResDto)
                 .collect(Collectors.toList());
 
         return PairResponseDto.PairListResDto.builder()
