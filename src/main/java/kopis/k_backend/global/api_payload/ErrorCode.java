@@ -38,7 +38,10 @@ public enum ErrorCode implements BaseCode {
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE_4041", "존재하지 않는 공연입니다."),
 
     // Pair
-    PAIR_NOT_FOUND(HttpStatus.NOT_FOUND, "PAIR_4041", "존재하지 않는 페어입니다.")
+    PAIR_NOT_FOUND(HttpStatus.NOT_FOUND, "PAIR_4041", "존재하지 않는 페어입니다."),
+
+    // Actor
+    ACTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "PAIR_4041", "존재하지 않는 배우입니다.")
 
     ;
 
