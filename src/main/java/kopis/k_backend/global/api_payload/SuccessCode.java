@@ -39,6 +39,9 @@ public enum SuccessCode implements BaseCode {
     // Pair
     PERFORMANCE_MATCH_PAIRS(HttpStatus.OK, "PAIR_2001", "공연에 맞는 페어들을 반환 완료했습니다."),
 
+    // Goods
+    GOODS_LIST_VIEW_SUCCESS(HttpStatus.OK, "GOODS_2001", "굿즈 리스트 조회가 완료되었습니다."),
+
     // DB
     DB_HALL_LIST_SUCCESS(HttpStatus.OK, "DB_HALL_2011", "공연장 리스트를 DB에 넣었습니다."),
 
@@ -54,7 +57,12 @@ public enum SuccessCode implements BaseCode {
     OPEN_AI_PAIR_REVIEW_SUMMARY(HttpStatus.OK, "OPEN_2003", "페어 별 REVIEW 요약이 완료되었습니다."),
 
     // Search
-    SEARCH_HOME_SUCCESS(HttpStatus.OK, "SEARCH_2001", "홈 화면 검색이 완료되었습니다.")
+    SEARCH_HOME_SUCCESS(HttpStatus.OK, "SEARCH_2001", "홈 화면 검색이 완료되었습니다."),
+
+    // Favorite Actor
+    FAVORITE_ACTOR_CREATED(HttpStatus.CREATED, "FAVORITE_ACTOR_2011", "찜 배우가 생성되었습니다."),
+    FAVORITE_ACTOR_DELETED(HttpStatus.OK, "FAVORITE_ACTOR_2001", "찜 배우가 삭제되었습니다."),
+    FAVORITE_ACTOR_LIST_VIEW_SUCCESS(HttpStatus.OK, "FAVORITE_ACTOR_2002", "찜 배우 목록 반환이 완료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;

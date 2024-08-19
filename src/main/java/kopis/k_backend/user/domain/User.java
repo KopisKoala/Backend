@@ -2,6 +2,7 @@ package kopis.k_backend.user.domain;
 
 import jakarta.persistence.*;
 import kopis.k_backend.global.entity.BaseEntity;
+import kopis.k_backend.performance.domain.FavoriteActor;
 import kopis.k_backend.review.domain.Review;
 import lombok.*;
 import java.util.ArrayList;
@@ -42,6 +43,11 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "writer")
     private List<Review> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<FavoriteActor> favoriteActors = new ArrayList<>();
+
+    private Long favoriteActorCount = 0L;
+
     public User(String username, String nickname, String email, String provider) {
         this.username = username;
         this.nickname = nickname;
@@ -78,4 +84,7 @@ public class User extends BaseEntity {
             this.userRank = UserRank.VIP;
         }
     }
+
+    public void increaseFavoriteActorCount() { this.favoriteActorCount += 1; }
+    public void decreaseFavoriteActorCount() { this.favoriteActorCount -= 1; }
 }

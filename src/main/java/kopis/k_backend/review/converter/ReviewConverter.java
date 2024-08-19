@@ -61,7 +61,7 @@ public class ReviewConverter {
     }
 
     public static ReviewListResDto reviewListResDto(List<Review> reviews, Long reviewCount, Double rating, String ratingType, List<String> hashtags, User user) {
-        List<ReviewResDto> reviewResDtos = reviews.stream()
+        List<ReviewResDto> reviewResDtoList = reviews.stream()
                 .map(review -> simpleReviewDto(review, ratingType, user))
                 .collect(Collectors.toList());
 
@@ -69,7 +69,7 @@ public class ReviewConverter {
                 .averageRating(rating)
                 .hashtags(hashtags)
                 .reviewCount(reviewCount)
-                .reviewList(reviewResDtos)
+                .reviewList(reviewResDtoList)
                 .build();
     }
 

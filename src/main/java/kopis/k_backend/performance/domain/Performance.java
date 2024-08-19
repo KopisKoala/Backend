@@ -1,6 +1,7 @@
 package kopis.k_backend.performance.domain;
 
 import jakarta.persistence.*;
+import kopis.k_backend.goods.domain.Goods;
 import kopis.k_backend.pair.domain.Pair;
 import kopis.k_backend.review.domain.Review;
 import lombok.*;
@@ -92,6 +93,9 @@ public class Performance {
 
     @OneToMany(mappedBy = "performance")
     private List<PerformanceActor> performanceActors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "performance")
+    private List<Goods> goodsList = new ArrayList<>();
 
     public void increaseReviewCount(Long performanceId){
         this.id = performanceId;
