@@ -12,7 +12,6 @@ import kopis.k_backend.performance.domain.PerformancePopularMusical;
 import kopis.k_backend.performance.domain.PerformancePopularPlay;
 import kopis.k_backend.performance.dto.PerformanceResponseDto;
 import kopis.k_backend.performance.service.PerformanceRankingService;
-import kopis.k_backend.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
