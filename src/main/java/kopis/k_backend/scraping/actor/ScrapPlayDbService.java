@@ -2,6 +2,8 @@ package kopis.k_backend.scraping.actor;
 
 import kopis.k_backend.job.Job;
 import kopis.k_backend.job.JobRepository;
+import kopis.k_backend.pair.domain.Pair;
+import kopis.k_backend.pair.repository.PairRepository;
 import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.domain.PerformanceActor;
@@ -33,6 +35,7 @@ public class ScrapPlayDbService {
     private final PerformanceActorRepository performanceActorRepository;
     private final PerformanceRepository performanceRepository;
     private final JobRepository jobRepository;
+    private final PairRepository pairRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
@@ -75,14 +78,23 @@ public class ScrapPlayDbService {
             performanceLinks.addAll(links); // 결과를 전체 리스트에 추가
         }
 
+        // 공연 찾기
         String hallName = performance.getHall().getHallName(); System.out.println("hallName: " + hallName);
         Optional<String> matchingPerformanceLink = findMatchingPerformance(performance.getStartDate(), performance.getEndDate(), performanceLinks, hallName);
         System.out.println("matchingPerformanceLink: " + matchingPerformanceLink);
 
         if (matchingPerformanceLink.isPresent()) {
             System.out.println(matchingPerformanceLink.get().split("/")[3]);
-            List<ActorAndRole> actorsAndRoles = getCastInfo(matchingPerformanceLink.get().split("/")[3]);
-            saveActors(actorsAndRoles, performance);
+
+            // 배우 찾기
+            List<String> roles = new ArrayList<>();
+            List<ActorAndRole> actorsAndRoles = getCastInfo(matchingPerformanceLink.get().split("/")[3], roles);
+            // 배우 저장
+            List<Long> role_1_actors = new ArrayList<>();
+            List<Long> role_2_actors = new ArrayList<>();
+            saveActors(actorsAndRoles, roles, role_1_actors, role_2_actors, performance);
+            // 페어 저장
+            savePairs(role_1_actors, role_2_actors, performance);
 
             System.out.println("PLAYDB의 공연 배우 정보를 DB에 넣었습니다.");
         } else {
@@ -205,7 +217,7 @@ public class ScrapPlayDbService {
 
                 // 공연 종료일이 주어진 perfEndDate 이후이고, 시작일이 perfStartDate 이전인지 확인
                 if (endDate.isAfter(perfEnd.minusDays(3)) && startDate.isBefore(perfStart.plusDays(3))) {
-                    // 공통 부분 문자열의 길이 계산
+                    // 공연장 공통 부분 문자열의 길이 계산
                     int commonLength = longestCommonSubstring(hallName, hall);
 
                     if (commonLength > maxCommonLength) { // 같다면 처음 나온 공연 선택
@@ -240,7 +252,7 @@ public class ScrapPlayDbService {
     }
 
     // 배우 정보 추출
-    private List<ActorAndRole> getCastInfo(String performanceId) {
+    private List<ActorAndRole> getCastInfo(String performanceId, List<String> roles) {
         String castUrl = "http://m.playdb.co.kr/Play/CAST/" + performanceId;
         String response = restTemplate.getForObject(castUrl, String.class);
 
@@ -248,10 +260,13 @@ public class ScrapPlayDbService {
         Document doc = Jsoup.parse(response);
         List<ActorAndRole> actorsAndRoles = new ArrayList<>();
 
+        int role_num = 0;
         for (Element roleElement : doc.select(".goods_cast_detail > li")) {
             String role = Objects.requireNonNull(roleElement.select("p").first()).text();
             if(role.endsWith("역")) role = role.substring(0, role.length() - 1);
             System.out.println("role: " + role);
+            role_num++;
+            if(role_num == 1 || role_num == 2) roles.add(role);
 
             for (Element actorElement : roleElement.select(".cast_list > li")) {
                 String actorName = actorElement.select(".name").text();
@@ -268,8 +283,8 @@ public class ScrapPlayDbService {
         return actorsAndRoles;
     }
 
-    // db에 저장
-    private void saveActors(List<ActorAndRole> actorsAndRoles, Performance performance) {
+    // db에 배우 저장
+    private void saveActors(List<ActorAndRole> actorsAndRoles, List<String> roles, List<Long> role_1_actors, List<Long> role_2_actors, Performance performance) {
         boolean flag = false;
 
         for (ActorAndRole actorAndRole : actorsAndRoles) {
@@ -297,6 +312,16 @@ public class ScrapPlayDbService {
                     .build();
             flag = true;
             performanceActorRepository.save(performanceActor);
+
+            if (roles.size() == 2){
+                // role에 맞는 actor id array로 저장
+                if(Objects.equals(roles.get(0), actorAndRole.getRole())){
+                    role_1_actors.add(actorEntity.getId());
+                }
+                else if(Objects.equals(roles.get(1), actorAndRole.getRole())){
+                    role_2_actors.add(actorEntity.getId());
+                }
+            }
         }
         if(flag) {
             performance.updateCast("PLAYDB");
@@ -305,6 +330,25 @@ public class ScrapPlayDbService {
         else {
             performance.updateCast("no cast in playdb");
             performanceRepository.save(performance);
+        }
+    }
+
+    // db에 페어 저장
+    public void savePairs(List<Long> role_1_actors, List<Long> role_2_actors, Performance performance){
+
+        if (!role_1_actors.isEmpty() && !role_2_actors.isEmpty()) {
+            for (Long role1Actor : role_1_actors) {
+                for (Long role2Actor : role_2_actors) {
+                    Pair pair = Pair.builder()
+                            .performance(performance)
+                            .actor1(role1Actor)
+                            .actor2(role2Actor)
+                            .reviewCount(0L)
+                            .ratingAverage(0.0)
+                            .build();
+                    pairRepository.save(pair);
+                }
+            }
         }
     }
 

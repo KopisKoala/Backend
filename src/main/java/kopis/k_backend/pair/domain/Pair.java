@@ -25,10 +25,10 @@ public class Pair {
     private Performance performance;
 
     @Column(nullable = false)
-    private String actor1Name;
+    private Long actor1;
 
     @Column(nullable = false)
-    private String actor2Name;
+    private Long actor2;
 
     @Column(length = 7)
     private String hashtag1;

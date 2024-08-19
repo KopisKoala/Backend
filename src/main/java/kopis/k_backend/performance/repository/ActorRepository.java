@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ActorRepository extends JpaRepository<Actor, Long> {
     Optional<Actor> findByActorNameAndActorProfile(String actorName, String actorProfile);
     Page<Actor> findByActorNameContaining(String name, Pageable pageable);
+
+    Optional<Actor> findById(Long id);
 }

@@ -1,7 +1,6 @@
 package kopis.k_backend.goods.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import kopis.k_backend.performance.domain.Performance;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -45,6 +45,7 @@ public class ReviewController {
     private final PerformanceService performanceService;
     private final PairService pairService;
     private final RankService rankService;
+    private final PairConverter pairConverter;
 
     @Operation(summary = "공연에 따른 페어 반환", description = "공연에 따른 페어들을 반환하는 메서드입니다.")
     @ApiResponses(value = {
@@ -58,7 +59,7 @@ public class ReviewController {
         Performance performance = performanceService.findById(id);
         List<Pair> pairs = pairService.findPairsByPerformance(performance);
 
-        return ApiResponse.onSuccess(SuccessCode.PERFORMANCE_MATCH_PAIRS, PairConverter.pairListResDto(pairs));
+        return ApiResponse.onSuccess(SuccessCode.PERFORMANCE_MATCH_PAIRS, pairConverter.pairListResDto(pairs));
     }
 
     @Operation(summary = "리뷰 만들기 메서드", description = "리뷰를 만드는 메서드입니다.")

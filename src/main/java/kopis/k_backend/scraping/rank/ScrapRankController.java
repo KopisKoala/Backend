@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/scrape/popular")
-public class RankScrapController {
+public class ScrapRankController {
 
 }

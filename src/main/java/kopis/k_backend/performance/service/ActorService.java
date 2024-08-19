@@ -5,7 +5,6 @@ import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.repository.ActorRepository;
-import kopis.k_backend.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

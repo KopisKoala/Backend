@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public class PerformanceResponseDto {
@@ -54,5 +52,44 @@ public class PerformanceResponseDto {
 
         @Schema(description = "공연 리스트")
         private List<PerformanceResDto> performanceList;
+    }
+
+    @Schema(description = "SimpleRankPerformanceDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SimpleRankPerformanceDto {
+
+        @Schema(description = "공연 id")
+        private Long perfId;
+
+        @Schema(description = "공연 이름")
+        private String title;
+
+        @Schema(description = "공연 포스터")
+        private String poster;
+
+        @Schema(description = "공연 순위")
+        private Integer rank;
+
+        @Schema(description = "공연장 이름")
+        private String hall;
+
+        @Schema(description = "공연 상영 기간")
+        private String duration;
+
+    }
+
+    @Schema(description = "RankPerformanceListDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RankPerformanceListDto {
+
+        @Schema(description = "공연 리스트")
+        private List<SimpleRankPerformanceDto> performanceList;
+
     }
 }

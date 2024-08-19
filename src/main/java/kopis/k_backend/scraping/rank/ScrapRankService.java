@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RankScrapService {
+public class ScrapRankService {
     // 인터파크: 65 % / yes24: 20 % / melon: 8 % / 티켓 링크: 7 %
     private final PerformanceRepository performanceRepository;
     private final JobRepository jobRepository;

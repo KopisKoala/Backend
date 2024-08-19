@@ -143,7 +143,7 @@ public class KopisPerfService {
         jobRepository.save(jobEntity); // 완료
     }
 
-    @Scheduled(cron = "0 30 2 * * *", zone = "Asia/Seoul") // 기존 1시. 테스트용 2시반
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 기존 1시
     private void putPerfListEveryDayDev(){
         putPerfList();
     }
