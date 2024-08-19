@@ -52,7 +52,12 @@ public enum SuccessCode implements BaseCode {
     OPEN_AI_PAIR_REVIEW_SUMMARY(HttpStatus.OK, "OPEN_2003", "페어 별 REVIEW 요약이 완료되었습니다."),
 
     // Search
-    SEARCH_HOME_SUCCESS(HttpStatus.OK, "SEARCH_2001", "홈 화면 검색이 완료되었습니다.")
+    SEARCH_HOME_SUCCESS(HttpStatus.OK, "SEARCH_2001", "홈 화면 검색이 완료되었습니다."),
+
+    // Favorite Actor
+    FAVORITE_ACTOR_CREATED(HttpStatus.CREATED, "FAVORITE_ACTOR_2011", "찜 배우가 생성되었습니다."),
+    FAVORITE_ACTOR_DELETED(HttpStatus.OK, "FAVORITE_ACTOR_2001", "찜 배우가 삭제되었습니다.")
+
     ;
 
     private final HttpStatus httpStatus;
