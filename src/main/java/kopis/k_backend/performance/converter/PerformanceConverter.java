@@ -1,12 +1,9 @@
 package kopis.k_backend.performance.converter;
 
-<<<<<<< HEAD
 import kopis.k_backend.performance.domain.*;
 import kopis.k_backend.performance.dto.PerformanceResponseDto;
-=======
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.PerformanceResDto;
->>>>>>> 2ad71f20e5eb213806640fae4cee8ae503933dc4
 import kopis.k_backend.performance.dto.PerformanceResponseDto.PerformanceListResDto;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
