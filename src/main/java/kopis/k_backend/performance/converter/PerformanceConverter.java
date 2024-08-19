@@ -1,9 +1,6 @@
 package kopis.k_backend.performance.converter;
 
-import kopis.k_backend.performance.domain.Performance;
-import kopis.k_backend.performance.domain.PerformanceAdvertise;
-import kopis.k_backend.performance.domain.PerformancePopularMusical;
-import kopis.k_backend.performance.domain.PerformancePopularPlay;
+import kopis.k_backend.performance.domain.*;
 import kopis.k_backend.performance.dto.PerformanceResponseDto;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.PerformanceListResDto;
 import lombok.NoArgsConstructor;
@@ -96,6 +93,29 @@ public class PerformanceConverter {
 
         return PerformanceResponseDto.RankPerformanceListDto.builder()
                 .performanceList(advertiseResDtos)
+                .build();
+    }
+
+    public static PerformanceResponseDto.SimpleRankPerformanceDto simpleAttractPerformanceDto(PerformanceAttract performanceAttract){
+        String dur = performanceAttract.getPerformance().getStartDate() + " ~ " + performanceAttract.getPerformance().getEndDate();
+
+        return PerformanceResponseDto.SimpleRankPerformanceDto.builder()
+                .perfId(performanceAttract.getPerformance().getId())
+                .title(performanceAttract.getPerformance().getTitle())
+                .poster(performanceAttract.getPerformance().getPoster())
+                .rank(performanceAttract.getRanking())
+                .hall(performanceAttract.getPerformance().getHall().getHallName())
+                .duration(dur)
+                .build();
+    }
+
+    public static PerformanceResponseDto.RankPerformanceListDto performanceAttractListDto(List<PerformanceAttract> attractList){
+        List<PerformanceResponseDto.SimpleRankPerformanceDto> attractResDtos = attractList.stream()
+                .map(PerformanceConverter::simpleAttractPerformanceDto)
+                .toList();
+
+        return PerformanceResponseDto.RankPerformanceListDto.builder()
+                .performanceList(attractResDtos)
                 .build();
     }
 
