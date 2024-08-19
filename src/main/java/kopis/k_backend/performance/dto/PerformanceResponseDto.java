@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class PerformanceResponseDto {
@@ -19,8 +20,17 @@ public class PerformanceResponseDto {
         @Schema(description = "공연 id")
         private Long id;
 
+        @Schema(description = "공연장 이름")
+        private String hallName;
+
         @Schema(description = "공연 이름")
         private String title;
+
+        @Schema(description = "공연 시작 날짜")
+        private String startDate;
+
+        @Schema(description = "공연 끝 날짜")
+        private String endDate;
 
         @Schema(description = "공연 포스터")
         private String poster;
