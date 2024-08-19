@@ -4,9 +4,7 @@ import kopis.k_backend.goods.domain.Goods;
 import kopis.k_backend.goods.dto.GoodsResponseDto.GoodsListResDto;
 import kopis.k_backend.goods.dto.GoodsResponseDto.GoodsResDto;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class GoodsConverter {

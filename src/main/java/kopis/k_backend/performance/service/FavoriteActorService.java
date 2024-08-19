@@ -6,7 +6,6 @@ import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.FavoriteActor;
 import kopis.k_backend.performance.repository.FavoriteActorRepository;
 import kopis.k_backend.user.domain.User;
-import kopis.k_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

@@ -29,7 +29,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/performance")
 public class PerformanceController {
-    private final PerformanceService performanceService;
     private final PerformanceRankingService performanceRankingService;
 
     @Operation(summary = "뮤지컬 인기 순위", description = "뮤지컬 인기 순위를 반환하는 api입니다. ")

@@ -6,9 +6,7 @@ import kopis.k_backend.performance.dto.FavoriteActorResponseDto.FavoriteActorRes
 import kopis.k_backend.performance.dto.FavoriteActorResponseDto.FavoriteActorListResDto;
 import kopis.k_backend.user.domain.User;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class FavoriteActorConverter {
