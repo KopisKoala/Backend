@@ -77,8 +77,8 @@ public class PerformanceController {
     })
     @GetMapping("/attract")
     public ApiResponse<PerformanceResponseDto.RankPerformanceListDto> attractPerformances() {
-        // 리뷰 적고(5개 이상) 별점 높은 공연 db에 넣기
-        performanceRankingService.extractAttractPerformance();
+        // 리뷰 적고(5개 이상) 별점 높은 공연 db에 넣기 -> 현재 스케줄러로 돌아가고 있음
+        //performanceRankingService.extractAttractPerformance();
 
         // 오늘 날짜에 맞는 공연 가져오기
         LocalDate today = LocalDate.now();
