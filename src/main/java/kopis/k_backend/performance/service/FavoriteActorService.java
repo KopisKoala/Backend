@@ -6,8 +6,11 @@ import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.FavoriteActor;
 import kopis.k_backend.performance.repository.FavoriteActorRepository;
 import kopis.k_backend.user.domain.User;
+import kopis.k_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +20,6 @@ import java.util.List;
 @Slf4j
 public class FavoriteActorService {
     private final FavoriteActorRepository favoriteActorRepository;
-
     @Transactional
     public FavoriteActor create(User user, Actor actor) {
 
@@ -33,6 +35,8 @@ public class FavoriteActorService {
         FavoriteActor favoriteActor = FavoriteActorConverter.saveFavoriteActor(user, actor);
         favoriteActorRepository.save(favoriteActor);
 
+        user.increaseFavoriteActorCount();
+
         return favoriteActor;
     }
 
@@ -46,14 +50,24 @@ public class FavoriteActorService {
         for (FavoriteActor favoriteActor : favoriteActors) {
             if (favoriteActor.getActor().equals(actor)) {
                 favoriteActorRepository.deleteById(favoriteActor.getId());
+                user.decreaseFavoriteActorCount();
                 favoriteActorNotFound = false;
-                // favoriteActorRepository.save(favoriteActor);
                 break;
             }
         }
 
         // 해당 배우가 찜이 되어 있지 않은 경우
         if(favoriteActorNotFound) throw new IllegalArgumentException("찜이 되어 있지 않은 배우입니다.");
+    }
 
+    @Transactional
+    public List<FavoriteActor> getFavoriteActorList(User user, Integer scrollPosition, Integer fetchSize) {
+        Slice<FavoriteActor> favoriteActorSlice = favoriteActorRepository.findFavoriteActorByUser(user, PageRequest.of(scrollPosition, fetchSize));
+        return favoriteActorSlice.getContent();
+    }
+
+    @Transactional
+    public Long getFavoriteActorCount(User user) {
+        return user.getFavoriteActorCount();
     }
 }

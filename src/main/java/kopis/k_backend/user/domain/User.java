@@ -46,6 +46,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<FavoriteActor> favoriteActors = new ArrayList<>();
 
+    private Long favoriteActorCount = 0L;
+
     public User(String username, String nickname, String email, String provider) {
         this.username = username;
         this.nickname = nickname;
@@ -82,4 +84,7 @@ public class User extends BaseEntity {
             this.userRank = UserRank.VIP;
         }
     }
+
+    public void increaseFavoriteActorCount() { this.favoriteActorCount += 1; }
+    public void decreaseFavoriteActorCount() { this.favoriteActorCount -= 1; }
 }

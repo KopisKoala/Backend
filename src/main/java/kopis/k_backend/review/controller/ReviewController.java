@@ -121,7 +121,7 @@ public class ReviewController {
             @Parameter(name = "scrollPosition", description = "데이터 가져올 시작 위치. 0부터 시작. scrollPosition * fetchSize가 첫 데이터 주소"),
             @Parameter(name = "fetchSize", description = "가져올 데이터 크기 (리뷰 개수)")
     })
-    @GetMapping("/review/list/performance")
+    @GetMapping("/list/performance")
     public ApiResponse<ReviewListResDto> getPerformanceReviews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(name = "performanceId") Long performanceId,
@@ -151,7 +151,7 @@ public class ReviewController {
             @Parameter(name = "scrollPosition", description = "데이터 가져올 시작 위치. 0부터 시작. scrollPosition * fetchSize가 첫 데이터 주소"),
             @Parameter(name = "fetchSize", description = "가져올 데이터 크기 (리뷰 개수)")
     })
-    @GetMapping("/review/list/pair")
+    @GetMapping("/list/pair")
     public ApiResponse<ReviewListResDto> getPairReviews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(name = "pairId") Long pairId,

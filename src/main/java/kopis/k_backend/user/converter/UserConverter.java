@@ -19,6 +19,7 @@ public class UserConverter {
                 .userRank(UserRank.A)
                 .address("경기도 고양시 덕양구 항공대학로 76")
                 .reviewCount(0L)
+                .favoriteActorCount(0L)
                 .build();
     }
 

@@ -73,7 +73,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
-      minimum-idle: 20 # 최소 유지할 연결의 수
+      minimum-idle: 200 # 최소 유지할 연결의 수
       maximum-pool-size: 50 # 최대 풀 크기
       idle-timeout: 60000 # 1분. 사용되지 않는 연결이 유지될 최대 시간
       validation-timeout: 5000 # 5초. 연결 유효성 검사를 위한 타임아웃
@@ -88,7 +88,7 @@ spring:
         #        show_sql: true
         #        use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: create
         default_batch_fetch_size: 1000
 
 ---

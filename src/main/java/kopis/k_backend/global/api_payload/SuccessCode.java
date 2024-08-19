@@ -56,8 +56,8 @@ public enum SuccessCode implements BaseCode {
 
     // Favorite Actor
     FAVORITE_ACTOR_CREATED(HttpStatus.CREATED, "FAVORITE_ACTOR_2011", "찜 배우가 생성되었습니다."),
-    FAVORITE_ACTOR_DELETED(HttpStatus.OK, "FAVORITE_ACTOR_2001", "찜 배우가 삭제되었습니다.")
-
+    FAVORITE_ACTOR_DELETED(HttpStatus.OK, "FAVORITE_ACTOR_2001", "찜 배우가 삭제되었습니다."),
+    FAVORITE_ACTOR_LIST_VIEW_SUCCESS(HttpStatus.OK, "FAVORITE_ACTOR_2002", "찜 배우 목록 반환이 완료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;
