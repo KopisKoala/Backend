@@ -49,9 +49,9 @@ public class KopisHallService {
     @Scheduled(cron = "0 0 23 1 * ?", zone = "Asia/Seoul") // 매달 1일 23시에 공연장 재탐색 -> 새로운 공연장 추가 + 기존 공연장 정보 수정
     public void putHallList() {
         LocalDateTime today = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        DateTimeFormatter jobFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
 
-        String jobId = today.format(formatter);
+        String jobId = today.format(jobFormatter);
         String jobType = "HALL_SYNC";
         Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
@@ -117,9 +117,7 @@ public class KopisHallService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
-
-        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(jobFormatter));
         jobRepository.save(jobEntity); // 완료
     }
 

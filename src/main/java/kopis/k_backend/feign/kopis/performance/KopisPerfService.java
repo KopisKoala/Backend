@@ -59,7 +59,7 @@ public class KopisPerfService {
         this.asyncExecutor = Executors.newFixedThreadPool(20);
     }
 
-    // 모든 공연 다 돌면서 state가 "공연중"인거 날짜보고 완료 날짜가 오늘 이전이었다면 "공연완료"로 업데이트
+    // 공연 상태 공연예정 -> 공연중 & 공연중 -> 공연완료 업데이트
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정에 실행
     private void updatePerfStateEveryDayDev(){
         updatePerfState();
@@ -67,9 +67,10 @@ public class KopisPerfService {
 
     public void updatePerfState(){
         LocalDateTime today = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        DateTimeFormatter jobFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-        String jobId = today.format(formatter);
+        String jobId = today.format(jobFormatter);
         String jobType = "PERFORMANCE_STATE";
         Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
         jobRepository.save(jobEntity);
@@ -78,8 +79,8 @@ public class KopisPerfService {
         List<Performance> ongoingPerformances = performanceRepository.findByState("공연중");
 
         for (Performance performance : ongoingPerformances) {
-            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
             LocalDate startDate = LocalDate.parse(performance.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
 
             // 종료 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
             if (endDate.isBefore(ChronoLocalDate.from(today))) {
@@ -87,20 +88,62 @@ public class KopisPerfService {
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
             }
-            // 종료 날짜가 오늘 이후이고, 시작 날짜가 오늘 이전라면 상태를 "공연중"으로 업데이트
-            else if(startDate.isBefore(ChronoLocalDate.from(today)) && !Objects.equals(performance.getState(), "공연중")){
+            // 시작 날짜가 오늘 이후이라면 상태를 "공연예정"으로 업데이트
+            else if (startDate.isAfter(ChronoLocalDate.from(today))){
+                performance.updateState("공연예정");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연예정'");
+            }
+        }
+
+        // 공연 상태가 "공연예정"인 모든 공연들을 찾기
+        List<Performance> waitingPerformances = performanceRepository.findByState("공연예정");
+        for (Performance performance : waitingPerformances){
+            LocalDate startDate = LocalDate.parse(performance.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
+
+            // 시작 날짜가 오늘이거나 오늘 이전이고, 끝 날짜가 오늘 이후거나 오늘이라면 상태를 "공연중"으로 업데이트
+            if(startDate.isBefore(ChronoLocalDate.from(today.plusDays(1))) && endDate.isAfter(ChronoLocalDate.from(today.minusDays(1)))) {
                 performance.updateState("공연중");
                 performanceRepository.save(performance);
                 System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연중'");
             }
+
+            // 끝 날짜가 오늘 이전이라면 상태를 "공연완료"로 업데이트
+            else if(endDate.isBefore(ChronoLocalDate.from(today))){
+                performance.updateState("공연완료");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연완료'");
+            }
         }
+
+        // 공연 상태가 "공연완료"인 모든 공연들을 찾기
+        List<Performance> endedPerformances = performanceRepository.findByState("공연완료");
+        for (Performance performance : endedPerformances){
+            LocalDate startDate = LocalDate.parse(performance.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(performance.getEndDate(), formatter);
+
+            // 시작 날짜가 오늘이거나 오늘 이전이고, 끝 날짜가 오늘 이후거나 오늘이라면 상태를 "공연중"으로 업데이트
+            if(startDate.isBefore(ChronoLocalDate.from(today.plusDays(1))) && endDate.isAfter(ChronoLocalDate.from(today.minusDays(1)))) {
+                performance.updateState("공연중");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연중'");
+            }
+            // 시작이 오늘 이후라면
+            else if(startDate.isAfter(ChronoLocalDate.from(today))){
+                performance.updateState("공연예정");
+                performanceRepository.save(performance);
+                System.out.println("Updated Performance: " + performance.getKopisPerfId() + " to '공연예정'");
+            }
+        }
+
+
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
-        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+        jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(jobFormatter));
         jobRepository.save(jobEntity); // 완료
     }
 
-    @Scheduled(cron = "0 0 18 * * *", zone = "Asia/Seoul") // 오후 1시 테스트
+    @Scheduled(cron = "0 30 2 * * *", zone = "Asia/Seoul") // 기존 1시. 테스트용 2시반
     private void putPerfListEveryDayDev(){
         putPerfList();
     }
@@ -111,8 +154,8 @@ public class KopisPerfService {
         Integer formattedDate = Integer.valueOf(today.format(formatter));
 
         LocalDateTime today_2 = LocalDateTime.now();
-        DateTimeFormatter formatter_2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
-        String jobId = today_2.format(formatter_2);
+        DateTimeFormatter jobFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
+        String jobId = today_2.format(jobFormatter);
 
         String jobType = "PERFORMANCE_SYNC";
         Job jobEntity = new Job(jobId, "-", "IN_PROGRESS", jobType);
@@ -151,8 +194,7 @@ public class KopisPerfService {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
             LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter now_formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
-            jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(now_formatter));
+            jobEntity.setStatus("COMPLETED"); jobEntity.setEnd(now.format(jobFormatter));
             jobRepository.save(jobEntity); // 완료
 
         }, asyncExecutor).exceptionally(ex -> {

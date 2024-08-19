@@ -1,7 +1,5 @@
 package kopis.k_backend.performance.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kopis.k_backend.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
