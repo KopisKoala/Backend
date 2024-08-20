@@ -56,7 +56,7 @@ public class Performance {
     private String state;
 
     @Column(nullable = false)
-    private String duration;
+    private String runtime;
 
     @Column(nullable = false)
     private String lowestPrice;
@@ -135,8 +135,8 @@ public class Performance {
         this.state = state;
     }
 
-    public void updateExistingPerformance(String duration, String price, String cast, String lowestPrice, String highestPrice, String ticketingLink){
-        this.duration = duration;
+    public void updateExistingPerformance(String runtime, String price, String cast, String lowestPrice, String highestPrice, String ticketingLink){
+        this.runtime = runtime;
         this.price = price;
         this.cast = cast;
         this.lowestPrice = lowestPrice;

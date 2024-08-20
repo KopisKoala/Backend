@@ -1,16 +1,16 @@
 package kopis.k_backend.search.converter;
 
-import kopis.k_backend.performance.dto.ActorResponseDto.ActorListResDto;
-import kopis.k_backend.performance.dto.PerformanceResponseDto.PerformanceListResDto;
+import kopis.k_backend.performance.dto.ActorResponseDto.HomeSearchActorListResDto;
+import kopis.k_backend.performance.dto.PerformanceResponseDto.HomeSearchPerformanceListResDto;
 import kopis.k_backend.search.dto.SearchResponseDto.SearchResDto;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class SearchConverter {
-    public static SearchResDto searchResDto(PerformanceListResDto performanceResDto, ActorListResDto actorResDto) {
+    public static SearchResDto searchResDto(HomeSearchPerformanceListResDto homeSearchPerformanceListResDto, HomeSearchActorListResDto homeSearchActorListResDto) {
         return SearchResDto.builder()
-                .performances(performanceResDto)
-                .actors(actorResDto)
+                .performances(homeSearchPerformanceListResDto)
+                .actors(homeSearchActorListResDto)
                 .build();
     }
 }
