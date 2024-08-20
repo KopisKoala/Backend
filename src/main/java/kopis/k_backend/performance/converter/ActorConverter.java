@@ -2,6 +2,7 @@ package kopis.k_backend.performance.converter;
 
 import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.Performance;
+import kopis.k_backend.performance.domain.PerformanceActor;
 import kopis.k_backend.performance.dto.ActorResponseDto.PerformanceDetailActorListResDto;
 import kopis.k_backend.performance.dto.ActorResponseDto.PerformanceDetailActorResDto;
 import kopis.k_backend.performance.dto.ActorResponseDto.HomeSearchActorResDto;
@@ -29,25 +30,26 @@ public class ActorConverter {
                 .build();
     }
 
-    public static PerformanceDetailActorResDto performanceDetailActorResDto(User user, Actor actor) {
+    public static PerformanceDetailActorResDto performanceDetailActorResDto(User user, PerformanceActor performanceActor) {
 
         boolean isFavorite = user.getFavoriteActors().stream()
-                .anyMatch(favoriteActor -> favoriteActor.getActor().equals(actor));
+                .anyMatch(favoriteActor -> favoriteActor.getActor().equals(performanceActor.getActor()));
 
         String isFavoriteActor = isFavorite ? "Y" : "N";
 
         return PerformanceDetailActorResDto.builder()
-                .id(actor.getId())
-                .actorName(actor.getActorName())
-                .actorProfile(actor.getActorProfile())
+                .id(performanceActor.getActor().getId())
+                .actorName(performanceActor.getActor().getActorName())
+                .actorProfile(performanceActor.getActor().getActorProfile())
                 .isFavoriteActor(isFavoriteActor)
+                .characterName(performanceActor.getCharacterName())
                 .build();
     }
 
     public static PerformanceDetailActorListResDto performanceDetailActorListResDto (User user, Performance performance) {
 
         List<PerformanceDetailActorResDto> performanceDetailActorResDtoList = performance.getPerformanceActors().stream()
-                .map(performanceActor -> performanceDetailActorResDto(user, performanceActor.getActor()))
+                .map(performanceActor -> performanceDetailActorResDto(user, performanceActor))
                 .collect(Collectors.toList());
 
         return PerformanceDetailActorListResDto.builder()
