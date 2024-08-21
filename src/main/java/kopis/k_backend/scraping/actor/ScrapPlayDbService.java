@@ -38,7 +38,7 @@ public class ScrapPlayDbService {
     private final PairRepository pairRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul") // 매일 아침 7시
+    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul") // 매일 아침 7시. 10시로 테스트
     private void scrapeActorsEveryDay(){
         LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter jobFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm");
