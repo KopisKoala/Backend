@@ -50,6 +50,7 @@ public class SearchController {
     })
     @Parameters({
             @Parameter(name = "query", description = "조회하고 싶은 공연 이름의 부분 문자열")
+            @Parameter(name = "pageable", description = "이 메서드에서 size는 한 번에 검색되는 공연 수입니다.")
     })
     @GetMapping(value = "pairs/performance")
     public ApiResponse<PairSearchResDto> getPairSearchResults(
