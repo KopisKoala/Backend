@@ -2,17 +2,17 @@ package kopis.k_backend.performance.converter;
 
 import kopis.k_backend.performance.domain.*;
 import kopis.k_backend.performance.dto.ActorResponseDto.PerformanceDetailActorListResDto;
+import kopis.k_backend.performance.dto.PerformanceResponseDto;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.PerformanceDetailResDto;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.SimpleRankPerformanceDto;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.RankPerformanceListDto;
 import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.HomeSearchPerformanceResDto;
 import kopis.k_backend.performance.dto.PerformanceResponseDto.HomeSearchPerformanceListResDto;
-
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
-
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -150,6 +150,41 @@ public class PerformanceConverter {
                 .isSuyu(performance.getHall().getSuyu())
                 .isParking(performance.getHall().getParkinglot())
                 .performanceDetailActorListResDto(performanceDetailActorListResDto)
+                .build();
+    }
+
+    public static PerformanceResponseDto.SimpleRecommendPerfDto simpleRecommendResDto(Performance performance){
+        return PerformanceResponseDto.SimpleRecommendPerfDto.builder()
+                .id(performance.getId())
+                .title(performance.getTitle())
+                .poster(performance.getPoster())
+                .ratingAverage(performance.getRatingAverage())
+
+                .price(performance.getPrice())
+                .startDate(performance.getStartDate())
+                .endDate(performance.getEndDate())
+                .build();
+    }
+
+    public static PerformanceResponseDto.StandardRecommendPerfDto standardRecommendResDto(String standard, List<Performance> performanceList){
+        List<PerformanceResponseDto.SimpleRecommendPerfDto> recommendResDtos = performanceList.stream()
+                .map(PerformanceConverter::simpleRecommendResDto)
+                .toList();
+
+        return PerformanceResponseDto.StandardRecommendPerfDto.builder()
+                .standard(standard)
+                .performancesByStandard(recommendResDtos)
+                .build();
+
+    }
+
+    public static PerformanceResponseDto.StandardRecommendPerfListDto standardRecommendListResDto(Map<String, List<Performance>> performancesByStandardMap) {
+        List<PerformanceResponseDto.StandardRecommendPerfDto> recommendResDtos = performancesByStandardMap.entrySet().stream()
+                .map(entry -> standardRecommendResDto(entry.getKey(), entry.getValue()))
+                .toList();
+
+        return PerformanceResponseDto.StandardRecommendPerfListDto.builder()
+                .performancesByStandardList(recommendResDtos)
                 .build();
     }
 

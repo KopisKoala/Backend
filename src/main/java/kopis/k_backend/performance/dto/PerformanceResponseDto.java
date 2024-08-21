@@ -150,4 +150,61 @@ public class PerformanceResponseDto {
 
     }
 
+    @Schema(description = "SimpleRecommendPerfDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SimpleRecommendPerfDto {
+
+        @Schema(description = "공연 id - 이걸로 아래 리뷰 가져오면 돼요")
+        private Long id;
+
+        @Schema(description = "공연 제목")
+        private String title;
+
+        @Schema(description = "공연 포스터")
+        private String poster;
+
+        @Schema(description = "평점")
+        private Double ratingAverage;
+
+        @Schema(description = "시작날짜")
+        private String startDate;
+
+        @Schema(description = "종료날짜")
+        private String endDate;
+
+        @Schema(description = "가격")
+        private String price;
+
+    }
+
+    @Schema(description = "StandardRecommendPerfDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StandardRecommendPerfDto {
+
+        @Schema(description = "추천 기준")
+        private String standard;
+
+        @Schema(description = "공연 리스트")
+        private List<SimpleRecommendPerfDto> performancesByStandard;
+
+    }
+
+    @Schema(description = "StandardRecommendPerfListDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StandardRecommendPerfListDto {
+
+        @Schema(description = "공연 리스트")
+        private List<StandardRecommendPerfDto> performancesByStandardList;
+
+    }
+
 }
