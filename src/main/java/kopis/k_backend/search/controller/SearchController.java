@@ -49,7 +49,7 @@ public class SearchController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_2002", description = "공연 이름에 따른 페어 목록 반환 완료했습니다.")
     })
     @Parameters({
-            @Parameter(name = "query", description = "조회하고 싶은 공연 이름의 부분 문자열")
+            @Parameter(name = "query", description = "조회하고 싶은 공연 이름의 부분 문자열"),
             @Parameter(name = "pageable", description = "이 메서드에서 size는 한 번에 검색되는 공연 수입니다.")
     })
     @GetMapping(value = "pairs/performance")
