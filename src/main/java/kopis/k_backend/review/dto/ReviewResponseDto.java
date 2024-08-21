@@ -73,6 +73,8 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 리스트")
         private List<ReviewResDto> reviewList;
 
+        @Schema(description = "리뷰 요약")
+        private String reviewSummary;
     }
 
     @Schema(description = "MonthReviewResDto")

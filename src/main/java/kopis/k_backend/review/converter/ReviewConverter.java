@@ -65,11 +65,22 @@ public class ReviewConverter {
                 .map(review -> simpleReviewDto(review, ratingType, user))
                 .collect(Collectors.toList());
 
+        String reviewSummary = null;
+
+        if (Objects.equals(ratingType, "performance") && !reviews.isEmpty()) {
+            System.out.println("test");
+            reviewSummary = reviews.get(0).getPerformance().getReviewSummary();
+        }
+        else if (Objects.equals(ratingType, "pair") && !reviews.isEmpty()) {
+            reviewSummary = reviews.get(0).getPair().getReviewSummary();
+        }
+
         return ReviewListResDto.builder()
                 .averageRating(rating)
                 .hashtags(hashtags)
                 .reviewCount(reviewCount)
                 .reviewList(reviewResDtoList)
+                .reviewSummary(reviewSummary)
                 .build();
     }
 
