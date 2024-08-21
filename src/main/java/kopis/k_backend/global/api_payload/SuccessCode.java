@@ -59,6 +59,7 @@ public enum SuccessCode implements BaseCode {
 
     // Search
     SEARCH_HOME_SUCCESS(HttpStatus.OK, "SEARCH_2001", "홈 화면 검색이 완료되었습니다."),
+    SEARCH_PAIR_SUCCESS(HttpStatus.OK, "SEARCH_2002", "공연 이름에 따른 페어 검색이 완료되었습니다."),
 
     // Favorite Actor
     FAVORITE_ACTOR_CREATED(HttpStatus.CREATED, "FAVORITE_ACTOR_2011", "찜 배우가 생성되었습니다."),
