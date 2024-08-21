@@ -87,8 +87,8 @@ public class ReviewResponseDto {
         @Schema(description = "공연 포스터")
         private String poster;
 
-        @Schema(description = "공연 관람 날짜")
-        private LocalDate performanceDate;
+        @Schema(description = "공연 관람 날짜 (일)")
+        private String performanceDate;
     }
 
     @Schema(description = "MonthReviewListResDto")

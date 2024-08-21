@@ -78,7 +78,7 @@ public class ReviewConverter {
         return MonthReviewResDto.builder()
                 .id(review.getId())
                 .poster(review.getPerformance().getPoster())
-                .performanceDate(review.getPerformanceDate())
+                .performanceDate(String.valueOf(review.getPerformanceDate().getDayOfMonth()))
                 .build();
     }
 
