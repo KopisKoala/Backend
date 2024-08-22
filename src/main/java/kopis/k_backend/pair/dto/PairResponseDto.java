@@ -88,4 +88,14 @@ public class PairResponseDto {
         @Schema(description = "공연 별 페어 수")
         private Long pairCount;
     }
+
+    @Schema(description = "PopularPairListResDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PopularPairListResDto {
+        @Schema(description = "공연 상세 리스트")
+        private List<PairDetailResDto> pairDetailResDtoList;
+    }
 }

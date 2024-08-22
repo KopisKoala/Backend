@@ -3,6 +3,7 @@ package kopis.k_backend.pair.converter;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.pair.domain.Pair;
+import kopis.k_backend.pair.dto.PairResponseDto.PopularPairListResDto;
 import kopis.k_backend.pair.dto.PairResponseDto.PairDetailListResDto;
 import kopis.k_backend.pair.dto.PairResponseDto.PairDetailResDto;
 import kopis.k_backend.pair.dto.PairResponseDto.SimplePairResDto;
@@ -76,6 +77,16 @@ public class PairConverter {
                 .pairDetailResDtoList(pairDetailListResDtoList)
                 .pairCount((long) pairDetailListResDtoList.size())
                 .performanceTitle(pairList.get(0).getPerformance().getTitle())
+                .build();
+    }
+
+    public PopularPairListResDto popularPairListResDto (List<Pair> pairList) {
+        List<PairDetailResDto> pairDetailResDtoList = pairList.stream()
+                .map(this::pairDetailResDto)
+                .toList();
+
+        return PopularPairListResDto.builder()
+                .pairDetailResDtoList(pairDetailResDtoList)
                 .build();
     }
 }

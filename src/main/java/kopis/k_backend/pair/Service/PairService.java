@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -82,4 +83,7 @@ public class PairService {
         return pairRepository.findAllByPerformance(performance);
     }
 
+    public List<Pair> findPopularPairList(Pageable pageable) {
+        return pairRepository.findPopularPairs(pageable);
+    }
 }
