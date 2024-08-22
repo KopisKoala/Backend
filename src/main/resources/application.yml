@@ -30,6 +30,11 @@ openai:
   url:
     prompt: https://api.openai.com/v1/completions
 
+# 도로명 주소 -> 좌표
+kakao:
+  local:
+    key: ${KAKAO_LOCAL_KEY}
+
 # s3
 cloud:
   aws:
