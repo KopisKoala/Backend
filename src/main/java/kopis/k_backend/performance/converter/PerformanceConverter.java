@@ -11,6 +11,7 @@ import kopis.k_backend.performance.dto.PerformanceResponseDto.HomeSearchPerforma
 import kopis.k_backend.performance.dto.PerformanceResponseDto.HomeSearchPerformanceListResDto;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,10 +26,10 @@ public class PerformanceConverter {
                 .build();
     }
 
-    public static HomeSearchPerformanceListResDto homeSearchPerformanceListResDto (Page<Performance> performancePage) {
+    public static HomeSearchPerformanceListResDto homeSearchPerformanceListResDto (Slice<Performance> performanceSlice) {
         return HomeSearchPerformanceListResDto.builder()
-                .performanceCount(performancePage.getTotalElements())
-                .performanceList(performancePage.getContent().stream()
+                .performanceCount(performanceSlice.stream().count())
+                .performanceList(performanceSlice.getContent().stream()
                         .map(PerformanceConverter::homeSearchPerformanceResDto)
                         .collect(Collectors.toList())
                 )

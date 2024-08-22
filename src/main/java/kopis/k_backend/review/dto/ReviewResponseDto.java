@@ -73,6 +73,8 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 리스트")
         private List<ReviewResDto> reviewList;
 
+        @Schema(description = "리뷰 요약")
+        private String reviewSummary;
     }
 
     @Schema(description = "MonthReviewResDto")
@@ -87,8 +89,8 @@ public class ReviewResponseDto {
         @Schema(description = "공연 포스터")
         private String poster;
 
-        @Schema(description = "공연 관람 날짜")
-        private LocalDate performanceDate;
+        @Schema(description = "공연 관람 날짜 (일)")
+        private String performanceDate;
     }
 
     @Schema(description = "MonthReviewListResDto")

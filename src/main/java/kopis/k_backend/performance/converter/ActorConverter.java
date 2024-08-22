@@ -10,16 +10,17 @@ import kopis.k_backend.performance.dto.ActorResponseDto.HomeSearchActorListResDt
 import kopis.k_backend.user.domain.User;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class ActorConverter {
-    public static HomeSearchActorListResDto homeSearchActorListResDto (Page<Actor> actorPage) {
+    public static HomeSearchActorListResDto homeSearchActorListResDto (Slice<Actor> actorSlice) {
         return HomeSearchActorListResDto.builder()
-                .actorCount(actorPage.getTotalElements())
-                .actorList(actorPage.getContent().stream()
+                .actorCount(actorSlice.stream().count())
+                .actorList(actorSlice.getContent().stream()
                         .map(actor -> new HomeSearchActorResDto(
                                 actor.getId(),
                                 actor.getActorName(),

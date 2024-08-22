@@ -4,6 +4,7 @@ import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.domain.PerformanceType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +20,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
 
     List<Performance> findByState(String state);
 
-    Page<Performance> findByTitleContaining(String title, Pageable pageable);
+    Slice<Performance> findByTitleContaining(String title, Pageable pageable);
 
     @Query("SELECT p FROM Performance p WHERE p.reviewCount > :minReviews AND p.state != '공연완료' ORDER BY p.ratingAverage DESC, p.reviewCount ASC")
     List<Performance> findTop10ByMinReviewsOrderByRatingAndReviewCount(@Param("minReviews") Long minReviews);
