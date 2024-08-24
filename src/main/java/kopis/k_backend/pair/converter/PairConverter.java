@@ -3,6 +3,8 @@ package kopis.k_backend.pair.converter;
 import kopis.k_backend.global.api_payload.ErrorCode;
 import kopis.k_backend.global.exception.GeneralException;
 import kopis.k_backend.pair.domain.Pair;
+import kopis.k_backend.pair.dto.PairResponseDto.RecommendPairResDto;
+import kopis.k_backend.pair.dto.PairResponseDto.RecommendPairListDto;
 import kopis.k_backend.pair.dto.PairResponseDto.PopularPairListResDto;
 import kopis.k_backend.pair.dto.PairResponseDto.PairDetailListResDto;
 import kopis.k_backend.pair.dto.PairResponseDto.PairDetailResDto;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,6 +90,26 @@ public class PairConverter {
 
         return PopularPairListResDto.builder()
                 .pairDetailResDtoList(pairDetailResDtoList)
+                .build();
+    }
+
+    public RecommendPairResDto recommendPairResDto(Pair pair, String standard) {
+        return RecommendPairResDto.builder()
+                .standard(standard)
+                .pairDetailResDtoByStandard(pairDetailResDto(pair))
+                .build();
+    }
+
+    public RecommendPairListDto recommendPairListDto(Pair topRatedPair, Pair favoritePair, Pair preActorPair, Pair preHashtagPair) {
+        List<RecommendPairResDto> recommendPairResDtoList = new ArrayList<>();
+
+        if (topRatedPair != null) recommendPairResDtoList.add(recommendPairResDto(topRatedPair, "topRatedPair"));
+        if (favoritePair != null) recommendPairResDtoList.add(recommendPairResDto(favoritePair, "favoritePair"));
+        if (preActorPair != null) recommendPairResDtoList.add(recommendPairResDto(preActorPair, "preActorPair"));
+        if (preHashtagPair != null) recommendPairResDtoList.add(recommendPairResDto(preHashtagPair, "preHashtagPair"));
+
+        return RecommendPairListDto.builder()
+                .recommendPairResDtoList(recommendPairResDtoList)
                 .build();
     }
 }
