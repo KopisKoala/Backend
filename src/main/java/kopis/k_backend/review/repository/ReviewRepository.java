@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import kopis.k_backend.review.domain.Review;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -63,5 +64,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Long sumPerformanceRatingsByPerformance(@Param("performance") Performance performance);
 
     // 특정 사용자와 날짜 범위에 해당하는 리뷰 조회
-    List<Review> findAllByWriterAndCreatedAtBetween(User writer, LocalDateTime start, LocalDateTime end);
+    List<Review> findAllByWriterAndPerformanceDateBetween(User writer, LocalDate start, LocalDate end);
 }

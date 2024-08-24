@@ -117,13 +117,13 @@ public class ReviewService {
 
     public List<Review> getMonthReviewList(User user, LocalDate month) {
         // 해당 월의 시작 일
-        LocalDateTime startOfMonth = month.withDayOfMonth(1).atStartOfDay();
+        LocalDate startOfMonth = month.withDayOfMonth(1).atStartOfDay().toLocalDate();
 
         // 해당 월의 마지막 일
-        LocalDateTime endOfMonth = month.withDayOfMonth(month.lengthOfMonth()).atTime(23, 59, 59);
+        LocalDate endOfMonth = month.withDayOfMonth(month.lengthOfMonth()).atTime(23, 59, 59).toLocalDate();
 
         // 해당 월에 작성된 리뷰 조회
-        return reviewRepository.findAllByWriterAndCreatedAtBetween(user, startOfMonth, endOfMonth);
+        return reviewRepository.findAllByWriterAndPerformanceDateBetween(user, startOfMonth, endOfMonth);
     }
 
     public Long getSumOfPairRatings(Pair pair) {

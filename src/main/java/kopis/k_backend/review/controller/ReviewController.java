@@ -156,7 +156,7 @@ public class ReviewController {
         return ApiResponse.onSuccess(SuccessCode.REVIEW_LIST_VIEW_SUCCESS, ReviewConverter.reviewListResDto(reviews, reviewCount, rating, ratingType, hashtags, user));
     }
 
-    @Operation(summary = "마이페이지 월 리뷰 목록 조회", description = "사용자가 해당 월에 작성한 리뷰 목록을 반환하는 메서드입니다.")
+    @Operation(summary = "마이페이지 월 리뷰 목록 조회", description = "사용자가 해당 월에 본 리뷰 목록을 반환하는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2005", description = "월 리뷰 목록 반환이 완료되었습니다.")
     })
