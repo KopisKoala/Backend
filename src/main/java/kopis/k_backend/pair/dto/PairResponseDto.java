@@ -1,6 +1,7 @@
 package kopis.k_backend.pair.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import kopis.k_backend.pair.domain.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -95,7 +96,30 @@ public class PairResponseDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PopularPairListResDto {
-        @Schema(description = "공연 상세 리스트")
+        @Schema(description = "페어 상세 리스트")
         private List<PairDetailResDto> pairDetailResDtoList;
+    }
+
+    @Schema(description = "RecommendPairResDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RecommendPairResDto {
+        @Schema(description = "추천 기준")
+        private String standard;
+
+        @Schema(description = "페어 정보")
+        private PairDetailResDto pairDetailResDtoByStandard;
+    }
+
+    @Schema(description = "RecommendPairListDto")
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RecommendPairListDto {
+        @Schema(description = "추천 기준 별 페어 리스트")
+        private List<RecommendPairResDto> recommendPairResDtoList;
     }
 }
