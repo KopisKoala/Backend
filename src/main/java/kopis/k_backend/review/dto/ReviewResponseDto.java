@@ -116,6 +116,9 @@ public class ReviewResponseDto {
         @Schema(description = "리뷰 id")
         private Long id;
 
+        @Schema(description = "리뷰 내용")
+        private String content;
+
         @Schema(description = "공연 이름")
         private String performanceName;
 
@@ -130,6 +133,12 @@ public class ReviewResponseDto {
 
         @Schema(description = "공연 만족도")
         private Integer performanceRatings;
+
+        @Schema(description = "배우1 이름")
+        private String actor1Name;
+
+        @Schema(description = "배우2 이름")
+        private String actor2Name;
 
         @Schema(description = "페어 만족도")
         private Integer pairRatings;

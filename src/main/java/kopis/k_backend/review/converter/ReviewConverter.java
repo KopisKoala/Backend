@@ -1,7 +1,9 @@
 package kopis.k_backend.review.converter;
 
 import kopis.k_backend.pair.domain.Pair;
+import kopis.k_backend.performance.domain.Actor;
 import kopis.k_backend.performance.domain.Performance;
+import kopis.k_backend.performance.repository.ActorRepository;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.domain.ViewingPartner;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
@@ -12,13 +14,18 @@ import kopis.k_backend.review.dto.ReviewResponseDto.ReviewResDto;
 import kopis.k_backend.review.dto.ReviewResponseDto.ReviewListResDto;
 import kopis.k_backend.user.domain.User;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class ReviewConverter {
+    private final ActorRepository actorRepository;
+
     public static Review saveReview(ReviewReqDto review, User user, Performance performance, Pair pair){
         return Review.builder()
                 .writer(user)
@@ -104,7 +111,14 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static MyReviewResDto myReviewResDto(Review review) {
+    public MyReviewResDto myReviewResDto(Review review) {
+
+        Actor actor1 = actorRepository.findById(review.getPair().getActor1())
+                .orElseThrow(() -> new RuntimeException("actor not found"));
+
+        Actor actor2 = actorRepository.findById(review.getPair().getActor2())
+                .orElseThrow(() -> new RuntimeException("actor not found"));
+
         return MyReviewResDto.builder()
                 .id(review.getId())
                 .performanceName(review.getPerformance().getTitle())
@@ -116,6 +130,9 @@ public class ReviewConverter {
                 .hashtag(review.getHashtag())
                 .viewingPartner(review.getViewingPartner())
                 .memo(review.getMemo())
+                .content(review.getContent())
+                .actor1Name(actor1.getActorName())
+                .actor2Name(actor2.getActorName())
                 .build();
     }
 }

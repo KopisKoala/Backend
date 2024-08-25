@@ -46,6 +46,8 @@ public class ReviewController {
     private final PairService pairService;
     private final RankService rankService;
 
+    private final ReviewConverter reviewConverter;
+
     @Operation(summary = "리뷰 만들기 메서드", description = "리뷰를 만드는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2011", description = "리뷰 생성이 완료되었습니다.")
@@ -184,7 +186,7 @@ public class ReviewController {
     ){
         Review review = reviewService.findById(reviewId);
 
-        return ApiResponse.onSuccess(SuccessCode.REVIEW_MY_SUCCESS, ReviewConverter.myReviewResDto(review));
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MY_SUCCESS, reviewConverter.myReviewResDto(review));
 
     }
 
