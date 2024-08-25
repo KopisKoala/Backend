@@ -7,6 +7,7 @@ import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
 import kopis.k_backend.review.domain.ReviewLike;
+import kopis.k_backend.review.domain.ViewingPartner;
 import kopis.k_backend.review.repository.ReviewLikeRepository;
 import kopis.k_backend.review.repository.ReviewRepository;
 import kopis.k_backend.global.api_payload.ErrorCode;
@@ -135,15 +136,17 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateViewingPartner(Review review, Integer partnerNumber) {
-        review.updateViewingPartner(partnerNumber);
+    public ViewingPartner updateViewingPartner(Review review, Integer partnerNumber) {
+        ViewingPartner viewingPartner = review.updateViewingPartner(partnerNumber);
         reviewRepository.save(review);
+        return viewingPartner;
     }
 
     @Transactional
-    public void updateMemo(Review review, String memo) {
-        review.updateMemo(memo);
+    public String updateMemo(Review review, String memo) {
+        String memoResult = review.updateMemo(memo);
         reviewRepository.save(review);
+        return memoResult;
     }
 }
 

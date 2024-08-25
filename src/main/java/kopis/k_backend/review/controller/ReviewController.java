@@ -13,6 +13,7 @@ import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.performance.service.PerformanceService;
 import kopis.k_backend.review.converter.ReviewConverter;
 import kopis.k_backend.review.domain.Review;
+import kopis.k_backend.review.domain.ViewingPartner;
 import kopis.k_backend.review.dto.ReviewRequestDto.ReviewReqDto;
 import kopis.k_backend.global.api_payload.*;
 import kopis.k_backend.review.dto.ReviewResponseDto.MyReviewResDto;
@@ -198,12 +199,12 @@ public class ReviewController {
     @Parameters({
             @Parameter(name = "partnerNumber", description = "0: 미입력, 1: 가족, 2: 친구, 3: 연인, 4: 혼자")
     })
-    public void updateViewingPartner(
+    public ApiResponse<ViewingPartner> updateViewingPartner(
             @PathVariable(name = "review-id") Long reviewId,
             @RequestParam(name = "partnerNumber") Integer partnerNumber
     ){
         Review review = reviewService.findById(reviewId);
-        reviewService.updateViewingPartner(review, partnerNumber);
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_VIEWING_PARTNER_SUCCESS, reviewService.updateViewingPartner(review, partnerNumber));
     }
 
     @Operation(summary = "리뷰 메모 추가", description = "리뷰에 메모를 적는 메서드입니다.")
@@ -211,11 +212,12 @@ public class ReviewController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "REVIEW_2008", description = "메모 추가가 완료되었습니다.")
     })
     @PatchMapping(value = "/myPage/memo/update/{review-id}")
-    public void updateMemo(
+    public ApiResponse<String> updateMemo(
             @PathVariable(name = "review-id") Long reviewId,
             @RequestBody String memo
     ){
         Review review = reviewService.findById(reviewId);
-        reviewService.updateMemo(review, memo);
+
+        return ApiResponse.onSuccess(SuccessCode.REVIEW_MEMO_SUCCESS, reviewService.updateMemo(review, memo));
     }
 }
