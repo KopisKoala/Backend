@@ -13,6 +13,7 @@ import kopis.k_backend.search.dto.SearchResponseDto.HomeSearchResDto;
 import kopis.k_backend.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,9 +38,10 @@ public class SearchController {
     })
     @GetMapping(value = "/home")
     public ApiResponse<HomeSearchResDto> getHomeSearchResults(
-            @RequestParam final String query,
-            @PageableDefault final Pageable pageable
+            @RequestParam final String query
     ){
+        Pageable pageable = PageRequest.of(0, 50);
+
         final HomeSearchResDto homeSearchResDto = searchService.getHomeSearchResDto(query, pageable);
         return ApiResponse.onSuccess(SuccessCode.SEARCH_HOME_SUCCESS, homeSearchResDto);
     }
@@ -49,14 +51,15 @@ public class SearchController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_2002", description = "공연 이름에 따른 페어 목록 반환 완료했습니다.")
     })
     @Parameters({
-            @Parameter(name = "query", description = "조회하고 싶은 공연 이름의 부분 문자열"),
-            @Parameter(name = "pageable", description = "이 메서드에서 size는 한 번에 검색되는 공연 수입니다.")
+            @Parameter(name = "query", description = "조회하고 싶은 공연 이름의 부분 문자열")
     })
     @GetMapping(value = "pairs/performance")
     public ApiResponse<PairSearchResDto> getPairSearchResults(
-            @RequestParam final String query,
-            @PageableDefault final Pageable pageable
+            @RequestParam final String query
     ){
+        // pageSize: 한 번에 검색되는 공연 수
+        Pageable pageable = PageRequest.of(0, 5);
+
         final List<Performance> performanceList = searchService.getPerformanceList(query, pageable);
         return ApiResponse.onSuccess(SuccessCode.SEARCH_PAIR_SUCCESS, searchService.getPairSearchResDto(performanceList));
     }
