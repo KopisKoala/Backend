@@ -74,7 +74,7 @@ public class Review extends BaseEntity {
         return this.likeCount;
     }
 
-    public void updateViewingPartner(Integer partnerNumber) {
+    public ViewingPartner updateViewingPartner(Integer partnerNumber) {
         if (partnerNumber == 0) {
             viewingPartner = ViewingPartner.NULL;
         }
@@ -93,9 +93,12 @@ public class Review extends BaseEntity {
         else {
             throw new IllegalArgumentException("Invalid partner number: " + partnerNumber);
         }
+
+        return viewingPartner;
     }
 
-    public void updateMemo(String memo) {
+    public String updateMemo(String memo) {
         this.memo = memo;
+        return this.memo;
     }
 }
