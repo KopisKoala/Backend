@@ -74,7 +74,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
 
-        if(Objects.equals(review.getWriter(), user.getUsername())) {
+        if(Objects.equals(review.getWriterName(), user.getUsername())) {
             // 리뷰 삭제
             reviewRepository.deleteById(id);
 
