@@ -20,11 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +46,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review create(ReviewReqDto reviewReqDto, User user, Performance performance, Pair pair) throws IOException {
+    public Review create(ReviewReqDto reviewReqDto, User user, Performance performance, Pair pair) {
 
         Review review = ReviewConverter.saveReview(reviewReqDto, user, performance, pair);
         reviewRepository.save(review);
@@ -74,7 +70,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> GeneralException.of(ErrorCode.REVIEW_NOT_FOUND));
 
-        if(Objects.equals(review.getWriter(), user.getUsername())) {
+        if(Objects.equals(review.getWriterName(), user.getUsername())) {
             // 리뷰 삭제
             reviewRepository.deleteById(id);
 
