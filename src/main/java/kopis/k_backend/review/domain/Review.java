@@ -26,7 +26,7 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User writer;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String writerName; // username
 
     @ManyToOne(fetch = FetchType.LAZY)
