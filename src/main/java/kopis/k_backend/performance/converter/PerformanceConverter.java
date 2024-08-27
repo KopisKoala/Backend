@@ -23,6 +23,7 @@ public class PerformanceConverter {
                 .id(performance.getId())
                 .title(performance.getTitle())
                 .poster(performance.getPoster())
+                .state(performance.getState())
                 .build();
     }
 
