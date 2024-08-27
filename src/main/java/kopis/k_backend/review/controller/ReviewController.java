@@ -214,7 +214,7 @@ public class ReviewController {
     @PatchMapping(value = "/myPage/memo/update/{review-id}")
     public ApiResponse<String> updateMemo(
             @PathVariable(name = "review-id") Long reviewId,
-            @RequestBody String memo
+            @RequestParam String memo
     ){
         Review review = reviewService.findById(reviewId);
 
