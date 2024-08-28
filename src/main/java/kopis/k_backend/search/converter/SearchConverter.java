@@ -34,7 +34,7 @@ public class SearchConverter {
                 .filter(performance -> !performance.getPairs().isEmpty())
                 .map(performance -> {
                     PairDetailListResDto pairDetailListResDto = pairConverter.pairDetailListResDto(performance.getPairs());
-                    totalPairCount.addAndGet(pairDetailListResDto.getPairCount());
+                    totalPairCount.addAndGet(pairDetailListResDto.getPairDetailResDtoList().size());
                     return pairDetailListResDto;
                 })
                 .collect(Collectors.toList());
