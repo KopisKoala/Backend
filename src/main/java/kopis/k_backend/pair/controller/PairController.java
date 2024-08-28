@@ -54,7 +54,7 @@ public class PairController {
         return ApiResponse.onSuccess(SuccessCode.PERFORMANCE_MATCH_PAIRS_SUCCESS, pairConverter.pairListResDto(pairs));
     }
 
-    @Operation(summary = "인기 있는 페어 목록 반환", description = "현재 가장 인기 있는 페어 목록을 반환하는 메서드입니다.")
+    @Operation(summary = "인기 있는 페어 목록 조회", description = "현재 가장 인기 있는 페어 목록을 조회하는 메서드입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAIR_2002", description = "현재 가장 인기 있는 페어 목록 반환을 완료했습니다.")
     })
