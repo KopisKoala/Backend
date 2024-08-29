@@ -151,11 +151,11 @@ public class PerformanceController {
 
         // 각 추천 리스트를 StandardRecommendPerfDto로 변환하여 추가
         Map<String, List<Performance>> performancesByStandardMap = new HashMap<>();
-        performancesByStandardMap.put("리뷰 많고 별점 높은 공연", topRatedPerformances);
-        performancesByStandardMap.put("좋아하는 배우의 공연", favoriteActorPerformances);
-        performancesByStandardMap.put("시작이 임박한 공연", upcomingPerformances);
-        performancesByStandardMap.put("마감이 임박한 공연", upcomingEndPerformances);
-        performancesByStandardMap.put("내 주소와 가까운 공연", nearestPerformances);
+        if(!topRatedPerformances.isEmpty()) performancesByStandardMap.put("리뷰 많고 별점 높은 공연", topRatedPerformances);
+        if(!favoriteActorPerformances.isEmpty()) performancesByStandardMap.put("좋아하는 배우의 공연", favoriteActorPerformances);
+        if(!upcomingPerformances.isEmpty()) performancesByStandardMap.put("시작이 임박한 공연", upcomingPerformances);
+        if(!upcomingEndPerformances.isEmpty()) performancesByStandardMap.put("마감이 임박한 공연", upcomingEndPerformances);
+        if(!nearestPerformances.isEmpty()) performancesByStandardMap.put("내 주소와 가까운 공연", nearestPerformances);
 
         // 전체 리스트를 StandardRecommendPerfListDto로 변환
         PerformanceResponseDto.StandardRecommendPerfListDto responseDto = PerformanceConverter.standardRecommendListResDto(performancesByStandardMap);
