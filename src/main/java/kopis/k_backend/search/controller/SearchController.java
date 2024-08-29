@@ -11,11 +11,15 @@ import kopis.k_backend.performance.domain.Performance;
 import kopis.k_backend.search.dto.SearchResponseDto.PairSearchResDto;
 import kopis.k_backend.search.dto.SearchResponseDto.HomeSearchResDto;
 import kopis.k_backend.search.service.SearchService;
+import kopis.k_backend.user.domain.User;
+import kopis.k_backend.user.jwt.CustomUserDetails;
+import kopis.k_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +35,7 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
+    private final UserService userService;
 
     @Operation(summary = "홈 화면 검색 결과 조회", description = "검색어가 포함된 배우와 공연 목록을 조회하는 메서드입니다.")
     @ApiResponses(value = {
@@ -38,11 +43,13 @@ public class SearchController {
     })
     @GetMapping(value = "/home")
     public ApiResponse<HomeSearchResDto> getHomeSearchResults(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam final String query
     ){
+        User user = userService.findByUserName(customUserDetails.getUsername());
         Pageable pageable = PageRequest.of(0, 50);
 
-        final HomeSearchResDto homeSearchResDto = searchService.getHomeSearchResDto(query, pageable);
+        final HomeSearchResDto homeSearchResDto = searchService.getHomeSearchResDto(query, pageable, user);
         return ApiResponse.onSuccess(SuccessCode.SEARCH_HOME_SUCCESS, homeSearchResDto);
     }
 

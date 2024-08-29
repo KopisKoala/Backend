@@ -17,15 +17,23 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class ActorConverter {
-    public static HomeSearchActorListResDto homeSearchActorListResDto (Slice<Actor> actorSlice) {
+    public static HomeSearchActorListResDto homeSearchActorListResDto (Slice<Actor> actorSlice, User user) {
+
         return HomeSearchActorListResDto.builder()
                 .actorCount(actorSlice.stream().count())
                 .actorList(actorSlice.getContent().stream()
-                        .map(actor -> new HomeSearchActorResDto(
-                                actor.getId(),
-                                actor.getActorName(),
-                                actor.getActorProfile()
-                        ))
+                        .map(actor -> {
+                            boolean isFavorite = user.getFavoriteActors().stream()
+                                    .anyMatch(favoriteActor -> favoriteActor.getActor().equals(actor));
+
+                            String isFavoriteActor = isFavorite ? "Y" : "N";
+                            return new HomeSearchActorResDto(
+                                    actor.getId(),
+                                    actor.getActorName(),
+                                    actor.getActorProfile(),
+                                    isFavoriteActor
+                            );
+                        })
                         .collect(Collectors.toList())
                 )
                 .build();

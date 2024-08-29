@@ -25,6 +25,9 @@ public class ActorResponseDto {
 
         @Schema(description = "배우 프로필")
         private String actorProfile;
+
+        @Schema(description = "배우 찜 여부")
+        private String isFavoriteActor;
     }
 
     @Schema(description = "HomeSearchActorListResDto")
