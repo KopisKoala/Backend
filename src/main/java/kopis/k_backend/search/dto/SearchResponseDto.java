@@ -34,10 +34,10 @@ public class SearchResponseDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PairSearchResDto {
-        @Schema(description = "페어 목록들")
-        private List<PairDetailListResDto> pairDetailListResDtos;
-
         @Schema(description = "총 페어 수")
         private Long totalPairCount;
+
+        @Schema(description = "페어 목록들")
+        private List<PairDetailListResDto> pairDetailListResDtos;
     }
 }

@@ -59,10 +59,11 @@ public class PairConverter {
 
         return PairDetailResDto.builder()
                 .id(pair.getId())
+                .title(pair.getPerformance().getTitle())
                 .actor1Name(actor1.getActorName())
                 .actor2Name(actor2.getActorName())
                 .actor1Profile(actor1.getActorProfile())
-                .actor2Profile(actor1.getActorProfile())
+                .actor2Profile(actor2.getActorProfile())
                 .hashtag1(pair.getHashtag1())
                 .hashtag2(pair.getHashtag2())
                 .hashtag3(pair.getHashtag3())
@@ -78,8 +79,6 @@ public class PairConverter {
 
         return PairDetailListResDto.builder()
                 .pairDetailResDtoList(pairDetailListResDtoList)
-                .pairCount((long) pairDetailListResDtoList.size())
-                .performanceTitle(pairList.get(0).getPerformance().getTitle())
                 .build();
     }
 

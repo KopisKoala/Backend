@@ -13,6 +13,7 @@ import kopis.k_backend.performance.repository.PerformanceRepository;
 import kopis.k_backend.search.converter.SearchConverter;
 import kopis.k_backend.search.dto.SearchResponseDto.PairSearchResDto;
 import kopis.k_backend.search.dto.SearchResponseDto.HomeSearchResDto;
+import kopis.k_backend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,14 +32,14 @@ public class SearchService {
     private final ActorRepository actorRepository;
     private final SearchConverter searchConverter;
 
-    public HomeSearchResDto getHomeSearchResDto(final String query, final Pageable pageable) {
+    public HomeSearchResDto getHomeSearchResDto(final String query, final Pageable pageable, final User user) {
         // 공연 목록 검색
         Slice<Performance> performanceSlice = performanceRepository.findByTitleContaining(query, pageable);
         HomeSearchPerformanceListResDto homeSearchPerformanceListResDto = PerformanceConverter.homeSearchPerformanceListResDto(performanceSlice);
 
         // 배우 목록 검색
         Slice<Actor> actorSlice = actorRepository.findByActorNameContaining(query, pageable);
-        HomeSearchActorListResDto actorListResDto = ActorConverter.homeSearchActorListResDto(actorSlice);
+        HomeSearchActorListResDto actorListResDto = ActorConverter.homeSearchActorListResDto(actorSlice, user);
 
         return SearchConverter.homeSearchResDto(homeSearchPerformanceListResDto, actorListResDto);
     }

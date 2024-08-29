@@ -46,6 +46,9 @@ public class PairResponseDto {
         @Schema(description = "페어 id")
         private Long id;
 
+        @Schema(description = "페어가 속한 공연 제목")
+        private String title;
+
         @Schema(description = "배우1 이름")
         private String actor1Name;
 
@@ -80,14 +83,8 @@ public class PairResponseDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PairDetailListResDto {
-        @Schema(description = "공연 이름")
-        private String performanceTitle;
-
         @Schema(description = "공연 별 페어 리스트")
         private List<PairDetailResDto> pairDetailResDtoList;
-
-        @Schema(description = "공연 별 페어 수")
-        private Long pairCount;
     }
 
     @Schema(description = "PopularPairListResDto")

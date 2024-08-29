@@ -24,6 +24,9 @@ public class PerformanceResponseDto {
 
         @Schema(description = "공연 포스터")
         private String poster;
+
+        @Schema(description = "공연 상태")
+        private String state;
     }
 
     @Schema(description = "HomeSearchPerformanceListResDto")
